@@ -1,6 +1,7 @@
 package passoff.chess;
 
 import chess.*;
+import chess.pieces.ChessPiece;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.Collection;
@@ -70,7 +71,7 @@ public class TestUtilities {
         return validMoves;
     }
 
-    public static void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
+    public static void  assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
         var generatedMoves = game.validMoves(position);
         var actualMoves = new HashSet<>(generatedMoves);
         Assertions.assertEquals(generatedMoves.size(), actualMoves.size(), "Duplicate move");

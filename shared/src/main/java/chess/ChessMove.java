@@ -1,5 +1,7 @@
 package chess;
 
+import chess.pieces.ChessPiece;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>

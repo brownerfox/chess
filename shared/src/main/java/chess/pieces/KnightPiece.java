@@ -11,8 +11,8 @@ import java.util.List;
 
 public class KnightPiece extends ChessPiece{
 
-    public KnightPiece(ChessGame.TeamColor pieceColor, PieceType type) {
-        super(pieceColor, type);
+    public KnightPiece(ChessGame.TeamColor pieceColor, PieceType type, boolean hasMoved) {
+        super(pieceColor, type, hasMoved);
     }
 
     public ChessGame.TeamColor getTeamColor() {

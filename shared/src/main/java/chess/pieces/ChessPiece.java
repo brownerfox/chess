@@ -1,4 +1,9 @@
-package chess;
+package chess.pieces;
+
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -11,12 +16,14 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor pieceColor;
-    private PieceType type;
+    public ChessGame.TeamColor pieceColor;
+    public PieceType type;
+    public boolean hasMoved = false;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type, boolean hasMoved) {
         this.pieceColor = pieceColor;
         this.type = type;
+        this.hasMoved = hasMoved;
     }
 
 
@@ -67,7 +74,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public Collection<ChessPosition> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
     }
 }

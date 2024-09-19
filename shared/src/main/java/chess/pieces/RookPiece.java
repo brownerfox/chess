@@ -11,8 +11,8 @@ import java.util.List;
 
 public class RookPiece extends ChessPiece{
 
-    public RookPiece(ChessGame.TeamColor pieceColor, PieceType type) {
-        super(pieceColor, type);
+    public RookPiece(ChessGame.TeamColor pieceColor, PieceType type, boolean hasMoved) {
+        super(pieceColor, type, hasMoved);
     }
 
     public ChessGame.TeamColor getTeamColor() {

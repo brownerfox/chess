@@ -2,7 +2,7 @@ package passoff.chess;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessPiece;
+import chess.pieces.ChessPiece;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -47,6 +47,10 @@ public class ChessBoardTests {
         var actualBoard = new ChessBoard();
         actualBoard.resetBoard();
 
+        expectedBoard.printChessboard();
+        System.out.println("\n");
+        actualBoard.printChessboard();
+
         Assertions.assertEquals(expectedBoard, actualBoard);
     }
 
@@ -66,5 +70,6 @@ public class ChessBoardTests {
             }
         }
     }
+
 
 }
