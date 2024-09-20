@@ -2,12 +2,10 @@ package chess.pieces;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessMove;
 import chess.ChessPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class BishopPiece extends ChessPiece{
 
@@ -47,17 +45,23 @@ public class BishopPiece extends ChessPiece{
         for (int[] direction : directions) {
             currCol = myPosition.col;
             currRow = myPosition.row;
-            boolean isPiece = true;
+            boolean canContinue = true;
 
-            while (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8 && isPiece) {
+            while (canContinue) {
                 currCol += direction[0];
                 currRow += direction[1];
 
+                if (currCol < 0 || currCol >= 8 || currRow < 0 || currRow >= 8) {
+                    canContinue = false;
+                }
+
                 if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
                     piece = board.getPiece(new ChessPosition(currRow, currCol));
-                    if (piece != null) {
+                    if (piece != null && piece.pieceColor == this.pieceColor) {
+                        canContinue = false;
+                    } else if (piece != null) {
                         validChessMoves.add(new ChessPosition(currRow, currCol));
-                        isPiece = false;
+                        canContinue = false;
                     } else {
                         validChessMoves.add(new ChessPosition(currRow, currCol));
                     }

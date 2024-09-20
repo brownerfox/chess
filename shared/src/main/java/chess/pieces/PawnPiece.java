@@ -34,36 +34,49 @@ public class PawnPiece extends ChessPiece{
 
     public Collection<ChessPosition> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessPosition> validChessMoves = new ArrayList<>();
-        ChessPiece piece;
-        Boolean isPiece = false;
 
-        if (getTeamColor() == WHITE) {
-            if (board.getPiece(new ChessPosition(myPosition.col, myPosition.row + 1)) == null) {
+        if (getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (myPosition.row + 1 < 8 && board.getPiece(new ChessPosition(myPosition.col, myPosition.row + 1)) == null) {
                 validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row + 1));
             }
-            if (board.getPiece(new ChessPosition(myPosition.col, myPosition.row + 2)) == null && myPosition.row + 2 < 8 && !hasMoved) {
+            if (myPosition.row + 2 < 8 && board.getPiece(new ChessPosition(myPosition.col, myPosition.row + 2)) == null && !hasMoved) {
                 validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row + 2));
             }
-            if (board.getPiece(new ChessPosition(myPosition.col - 1, myPosition.row + 1)) != null && myPosition.row + 1 < 8 && myPosition.col - 1 >= 0) {
-                validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row + 1));
+            if (myPosition.row + 1 < 8 && myPosition.col - 1 >= 0) {
+                ChessPiece leftDiagonalPiece = board.getPiece(new ChessPosition(myPosition.col - 1, myPosition.row + 1));
+                if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor() != getTeamColor()) {
+                    validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row + 1));
+                }
             }
-            if (board.getPiece(new ChessPosition(myPosition.col + 1, myPosition.row + 1)) != null && myPosition.row + 1 < 8 && myPosition.col + 1 < 8) {
-                validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row + 1));
+            if (myPosition.row + 1 < 8 && myPosition.col + 1 < 8) {
+                ChessPiece rightDiagonalPiece = board.getPiece(new ChessPosition(myPosition.col + 1, myPosition.row + 1));
+                if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor() != getTeamColor()) {
+                    validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row + 1));
+                }
             }
         } else {
-            if (board.getPiece(new ChessPosition(myPosition.row, myPosition.col - 1)) == null) {
-                validChessMoves.add(new ChessPosition(myPosition.row, myPosition.col - 1));
+            if (myPosition.row - 1 >= 0 && board.getPiece(new ChessPosition(myPosition.col, myPosition.row - 1)) == null) {
+                validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row - 1));
             }
-            if (board.getPiece(new ChessPosition(myPosition.col, myPosition.row - 2)) == null && myPosition.row - 2 >= 0 && !hasMoved) {
+            if (myPosition.row - 2 >= 0 && board.getPiece(new ChessPosition(myPosition.col, myPosition.row - 2)) == null && !hasMoved) {
                 validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row - 2));
             }
-            if (board.getPiece(new ChessPosition(myPosition.col - 1, myPosition.row - 1)) != null && myPosition.row - 1 >= 0 && myPosition.col - 1 >= 0) {
-                validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row - 1));
+            if (myPosition.row - 1 >= 0 && myPosition.col - 1 >= 0) {
+                ChessPiece leftDiagonalPiece = board.getPiece(new ChessPosition(myPosition.col - 1, myPosition.row - 1));
+                if (leftDiagonalPiece != null && leftDiagonalPiece.getTeamColor() != getTeamColor()) {
+                    validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row - 1));
+                }
             }
-            if (board.getPiece(new ChessPosition(myPosition.col + 1, myPosition.row - 1)) != null && myPosition.row - 1 >= 0 && myPosition.col + 1 < 8) {
-                validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row - 1));
+            if (myPosition.row - 1 >= 0 && myPosition.col + 1 < 8) {
+                ChessPiece rightDiagonalPiece = board.getPiece(new ChessPosition(myPosition.col + 1, myPosition.row - 1));
+                if (rightDiagonalPiece != null && rightDiagonalPiece.getTeamColor() != getTeamColor()) {
+                    validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row - 1));
+                }
             }
         }
+
+
+
 
 
         return validChessMoves;

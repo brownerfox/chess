@@ -51,12 +51,12 @@ public class RookPiece extends ChessPiece{
                 currCol += direction[0];
                 currRow += direction[1];
 
-                if (currCol < 0 && currCol >= 8 && currRow < 0 && currRow >= 8) {
+                if (currCol < 0 || currCol >= 8 || currRow < 0 || currRow >= 8) {
                     canContinue = false;
                 }
 
                 if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
-                    piece = board.getPiece(new ChessPosition(currRow+1, currCol+1));
+                    piece = board.getPiece(new ChessPosition(currRow, currCol));
                     if (piece != null && piece.pieceColor == this.pieceColor) {
                         canContinue = false;
                     } else if (piece != null) {

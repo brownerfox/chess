@@ -2,12 +2,10 @@ package chess.pieces;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessMove;
 import chess.ChessPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class QueenPiece extends ChessPiece{
 
@@ -51,18 +49,24 @@ public class QueenPiece extends ChessPiece{
         for (int[] direction : directions) {
             currCol = myPosition.col;
             currRow = myPosition.row;
-            boolean isPiece = true;
+            boolean canContinue = true;
 
             // Move in the direction until you hit the edge of the board or a piece
-            while (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8 && isPiece) {
+            while (canContinue) {
                 currCol += direction[0];
                 currRow += direction[1];
 
+                if (currCol < 0 || currCol >= 8 || currRow < 0 || currRow >= 8) {
+                    canContinue = false;
+                }
+
                 if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
                     piece = board.getPiece(new ChessPosition(currRow, currCol));
-                    if (piece != null) {
+                    if (piece != null && piece.pieceColor == this.pieceColor) {
+                        canContinue = false;
+                    } else if (piece != null) {
                         validChessMoves.add(new ChessPosition(currRow, currCol));
-                        isPiece = false;  // Stop once we hit another piece
+                        canContinue = false;
                     } else {
                         validChessMoves.add(new ChessPosition(currRow, currCol));
                     }

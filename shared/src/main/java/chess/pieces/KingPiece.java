@@ -34,20 +34,43 @@ public class KingPiece extends ChessPiece{
 
     public Collection<ChessPosition> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessPosition> validChessMoves = new ArrayList<>();
+        int currCol, currRow;
         ChessPiece piece;
 
-        if (myPosition.col != 8) {
-            validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row));
+        int[][] directions = {
+                {1, 0},   // right
+                {-1, 0}, // left
+                {0, 1},  // up
+                {0, -1},
+                {1, 1},
+                {1, -1},
+                {-1, 1},
+                {-1, -1}
+                // down
+        };
+
+        for (int[] direction : directions) {
+            currCol = myPosition.col;
+            currRow = myPosition.row;
+
+            currCol += direction[0];
+            currRow += direction[1];
+
+            if (currCol < 0 || currCol >= 8 || currRow < 0 || currRow >= 8) {
+                continue;
+            }
+
+            if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
+                piece = board.getPiece(new ChessPosition(currRow, currCol));
+                if (piece != null && piece.pieceColor == this.pieceColor) {
+                    continue;
+                } else {
+                    validChessMoves.add(new ChessPosition(currRow, currCol));
+                }
+            }
         }
-        if (myPosition.col != 0) {
-            validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row));
-        }
-        if (myPosition.row != 8) {
-            validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row + 1));
-        }
-        if (myPosition.row != 0) {
-            validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row - 1));
-        }
+
+
 
 
         return validChessMoves;

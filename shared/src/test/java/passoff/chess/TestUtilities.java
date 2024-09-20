@@ -37,12 +37,12 @@ public class TestUtilities {
 
     public static ChessBoard loadBoard(String boardText) {
         var board = new ChessBoard();
-        int row = 8;
-        int column = 1;
+        int row = 7;
+        int column = 0;
         for (var c : boardText.toCharArray()) {
             switch (c) {
                 case '\n' -> {
-                    column = 1;
+                    column = 0;
                     row--;
                 }
                 case ' ' -> column++;
