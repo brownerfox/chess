@@ -31,14 +31,23 @@ public class KingPiece extends ChessPiece{
      */
 
 
+
     public Collection<ChessPosition> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessPosition> validChessMoves = new ArrayList<>();
         ChessPiece piece;
 
-        validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row));
-        validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row));
-        validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row + 1));
-        validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row - 1));
+        if (myPosition.col != 8) {
+            validChessMoves.add(new ChessPosition(myPosition.col + 1, myPosition.row));
+        }
+        if (myPosition.col != 0) {
+            validChessMoves.add(new ChessPosition(myPosition.col - 1, myPosition.row));
+        }
+        if (myPosition.row != 8) {
+            validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row + 1));
+        }
+        if (myPosition.row != 0) {
+            validChessMoves.add(new ChessPosition(myPosition.col, myPosition.row - 1));
+        }
 
 
         return validChessMoves;

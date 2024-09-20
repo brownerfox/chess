@@ -2,6 +2,7 @@ package passoff.chess;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.pieces.BishopPiece;
 import chess.pieces.ChessPiece;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +17,7 @@ public class ChessBoardTests {
     @DisplayName("Add and Get Piece")
     public void getAddPiece() {
         ChessPosition position = new ChessPosition(4, 4);
-        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        ChessPiece piece = new BishopPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP, false);
 
         var board = new ChessBoard();
         board.addPiece(position, piece);

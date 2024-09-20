@@ -22,7 +22,7 @@ public class TestUtilities {
         assertCollectionsEquals(validMoves, pieceMoves, "Wrong moves");
     }
 
-    static public <T> void assertCollectionsEquals(Collection<T> first, Collection<T> second, String message) {
+    static public <T> void assertCollectionsEquals(Set<ChessMove> first, HashSet<ChessPosition> second, String message) {
         Assertions.assertEquals(new HashSet<>(first), new HashSet<>(second), message);
         Assertions.assertEquals(first.size(), second.size(), "Collections not the same size");
     }
@@ -53,7 +53,7 @@ public class TestUtilities {
                             : ChessGame.TeamColor.WHITE;
                     var type = CHAR_TO_TYPE_MAP.get(Character.toLowerCase(c));
                     var position = new ChessPosition(row, column);
-                    var piece = new ChessPiece(color, type);
+                    var piece = new ChessPiece(color, type, false);
                     board.addPiece(position, piece);
                     column++;
                 }

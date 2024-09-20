@@ -35,7 +35,6 @@ public class RookPiece extends ChessPiece{
         int currCol, currRow;
         ChessPiece piece;
 
-        // Define directions for diagonal movement (up-right, down-left, up-left, down-right)
         int[][] directions = {
                 {1, 0},   // right
                 {-1, 0}, // left
@@ -43,22 +42,26 @@ public class RookPiece extends ChessPiece{
                 {0, -1}   // down
         };
 
-        // Iterate over each diagonal direction
         for (int[] direction : directions) {
             currCol = myPosition.col;
             currRow = myPosition.row;
-            boolean isPiece = true;
+            boolean canContinue = true;
 
-            // Move in the direction until you hit the edge of the board or a piece
-            while (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8 && isPiece) {
+            while (canContinue) {
                 currCol += direction[0];
                 currRow += direction[1];
 
+                if (currCol < 0 && currCol >= 8 && currRow < 0 && currRow >= 8) {
+                    canContinue = false;
+                }
+
                 if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
-                    piece = board.getPiece(new ChessPosition(currRow, currCol));
-                    if (piece != null) {
+                    piece = board.getPiece(new ChessPosition(currRow+1, currCol+1));
+                    if (piece != null && piece.pieceColor == this.pieceColor) {
+                        canContinue = false;
+                    } else if (piece != null) {
                         validChessMoves.add(new ChessPosition(currRow, currCol));
-                        isPiece = false;  // Stop once we hit another piece
+                        canContinue = false;
                     } else {
                         validChessMoves.add(new ChessPosition(currRow, currCol));
                     }

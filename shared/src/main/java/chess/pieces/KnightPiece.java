@@ -16,11 +16,11 @@ public class KnightPiece extends ChessPiece{
     }
 
     public ChessGame.TeamColor getTeamColor() {
-        return this.pieceColor;
+        return super.getTeamColor();
     }
 
     public PieceType getPieceType() {
-        return this.type;
+        return super.getPieceType();
     }
     /**
      * Calculates all the positions a chess piece can move to
