@@ -1,27 +1,19 @@
 package chess.pieces;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class RookPiece extends ChessPiece{
+public class RookMoves implements PieceMoves {
+    public ChessBoard board;
+    public ChessPosition myPosition;
 
-    public RookPiece(ChessGame.TeamColor pieceColor, PieceType type, boolean hasMoved) {
-        super(pieceColor, type, hasMoved);
+    public RookMoves(ChessBoard board, ChessPosition myPosition) {
+        this.board = board;
+        this.myPosition = myPosition;;
     }
 
-    public ChessGame.TeamColor getTeamColor() {
-        return this.pieceColor;
-    }
-
-    public PieceType getPieceType() {
-        return this.type;
-    }
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -30,8 +22,8 @@ public class RookPiece extends ChessPiece{
      * @return Collection of valid moves
      */
 
-    public Collection<ChessPosition> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessPosition> validChessMoves = new ArrayList<>();
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> validChessMoves = new ArrayList<>();
         int currCol, currRow;
         ChessPiece piece;
 
@@ -43,27 +35,29 @@ public class RookPiece extends ChessPiece{
         };
 
         for (int[] direction : directions) {
-            currCol = myPosition.col;
-            currRow = myPosition.row;
+            currCol = myPosition.getColumn();
+            currRow = myPosition.getRow();
             boolean canContinue = true;
 
             while (canContinue) {
                 currCol += direction[0];
                 currRow += direction[1];
 
-                if (currCol < 0 || currCol >= 8 || currRow < 0 || currRow >= 8) {
+                if (currCol < 0 || currCol >= 7 || currRow < 0 || currRow >= 7) {
                     canContinue = false;
                 }
 
                 if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
-                    piece = board.getPiece(new ChessPosition(currRow, currCol));
-                    if (piece != null && piece.pieceColor == this.pieceColor) {
+                    piece = board.getPiece(new ChessPosition(currRow+1, currCol+1));
+                    if (piece != null && piece.pieceColor == board.getPiece(myPosition).pieceColor) {
                         canContinue = false;
                     } else if (piece != null) {
-                        validChessMoves.add(new ChessPosition(currRow, currCol));
+                        ChessPosition newPosition = ChessPosition.boardPosition(currRow, currCol);
+                        validChessMoves.add(new ChessMove(myPosition, newPosition, null));
                         canContinue = false;
                     } else {
-                        validChessMoves.add(new ChessPosition(currRow, currCol));
+                        ChessPosition newPosition = ChessPosition.boardPosition(currRow, currCol);
+                        validChessMoves.add(new ChessMove(myPosition, newPosition, null));
                     }
                 }
             }

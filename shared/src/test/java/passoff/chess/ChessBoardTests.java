@@ -2,8 +2,7 @@ package passoff.chess;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import chess.pieces.BishopPiece;
-import chess.pieces.ChessPiece;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +16,7 @@ public class ChessBoardTests {
     @DisplayName("Add and Get Piece")
     public void getAddPiece() {
         ChessPosition position = new ChessPosition(4, 4);
-        ChessPiece piece = new BishopPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP, false);
+        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
 
         var board = new ChessBoard();
         board.addPiece(position, piece);
@@ -48,10 +47,6 @@ public class ChessBoardTests {
         var actualBoard = new ChessBoard();
         actualBoard.resetBoard();
 
-        expectedBoard.printChessboard();
-        System.out.println("\n");
-        actualBoard.printChessboard();
-
         Assertions.assertEquals(expectedBoard, actualBoard);
     }
 
@@ -61,8 +56,8 @@ public class ChessBoardTests {
     public void pieceMoveAllPieces() {
         var board = new ChessBoard();
         board.resetBoard();
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
+        for(int i = 1; i <= 8; i++) {
+            for(int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null) {
@@ -71,6 +66,5 @@ public class ChessBoardTests {
             }
         }
     }
-
 
 }

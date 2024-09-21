@@ -1,7 +1,6 @@
 package passoff.chess;
 
 import chess.*;
-import chess.pieces.ChessPiece;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.Collection;
@@ -22,7 +21,7 @@ public class TestUtilities {
         assertCollectionsEquals(validMoves, pieceMoves, "Wrong moves");
     }
 
-    static public <T> void assertCollectionsEquals(Set<ChessMove> first, HashSet<ChessPosition> second, String message) {
+    static public <T> void assertCollectionsEquals(Collection<T> first, Collection<T> second, String message) {
         Assertions.assertEquals(new HashSet<>(first), new HashSet<>(second), message);
         Assertions.assertEquals(first.size(), second.size(), "Collections not the same size");
     }
@@ -37,12 +36,12 @@ public class TestUtilities {
 
     public static ChessBoard loadBoard(String boardText) {
         var board = new ChessBoard();
-        int row = 7;
-        int column = 0;
+        int row = 8;
+        int column = 1;
         for (var c : boardText.toCharArray()) {
             switch (c) {
                 case '\n' -> {
-                    column = 0;
+                    column = 1;
                     row--;
                 }
                 case ' ' -> column++;
@@ -53,7 +52,7 @@ public class TestUtilities {
                             : ChessGame.TeamColor.WHITE;
                     var type = CHAR_TO_TYPE_MAP.get(Character.toLowerCase(c));
                     var position = new ChessPosition(row, column);
-                    var piece = new ChessPiece(color, type, false);
+                    var piece = new ChessPiece(color, type);
                     board.addPiece(position, piece);
                     column++;
                 }
@@ -71,7 +70,7 @@ public class TestUtilities {
         return validMoves;
     }
 
-    public static void  assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
+    public static void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
         var generatedMoves = game.validMoves(position);
         var actualMoves = new HashSet<>(generatedMoves);
         Assertions.assertEquals(generatedMoves.size(), actualMoves.size(), "Duplicate move");
