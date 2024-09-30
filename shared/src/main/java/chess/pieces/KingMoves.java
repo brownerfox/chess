@@ -4,57 +4,54 @@ import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class KingMoves implements PieceMoves {
-    public ChessBoard board;
-    public ChessPosition myPosition;
+    private ChessBoard board;
+    private ChessPosition myPosition;
 
     public KingMoves(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
         this.myPosition = myPosition;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KingMoves kingMoves = (KingMoves) o;
+        return Objects.equals(board, kingMoves.board) && Objects.equals(myPosition, kingMoves.myPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, myPosition);
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ArrayList<ChessMove> validChessMoves = new ArrayList<>();
-        int currCol, currRow;
+        Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece piece;
+        ChessPosition position;
+        int[][] moves = {{1, 1}, {-1, -1}, {1, -1}, {-1, 1}, {1, 0}, {-1, 0}, {0, -1}, {0, 1}};
 
-        int[][] directions = {
-                {1, 0},   // right
-                {-1, 0}, // left
-                {0, 1},  // up
-                {0, -1},
-                {1, 1},
-                {1, -1},
-                {-1, 1},
-                {-1, -1}
-                // down
-        };
-
-        for (int[] direction : directions) {
-            currCol = myPosition.getColumn();
-            currRow = myPosition.getRow();
-
-            currCol += direction[0];
-            currRow += direction[1];
-
-            if (currCol < 0 || currCol >= 7 || currRow < 0 || currRow >= 7) {
+        for (int[] move : moves) {
+            int currRow = myPosition.getRow();
+            int currCol = myPosition.getColumn();
+            currRow += move[0];
+            currCol += move[1];
+            if (currRow < 0 || currRow >= 8 || currCol < 0 || currCol >= 8) {
                 continue;
             } else {
-                piece = board.getPiece(ChessPosition.boardPosition(currRow, currCol));
-                if (piece != null && piece.pieceColor == board.getPiece(myPosition).pieceColor) {
+                position = new ChessPosition(currRow + 1, currCol + 1);
+                piece = board.getPiece(position);
+                if (piece != null && piece.getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
                     continue;
                 } else {
-                    ChessPosition newPosition = ChessPosition.boardPosition(currRow, currCol);
-                    validChessMoves.add(new ChessMove(myPosition, newPosition, null));
+                    validMoves.add(new ChessMove(myPosition, position, null));
                 }
             }
         }
 
-
-
-
-        return validChessMoves;
-
+        return validMoves;
     }
 }

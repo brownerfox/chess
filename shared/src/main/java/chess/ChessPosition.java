@@ -12,33 +12,23 @@ public class ChessPosition {
     private int row;
     private int col;
 
+    public ChessPosition(int row, int col) {
+        this.row = row-1;
+        this.col = col-1;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChessPosition that = (ChessPosition) o;
-        return row == that.row && col == that.col;
+        ChessPosition position = (ChessPosition) o;
+        return row == position.row && col == position.col;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(row, col);
     }
-
-    public ChessPosition(int row, int col) {
-        this.row = row-1;
-        this.col = col-1;
-    }
-
-    public static ChessPosition boardPosition(int row, int col) {
-        return new ChessPosition(row+1, col+1);
-    }
-
-    public ChessPosition translate(int row, int col) {
-        return new ChessPosition(this.row+1+row, this.col+1+col);
-    }
-
-
 
     /**
      * @return which row this position is in

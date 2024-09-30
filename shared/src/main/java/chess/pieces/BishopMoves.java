@@ -1,63 +1,65 @@
 package chess.pieces;
 
-import chess.ChessBoard;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
-public class BishopMoves implements PieceMoves {
-    public ChessBoard board;
-    public ChessPosition myPosition;
+public class BishopMoves implements PieceMoves{
+    private ChessBoard board;
+    private ChessPosition myPosition;
 
     public BishopMoves(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
         this.myPosition = myPosition;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BishopMoves that = (BishopMoves) o;
+        return Objects.equals(board, that.board) && Objects.equals(myPosition, that.myPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, myPosition);
+    }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validChessMoves = new ArrayList<>();
-        int currCol, currRow;
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        int currRow, currCol;
         ChessPiece piece;
+        ChessPosition position;
+        int[][] moves = {{1, 1}, {-1,-1}, {1, -1}, {-1, 1}};
 
-        int[][] directions = {
-                {1, 1},   // up-right
-                {-1, -1}, // down-left
-                {-1, 1},  // up-left
-                {1, -1}   // down-right
-        };
-
-        for (int[] direction : directions) {
-            currCol = myPosition.getColumn();
-            currRow = myPosition.getRow();
+        for (int[] move: moves) {
             boolean canContinue = true;
+            currRow = myPosition.getRow();
+            currCol = myPosition.getColumn();
 
             while (canContinue) {
-                currCol += direction[0];
-                currRow += direction[1];
-
-                if (currCol < 0 || currCol >= 7 || currRow < 0 || currRow >= 7) {
+                currRow += move[0];
+                currCol += move[1];
+                if (currRow < 0 || currRow >= 8 || currCol < 0 || currCol >= 8) {
                     canContinue = false;
-                }
-
-                if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
-                    ChessPosition newPosition = ChessPosition.boardPosition(currRow, currCol);
-                    piece = board.getPiece(ChessPosition.boardPosition(currRow, currCol));
-                    if (piece != null && piece.pieceColor == board.getPiece(myPosition).pieceColor) {
+                } else {
+                    position = new ChessPosition(currRow+1, currCol+1);
+                    piece = board.getPiece(position);
+                    if (piece != null && piece.getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
                         canContinue = false;
-                    } else if (piece != null) {
-                        validChessMoves.add(new ChessMove(myPosition, newPosition, null));
+                    } else if (piece != null && piece.getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        validMoves.add(new ChessMove(myPosition, position, null));
                         canContinue = false;
                     } else {
-                        validChessMoves.add(new ChessMove(myPosition, newPosition, null));
+                        validMoves.add(new ChessMove(myPosition, position, null));
                     }
                 }
             }
         }
 
-        return validChessMoves;
+        return validMoves;
     }
 }

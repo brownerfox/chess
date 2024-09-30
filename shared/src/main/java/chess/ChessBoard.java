@@ -1,7 +1,5 @@
 package chess;
 
-import chess.pieces.*;
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -13,10 +11,24 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    public ChessPiece[][] chessboard = new ChessPiece[8][8];
+    private ChessPiece[][] chessboard = new ChessPiece[8][8];
 
-    public ChessBoard() {}
+    public ChessBoard() {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(chessboard, that.chessboard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(chessboard);
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -25,12 +37,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        int row = position.getRow();
-        int col = position.getColumn();
-
-
-        chessboard[row][col] = piece;
-
+        chessboard[position.getRow()][position.getColumn()] = piece;
     }
 
     /**
@@ -49,7 +56,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-
         chessboard = new ChessPiece[8][8];
 
         chessboard[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
@@ -70,16 +76,6 @@ public class ChessBoard {
         chessboard[1][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         chessboard[1][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
 
-// Set black pieces on the bottom of the board (rows 6 and 7)
-        chessboard[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        chessboard[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        chessboard[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        chessboard[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        chessboard[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        chessboard[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        chessboard[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        chessboard[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-
         chessboard[6][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         chessboard[6][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         chessboard[6][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
@@ -89,68 +85,20 @@ public class ChessBoard {
         chessboard[6][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         chessboard[6][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
 
+        chessboard[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        chessboard[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        chessboard[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        chessboard[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        chessboard[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        chessboard[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        chessboard[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        chessboard[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
 
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(chessboard, that.chessboard);
-    }
 
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(chessboard);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder boardString = new StringBuilder();
-        for (int i = 0; i < 8; i++) {
-            boardString.append("|");
-            for (int j = 0; j < 8; j++) {
-                if (chessboard[i][j] == null) {
-                    boardString.append(" ");
-                } else {
-                    if (chessboard[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        String pieceChar = switch (chessboard[i][j].getPieceType()) {
-                            case BISHOP -> "B";
-                            case ROOK -> "R";
-                            case KNIGHT -> "N";
-                            case QUEEN -> "Q";
-                            case KING -> "K";
-                            case PAWN -> "P";
-                            default -> "?";  // Use "?" for an unrecognized piece
-                            };
-                        boardString.append(pieceChar);
-                    } else {
-                        String pieceChar = switch (chessboard[i][j].getPieceType()) {
-                            case BISHOP -> "b";
-                            case ROOK -> "r";
-                            case KNIGHT -> "n";
-                            case QUEEN -> "q";
-                            case KING -> "k";
-                            case PAWN -> "p";
-                            default -> "?";  // Use "?" for an unrecognized piece
-                        };
-                        boardString.append(pieceChar);
-                    };
-                }
-                boardString.append("|");
-            }
-            boardString.append("\n");
-        }
-
-        return boardString.toString();
-    }
-
-    public void printChessboard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.println(this.chessboard[i][j]);
-            }
-        }
     }
 }
+
+
+
+

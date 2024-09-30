@@ -1,69 +1,54 @@
 package chess.pieces;
 
-import chess.*;
+import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RookMoves implements PieceMoves {
-    public ChessBoard board;
-    public ChessPosition myPosition;
+public class RookMoves implements PieceMoves{
+    private ChessBoard board;
+    private ChessPosition myPosition;
 
     public RookMoves(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
-        this.myPosition = myPosition;;
+        this.myPosition = myPosition;
     }
 
-    /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validChessMoves = new ArrayList<>();
-        int currCol, currRow;
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        int currRow, currCol;
         ChessPiece piece;
+        ChessPosition position;
+        int[][] moves = {{1, 0}, {-1,0}, {0, -1}, {0, 1}};
 
-        int[][] directions = {
-                {1, 0},   // right
-                {-1, 0}, // left
-                {0, 1},  // up
-                {0, -1}   // down
-        };
-
-        for (int[] direction : directions) {
-            currCol = myPosition.getColumn();
+        for (int[] move: moves) {
             currRow = myPosition.getRow();
+            currCol = myPosition.getColumn();
             boolean canContinue = true;
 
             while (canContinue) {
-                currCol += direction[0];
-                currRow += direction[1];
-
-                if (currCol < 0 || currCol >= 7 || currRow < 0 || currRow >= 7) {
+                currRow += move[0];
+                currCol += move[1];
+                if (currRow < 0 || currRow >= 8 || currCol < 0 || currCol >= 8) {
                     canContinue = false;
-                }
-
-                if (currCol >= 0 && currCol < 8 && currRow >= 0 && currRow < 8) {
-                    piece = board.getPiece(new ChessPosition(currRow+1, currCol+1));
-                    if (piece != null && piece.pieceColor == board.getPiece(myPosition).pieceColor) {
+                } else {
+                    position = new ChessPosition(currRow+1, currCol+1);
+                    piece = board.getPiece(position);
+                    if (piece != null && piece.getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
                         canContinue = false;
-                    } else if (piece != null) {
-                        ChessPosition newPosition = ChessPosition.boardPosition(currRow, currCol);
-                        validChessMoves.add(new ChessMove(myPosition, newPosition, null));
+                    } else if (piece != null && piece.getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        validMoves.add(new ChessMove(myPosition, position, null));
                         canContinue = false;
                     } else {
-                        ChessPosition newPosition = ChessPosition.boardPosition(currRow, currCol);
-                        validChessMoves.add(new ChessMove(myPosition, newPosition, null));
+                        validMoves.add(new ChessMove(myPosition, position, null));
                     }
                 }
             }
         }
 
-        return validChessMoves;
+        return validMoves;
     }
 }
-
