@@ -78,4 +78,17 @@ public class ChessPiece {
         };
         return pieceMove.pieceMoves(board, myPosition);
     }
+
+    public Collection<ChessMove> canCaptureKing(ChessBoard board, ChessPosition myPosition) {
+        var pieceMove = switch (getPieceType()) {
+            case BISHOP -> new BishopMoves(board, myPosition);
+            case ROOK -> new RookMoves(board, myPosition);
+            case QUEEN -> new QueenMoves(board, myPosition);
+            case KING -> new KingMoves(board, myPosition);
+            case KNIGHT -> new KnightMoves(board, myPosition);
+            case PAWN -> new PawnMoves(board, myPosition);
+            default -> null;
+        };
+        return pieceMove.canCaptureKing(board, myPosition);
+    }
 }

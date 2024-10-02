@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class KnightMoves implements PieceMoves{
+import static chess.ChessPiece.PieceType.KING;
+
+public class KnightMoves implements PieceMoves, canCaptureKing{
     private ChessBoard board;
     private ChessPosition myPosition;
 
@@ -54,5 +56,18 @@ public class KnightMoves implements PieceMoves{
         }
 
         return validMoves;
+    }
+
+    public boolean canCaptureKing() {
+        Collection<ChessMove> validMoves = pieceMoves(this.board, this.myPosition);
+
+        for (ChessMove move : validMoves) {
+            ChessPiece targetPiece = board.getPiece(move.getEndPosition());
+            if (targetPiece != null && targetPiece.getPieceType() == KING &&
+                    targetPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class KingMoves implements PieceMoves {
+public class KingMoves implements PieceMoves, canCaptureKing {
     private ChessBoard board;
     private ChessPosition myPosition;
 

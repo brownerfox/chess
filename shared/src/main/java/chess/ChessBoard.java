@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -51,6 +50,10 @@ public class ChessBoard {
         return chessboard[position.getRow()][position.getColumn()];
     }
 
+    public void removePiece(int row, int col) {
+        chessboard[row][col] = null;
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -96,6 +99,21 @@ public class ChessBoard {
 
 
 
+    }
+
+    public Collection<ChessPosition> piecePositions () {
+        Collection<ChessPosition> listOfPiecePositions = new ArrayList<>();
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                ChessPosition pos = new ChessPosition(x, y);
+
+                if (getPiece(pos) != null) {
+                    listOfPiecePositions.add(pos);
+                }
+            }
+        }
+        return listOfPiecePositions;
     }
 }
 

@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,10 +12,9 @@ import java.util.Collection;
 public class ChessGame {
 
     private TeamColor team;
+    private ChessBoard board;
 
-    public ChessGame() {
-
-    }
+    public ChessGame() {}
 
     /**
      * @return Which team's turn it is
@@ -28,9 +28,7 @@ public class ChessGame {
      *
      * @param team the team whose turn it is
      */
-    public void setTeamTurn(TeamColor team) {
-        this.team = team;
-    }
+    public void setTeamTurn(TeamColor team) {this.team = team;}
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -48,7 +46,28 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessBoard copyBoard = getBoard();
+        ChessPiece piece = getBoard().getPiece(startPosition);
+
+
+        if (isInCheck(getTeamTurn())) {
+            if (isInCheckmate(getTeamTurn())) {
+                // end the game
+            } else {
+                Collection<ChessMove> currentMoves = piece.pieceMoves(getBoard(), startPosition);
+                for (ChessMove move : currentMoves) {
+                    makeMove(move);
+                }
+                // iterate over moves of the given piece to see if it ends check
+            }
+        } else if (isInStalemate(getTeamTurn())) {
+                // end the game
+        } else {
+                // iterate over moves to see if the put the king in check
+        }
+
+        return validMoves;
     }
 
     /**
@@ -58,7 +77,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = getBoard().getPiece(move.getStartPosition());
+
+        getBoard().addPiece(move.getEndPosition(), piece);
+        getBoard().removePiece(move.getStartPosition().getRow(), move.getStartPosition().getColumn());
+        // If move is not in validMoves then throw an invalid move exception
+
+
+
     }
 
     /**
@@ -68,7 +94,12 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        for (ChessPosition pos : board.piecePositions()) {
+            if (board.getPiece(pos).getTeamColor() != teamColor) {
+                if (board.getPiece(pos).pieceMoves(board, pos).)
+            }
+        }
+        return true;
     }
 
     /**
@@ -78,7 +109,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // After checking for check, see if our king or any pieces can move to protect our king or take opposing pieces
+        return true;
     }
 
     /**
@@ -89,7 +121,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // If piece is not in check, check to see if king or any other pieces can move
+        return true;
     }
 
     /**
@@ -98,7 +131,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
+        // Takes a given board and adds pieces to our board
     }
 
     /**
@@ -107,6 +141,8 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        ChessBoard chessboard = new ChessBoard();
+
+        return chessboard;
     }
 }

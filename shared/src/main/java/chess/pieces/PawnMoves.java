@@ -10,7 +10,7 @@ import java.util.Objects;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
 
-public class PawnMoves implements PieceMoves{
+public class PawnMoves implements PieceMoves, canCaptureKing{
     private ChessBoard board;
     private ChessPosition myPosition;
 
@@ -150,5 +150,18 @@ public class PawnMoves implements PieceMoves{
         }
 
         return validMoves;
+    }
+
+    public boolean canCaptureKing() {
+        Collection<ChessMove> validMoves = pieceMoves(this.board, this.myPosition);
+
+        for (ChessMove move : validMoves) {
+            ChessPiece targetPiece = board.getPiece(move.getEndPosition());
+            if (targetPiece != null && targetPiece.getPieceType() == KING &&
+                    targetPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
