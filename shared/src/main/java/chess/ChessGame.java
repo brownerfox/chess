@@ -183,17 +183,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         Collection<ChessMove> teamMoves = new ArrayList<>();
-        boolean inCheck = false;
-
-        for (ChessPosition pos : getBoard().piecePositions()) {
-            ChessPiece piece = getBoard().getPiece(pos);
-            if (piece.getTeamColor() != teamColor) {
-                if (getBoard().getPiece(pos).canCaptureKing(getBoard(), pos)) {
-                    inCheck = true;
-                    break;
-                }
-            }
-        }
+        boolean inCheck = isInCheck(teamColor);
 
         if (!inCheck) {
             return false;
@@ -246,6 +236,7 @@ public class ChessGame {
         return teamMoves;
 
     }
+    
 
     /**
      * Sets this game's chessboard with a given board
