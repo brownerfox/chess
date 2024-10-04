@@ -170,7 +170,7 @@ public class ChessGame {
                 if (getBoard().getPiece(pos).canCaptureKing(getBoard(), pos)) {
                     return true;
                 }
-            }
+            } // Find out how to use gather moves to see if we can shorten this function
         }
         return false;
     }
@@ -236,7 +236,7 @@ public class ChessGame {
         return teamMoves;
 
     }
-    
+
 
     /**
      * Sets this game's chessboard with a given board
