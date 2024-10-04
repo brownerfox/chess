@@ -182,6 +182,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        Collection<ChessMove> teamMoves = new ArrayList<>();
         boolean inCheck = false;
 
         for (ChessPosition pos : getBoard().piecePositions()) {
@@ -198,16 +199,14 @@ public class ChessGame {
             return false;
         }
 
-        for (ChessPosition pos : getBoard().piecePositions()) {
-            ChessPiece piece = getBoard().getPiece(pos);
-            if (piece.getTeamColor() == teamColor) {
-                for (ChessMove move : piece.pieceMoves(getBoard(), pos)) {
-                    if (testMove(move, getBoard())) {
-                        return false;
-                    }
-                }
+        teamMoves.addAll(gatherTeamMoves(teamColor));
+
+        for (ChessMove move : teamMoves) {
+            if (testMove(move, getBoard())) {
+                return false;
             }
         }
+
         return inCheck;
     }
 
@@ -222,12 +221,7 @@ public class ChessGame {
         setTeamTurn(teamColor);
         Collection<ChessMove> teamMoves = new ArrayList<ChessMove>();
 
-        for (ChessPosition pos : getBoard().piecePositions()) {
-            ChessPiece piece = getBoard().getPiece(pos);
-            if (piece.getTeamColor() == teamColor) {
-                teamMoves.addAll(validMoves(pos));
-            }
-        }
+        teamMoves.addAll(gatherTeamMoves(teamColor));
 
         if (teamMoves.isEmpty()) {
             if (isInCheck(teamColor)) {
@@ -237,6 +231,20 @@ public class ChessGame {
             }
         }
         return false;
+    }
+
+    public Collection<ChessMove> gatherTeamMoves (TeamColor teamColor) {
+        Collection<ChessMove> teamMoves = new ArrayList<>();
+
+        for (ChessPosition pos : getBoard().piecePositions()) {
+            ChessPiece piece = getBoard().getPiece(pos);
+            if (piece.getTeamColor() == teamColor) {
+                teamMoves.addAll(validMoves(pos));
+            }
+        }
+
+        return teamMoves;
+
     }
 
     /**
