@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import static chess.ChessPiece.PieceType.KING;
 
-public class QueenMoves implements PieceMoves, canCaptureKing{
+public class QueenMoves implements PieceMoves {
     private ChessBoard board;
     private ChessPosition myPosition;
 
@@ -65,7 +65,7 @@ public class QueenMoves implements PieceMoves, canCaptureKing{
         return validMoves;
     }
 
-    public boolean canCaptureKing() {
+    public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> validMoves = pieceMoves(this.board, this.myPosition);
 
         for (ChessMove move : validMoves) {

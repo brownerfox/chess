@@ -6,4 +6,5 @@ import java.util.Collection;
 
 public interface PieceMoves {
     Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position);
+    boolean canCaptureKing(ChessBoard board, ChessPosition position);
 }

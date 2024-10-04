@@ -79,7 +79,7 @@ public class ChessPiece {
         return pieceMove.pieceMoves(board, myPosition);
     }
 
-    public Collection<ChessMove> canCaptureKing(ChessBoard board, ChessPosition myPosition) {
+    public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
         var pieceMove = switch (getPieceType()) {
             case BISHOP -> new BishopMoves(board, myPosition);
             case ROOK -> new RookMoves(board, myPosition);

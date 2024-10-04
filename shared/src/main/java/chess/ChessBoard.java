@@ -104,8 +104,8 @@ public class ChessBoard {
     public Collection<ChessPosition> piecePositions () {
         Collection<ChessPosition> listOfPiecePositions = new ArrayList<>();
 
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
+        for (int x = 1; x <= 8; x++) {
+            for (int y = 1; y <= 8; y++) {
                 ChessPosition pos = new ChessPosition(x, y);
 
                 if (getPiece(pos) != null) {
@@ -115,6 +115,8 @@ public class ChessBoard {
         }
         return listOfPiecePositions;
     }
+
+
 }
 
 

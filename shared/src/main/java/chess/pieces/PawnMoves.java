@@ -1,7 +1,6 @@
 package chess.pieces;
 
 import chess.*;
-import org.junit.jupiter.engine.discovery.predicates.IsPotentialTestContainer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +9,7 @@ import java.util.Objects;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
 
-public class PawnMoves implements PieceMoves, canCaptureKing{
+public class PawnMoves implements PieceMoves {
     private ChessBoard board;
     private ChessPosition myPosition;
 
@@ -152,8 +151,8 @@ public class PawnMoves implements PieceMoves, canCaptureKing{
         return validMoves;
     }
 
-    public boolean canCaptureKing() {
-        Collection<ChessMove> validMoves = pieceMoves(this.board, this.myPosition);
+    public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> validMoves = pieceMoves(board, myPosition);
 
         for (ChessMove move : validMoves) {
             ChessPiece targetPiece = board.getPiece(move.getEndPosition());
