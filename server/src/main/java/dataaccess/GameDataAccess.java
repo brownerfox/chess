@@ -6,8 +6,6 @@ import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;
 
-//GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game)
-
 public class GameDataAccess {
     private int nextId = 1;
     final private HashMap<Integer, GameData> gameList = new HashMap<>();
