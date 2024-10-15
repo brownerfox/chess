@@ -34,7 +34,7 @@ public class UserDataAccess {
 
         return UsersData.get(username);
     }
-    
+
     public boolean checkForDuplicateEmails (String newEmail) {
         boolean isDuplicate = false;
         for (String mapKey : UsersData.keySet()) {
