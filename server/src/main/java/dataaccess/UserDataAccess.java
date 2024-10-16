@@ -12,6 +12,7 @@ public class UserDataAccess {
     final private HashMap<String, UserData> UsersData = new HashMap<>();
 
     public UserData createUser(String username, String password, String email) throws DataAccessException {
+
         if (checkForDuplicateEmails(email)) {
             throw new DataAccessException("User with email already exists");
         }
