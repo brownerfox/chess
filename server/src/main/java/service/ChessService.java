@@ -1,22 +1,17 @@
 package service;
 
-import dataaccess.AuthDataAccess;
-import dataaccess.GameDataAccess;
-import dataaccess.UserDataAccess;
+import dataaccess.DataAccess;
+import dataaccess.MemoryDataAccess;
 import model.GameData;
 import model.UserData;
 import dataaccess.DataAccessException;
 
 public class ChessService {
 
-    private final UserDataAccess userDataAccess;
-    private final GameDataAccess gameDataAccess;
-    private final AuthDataAccess authDataAccess;
+    private final DataAccess dataAccess;
 
-    public ChessService(UserDataAccess userDataAccess, GameDataAccess gameDataAccess, AuthDataAccess authDataAccess) {
-        this.userDataAccess = userDataAccess;
-        this.gameDataAccess = gameDataAccess;
-        this.authDataAccess = authDataAccess;
+    public ChessService(MemoryDataAccess dataAccess) {
+        this.dataAccess = new MemoryDataAccess();
     }
 
     // I want this next function to return a username field and an authToken field, maybe I will fix this when I make a
