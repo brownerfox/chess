@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import model.AuthData;
 import model.UserData;
 import service.ChessService;
 import spark.*;
@@ -26,7 +27,6 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
-        Spark.exception(DataAccessException.class, this::exceptionHandler);
 
 
         // Register your endpoints and handle exceptions here.
@@ -45,31 +45,38 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private void exceptionHandler(DataAccessException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
-    }
 
     private Object createUser(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        user = service.createUser(user);
-
-        return new Gson().toJson(user);
+        try {
+            user = service.createUser(user);
+            return new Gson().toJson(user.username(), );
+        } catch (DataAccessException ex) {
+            res.status(400);
+            return ex.getMessage();
+        }
     }
 
     private Object loginUser(Request req, Response res) throws DataAccessException {
-        return authToken;
+        var user = new Gson().fromJson(req.body(), UserData.class);
+
+        return new Gson().toJson(service.loginUser(user.username(), user.password()));
     }
 
     private Object logoutUser(Request req, Response res) throws DataAccessException {
-        return "";
+        var authData = new Gson().fromJson(req.body(), AuthData.class);
+
+        return new Gson().toJson(service.logoutUser(authData.authToken()));
     }
 
     private Object listGames(Request req, Response res) throws DataAccessException {
-        return gameList;
+        var authData = new Gson().fromJson(req.body(), AuthData.class);
+
+        return new Gson().toJson(service.listGames(authData.authToken()));
     }
 
     private Object createGame(Request req, Response res) throws  DataAccessException {
-        return gameData;
+        return new Gson().toJson(service.createGame(new Gson().fromJson(req.body(), )));
     }
 
     private Object joinGame(Request req, Response res) throws  DataAccessException {

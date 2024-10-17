@@ -10,6 +10,7 @@ import org.eclipse.jetty.server.Authentication;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 public class ChessService {
 
@@ -28,8 +29,14 @@ public class ChessService {
 
     // I want this function to return a username field and an authtoken field
 
-    public Object loginUser(String username, String password) throws DataAccessException {
-        return 0;
+    public UserData loginUser(String username, String password) throws DataAccessException {
+        UserData user = dataAccess.getUser(username);
+
+        if (!Objects.equals(user.password(), password)) {
+            throw new DataAccessException("Incorrect Password for Username");
+        }
+
+        return user;
     }
 
     // I want this function check my authtoken first and then delete my authtoken
