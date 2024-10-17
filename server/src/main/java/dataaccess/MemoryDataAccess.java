@@ -68,11 +68,13 @@ public class MemoryDataAccess implements DataAccess {
         return gameList.values();
     }
 
-    public void updateGame(GameData newGame) throws DataAccessException {
+    public GameData updateGame(GameData newGame) throws DataAccessException {
         if (gameList.get(newGame.gameID()) == null) {
             throw new DataAccessException("There is no game with given ID");
         }
         gameList.put(newGame.gameID(), newGame);
+
+        return newGame;
     }
 
     public AuthData createAuth(String username) throws DataAccessException {

@@ -1,9 +1,17 @@
 package server;
 
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import model.UserData;
+import service.ChessService;
 import spark.*;
 
 public class Server {
+    private final ChessService service;
+
+    public Server (ChessService service) {
+        this.service = service;
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -42,7 +50,10 @@ public class Server {
     }
 
     private Object createUser(Request req, Response res) throws DataAccessException {
-        return authToken;
+        var user = new Gson().fromJson(req.body(), UserData.class);
+        user = service.createUser(user);
+
+        return new Gson().toJson(user);
     }
 
     private Object loginUser(Request req, Response res) throws DataAccessException {

@@ -1,10 +1,15 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccess;
 import dataaccess.MemoryDataAccess;
 import model.GameData;
 import model.UserData;
 import dataaccess.DataAccessException;
+import org.eclipse.jetty.server.Authentication;
+
+import java.util.Collection;
+import java.util.Collections;
 
 public class ChessService {
 
@@ -17,31 +22,39 @@ public class ChessService {
     // I want this next function to return a username field and an authToken field, maybe I will fix this when I make a
     // response class?
 
-    public Object createUser(UserData user) throws DataAccessException {
+    public UserData createUser(UserData user) throws DataAccessException {
         return dataAccess.createUser(user.username(), user.password(), user.email());
     }
 
     // I want this function to return a username field and an authtoken field
 
-    public Object loginUser(Username username, Password password) throws DataAccessException {
+    public Object loginUser(String username, String password) throws DataAccessException {
         return 0;
     }
 
     // I want this function check my authtoken first and then delete my authtoken
 
-    public Object logoutUser(AuthToken authToken) throws DataAccessException {
+    public Object logoutUser(String authToken) throws DataAccessException {
         return 0;
     }
 
-    // I want this function to check to see if my authToken is valid and then it should return a list of games
+    // I want this function to check to see if my authToken is valid, and then it should return a list of games
 
-    public Collection<GameData> listGames (AuthToken authToken) throws DataAccessException {
-        return 0;
+    public Collection<GameData> listGames (String authToken) throws DataAccessException {
+        try {
+            // Call getAuth and try to retrieve the AuthData
+            dataAccess.getAuth(authToken);
+            return dataAccess.listGames();
+        } catch (DataAccessException e) {
+            System.out.println("Error retrieving authentication data: " + e.getMessage());
+        }
+
+        return Collections.emptyList();
     }
 
     // I want this function to check my auth token, check for a game and then add a new game to the game list
 
-    public Object createGame(AuthToken authToken, GameName gameName) throws DataAccessException {
+    public Object createGame(String authToken, String gameName) throws DataAccessException {
         return 0;
     }
 
@@ -49,7 +62,7 @@ public class ChessService {
     // game exists, then it will check to see if there is already a player for the desired team. If all goes well
     // it will let the user join the game and update the game
 
-    public Object joinGame(AuthToken authToken, TeamColor teamColor, GameID gameID) throws DataAccessException {
+    public Object joinGame(String authToken, ChessGame.TeamColor teamColor, int gameID) throws DataAccessException {
         return 0;
     }
 
