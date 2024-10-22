@@ -1,4 +1,4 @@
 package results;
 
-public record JoinGameResult(c) {
+public record JoinGameResult() {
 }
