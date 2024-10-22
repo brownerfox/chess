@@ -1,4 +1,7 @@
 package results;
 
-public record ListGamesResult() {
+import java.util.Dictionary;
+import java.util.HashMap;
+
+public record ListGamesResult(HashMap gameDictionary) {
 }

@@ -1,16 +1,15 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.DataAccess;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 import dataaccess.DataAccessException;
 import requests.CreateUserRequest;
-import results.CreateUserResult;
-import results.LogInResult;
+import results.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ChessService {
@@ -25,7 +24,11 @@ public class ChessService {
     // response class?
 
     public CreateUserResult createUser(CreateUserRequest user) throws DataAccessException {
-        return dataAccess.createUser(user.username(), user.password(), user.email());
+        UserData newUser = dataAccess.createUser(user.username(), user.password(), user.email());
+
+        AuthData authData = dataAccess.createAuth(user.username());
+
+        return new CreateUserResult(user.username(), authData.authToken());
     }
 
     // I want this function to return a username field and an authtoken field
@@ -44,41 +47,60 @@ public class ChessService {
     // I want this function check my authtoken first and then delete my authtoken
 
     public Object logoutUser(String authToken) throws DataAccessException {
-        return 0;
+        dataAccess.deleteAuth(authToken);
+
+        return new LogOutResult();
     }
 
     // I want this function to check to see if my authToken is valid, and then it should return a list of games
 
-    public Collection<GameData> listGames (String authToken) throws DataAccessException {
-        try {
-            // Call getAuth and try to retrieve the AuthData
-            dataAccess.getAuth(authToken);
-            return dataAccess.listGames();
-        } catch (DataAccessException e) {
-            System.out.println("Error retrieving authentication data: " + e.getMessage());
-        }
+    public ListGamesResult listGames (String authToken) throws DataAccessException {
 
-        return Collections.emptyList();
+        // Call getAuth and try to retrieve the AuthData
+        dataAccess.getAuth(authToken);
+
+        HashMap<String, Collection<GameData>> listGameResult = new HashMap<>();
+
+        listGameResult.put("games", dataAccess.listGames());
+
+        return new ListGamesResult(listGameResult);
     }
 
     // I want this function to check my auth token, check for a game and then add a new game to the game list
 
-    public Object createGame(String authToken, String gameName) throws DataAccessException {
-        return 0;
+    public CreateGameResult createGame(String authToken, String gameName) throws DataAccessException {
+        dataAccess.getAuth(authToken);
+
+        return new CreateGameResult(dataAccess.createGame(gameName));
     }
 
     // This function first checks to see if our auth token is valid, then it checks for the desired game, if the
     // game exists, then it will check to see if there is already a player for the desired team. If all goes well
     // it will let the user join the game and update the game
 
-    public Object joinGame(String authToken, ChessGame.TeamColor teamColor, int gameID) throws DataAccessException {
-        return 0;
+    public JoinGameResult joinGame(String authToken, String teamColor, int gameID) throws DataAccessException {
+        GameData newGame;
+        AuthData authData = dataAccess.getAuth(authToken);
+
+        GameData game = dataAccess.getGame(gameID);
+
+        if (teamColor == "White") {
+            newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());
+        } else {
+            newGame = new GameData(gameID, game.blackUsername(), authData.username(), game.gameName(), game.game());
+        }
+
+        dataAccess.updateGame(newGame);
+
+        return new JoinGameResult();
     }
 
     // This function calls the clear function for each of our dataaccess objects and cleans out the database
 
     public Object clear() throws DataAccessException {
-        return 0;
+        dataAccess.clear();
+
+        return new ClearResult();
     }
 
 

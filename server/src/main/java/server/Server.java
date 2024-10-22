@@ -2,12 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import requests.ListGamesRequest;
-import requests.LogOutRequest;
-import requests.LogInRequest;
-import requests.CreateUserRequest;
-import results.CreateUserResult;
-import results.LogInResult;
+import requests.*;
 import service.ChessService;
 import spark.*;
 
@@ -53,8 +48,7 @@ public class Server {
     private Object createUser(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), CreateUserRequest.class);
         try {
-            CreateUserResult userResult = service.createUser(user);
-            return new Gson().toJson(userResult);
+            return new Gson().toJson(service.createUser(user));
         } catch (DataAccessException ex) {
             res.status(400);
             return ex.getMessage();
@@ -63,8 +57,6 @@ public class Server {
 
     private Object loginUser(Request req, Response res) throws DataAccessException {
         var loginRequest = new Gson().fromJson(req.body(), LogInRequest.class);
-
-        LogInResult loginResult = service.loginUser(loginRequest.username(), loginRequest.password());
 
         return new Gson().toJson(service.loginUser(loginRequest.username(), loginRequest.password()));
     }
@@ -82,14 +74,18 @@ public class Server {
     }
 
     private Object createGame(Request req, Response res) throws  DataAccessException {
-        return new Gson().toJson(service.createGame(new Gson().fromJson(req.body(), )));
+        var createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
+
+        return new Gson().toJson(service.createGame(createGameRequest.authToken(), createGameRequest.gameName()));
     }
 
     private Object joinGame(Request req, Response res) throws  DataAccessException {
-        return "";
+        var joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
+
+        return new Gson().toJson(service.joinGame(joinGameRequest.authToken(), joinGameRequest.playerColor(), joinGameRequest.gameID()));
     }
 
     private Object clear(Request req, Response res) throws DataAccessException {
-        return "";
+        return service.clear();
     }
 }

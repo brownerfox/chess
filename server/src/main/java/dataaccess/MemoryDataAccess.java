@@ -1,9 +1,9 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
-import results.CreateUserResult;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class MemoryDataAccess implements DataAccess {
 
     private int nextId = 1;
 
-    public CreateUserResult createUser(String username, String password, String email) throws DataAccessException {
+    public UserData createUser(String username, String password, String email) throws DataAccessException {
 
         if (checkForDuplicateEmails(email)) {
             throw new DataAccessException("User with email already exists");
@@ -26,11 +26,11 @@ public class MemoryDataAccess implements DataAccess {
             throw new DataAccessException("User already exists");
         }
 
-        UsersData.put(username, new UserData(username, password, email));
+        UserData user = new UserData(username, password, email);
 
-        AuthData authData = createAuth(username);
+        UsersData.put(username, user);
 
-        return new CreateUserResult(username, authData.authToken());
+        return user;
     }
 
     public UserData getUser(String username) throws DataAccessException {
@@ -42,8 +42,8 @@ public class MemoryDataAccess implements DataAccess {
         return UsersData.get(username);
     }
 
-    public GameData createGame(GameData game) throws DataAccessException {
-        GameData newGame = new GameData(nextId++, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+    public int createGame(String gameName) throws DataAccessException {
+        GameData newGame = new GameData(nextId++, null, null, gameName, new ChessGame());
 
         if (gameList.get(newGame.gameID()) != null) {
             throw new DataAccessException("Game with ID already exists");
@@ -51,7 +51,7 @@ public class MemoryDataAccess implements DataAccess {
 
         gameList.put(newGame.gameID(), newGame);
 
-        return newGame;
+        return newGame.gameID();
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
@@ -63,10 +63,6 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public Collection<GameData> listGames() throws DataAccessException {
-        if (gameList.isEmpty()) {
-            throw new DataAccessException("The game list is empty");
-        }
-
         return gameList.values();
     }
 
