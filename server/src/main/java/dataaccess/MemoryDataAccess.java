@@ -3,10 +3,12 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
+import results.CreateUserResult;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MemoryDataAccess implements DataAccess {
     final private HashMap<String, UserData> UsersData = new HashMap<>();
@@ -15,7 +17,7 @@ public class MemoryDataAccess implements DataAccess {
 
     private int nextId = 1;
 
-    public UserData createUser(String username, String password, String email) throws DataAccessException {
+    public CreateUserResult createUser(String username, String password, String email) throws DataAccessException {
 
         if (checkForDuplicateEmails(email)) {
             throw new DataAccessException("User with email already exists");
@@ -24,11 +26,13 @@ public class MemoryDataAccess implements DataAccess {
             throw new DataAccessException("User already exists");
         }
 
-        UserData newUser = new UserData(username, password, email);
+        UsersData.put(username, new UserData(username, password, email));
 
-        UsersData.put(newUser.username(), newUser);
+        AuthData authData = new AuthData(generateToken(), username);
 
-        return newUser;
+        AuthDataMap.put(authData.authToken(), authData);
+
+        return new CreateUserResult(username, authData.authToken());
     }
 
     public UserData getUser(String username) throws DataAccessException {
@@ -123,5 +127,9 @@ public class MemoryDataAccess implements DataAccess {
             }
         }
         return isDuplicate;
+    }
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 }

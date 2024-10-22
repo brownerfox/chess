@@ -2,8 +2,11 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import model.AuthData;
-import model.UserData;
+import requests.ListGamesRequest;
+import requests.LogOutRequest;
+import requests.LoginRequest;
+import requests.CreateUserRequest;
+import results.CreateUserResult;
 import service.ChessService;
 import spark.*;
 
@@ -47,10 +50,10 @@ public class Server {
 
 
     private Object createUser(Request req, Response res) throws DataAccessException {
-        var user = new Gson().fromJson(req.body(), UserData.class);
+        var user = new Gson().fromJson(req.body(), CreateUserRequest.class);
         try {
-            user = service.createUser(user);
-            return new Gson().toJson(user.username(), );
+            CreateUserResult userResult = service.createUser(user);
+            return new Gson().toJson(userResult);
         } catch (DataAccessException ex) {
             res.status(400);
             return ex.getMessage();
@@ -58,19 +61,19 @@ public class Server {
     }
 
     private Object loginUser(Request req, Response res) throws DataAccessException {
-        var user = new Gson().fromJson(req.body(), UserData.class);
+        var user = new Gson().fromJson(req.body(), LoginRequest.class);
 
         return new Gson().toJson(service.loginUser(user.username(), user.password()));
     }
 
     private Object logoutUser(Request req, Response res) throws DataAccessException {
-        var authData = new Gson().fromJson(req.body(), AuthData.class);
+        var authData = new Gson().fromJson(req.body(), LogOutRequest.class);
 
         return new Gson().toJson(service.logoutUser(authData.authToken()));
     }
 
     private Object listGames(Request req, Response res) throws DataAccessException {
-        var authData = new Gson().fromJson(req.body(), AuthData.class);
+        var authData = new Gson().fromJson(req.body(), ListGamesRequest.class);
 
         return new Gson().toJson(service.listGames(authData.authToken()));
     }

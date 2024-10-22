@@ -3,11 +3,12 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
+import results.CreateUserResult;
 
 import java.util.Collection;
 
 public interface DataAccess  {
-    UserData createUser (String username, String password, String email) throws DataAccessException;
+    CreateUserResult createUser (String username, String password, String email) throws DataAccessException;
 
     UserData getUser (String username) throws DataAccessException;
 

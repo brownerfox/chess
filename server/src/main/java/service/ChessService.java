@@ -7,6 +7,8 @@ import model.GameData;
 import model.UserData;
 import dataaccess.DataAccessException;
 import org.eclipse.jetty.server.Authentication;
+import requests.CreateUserRequest;
+import results.CreateUserResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,14 +18,14 @@ public class ChessService {
 
     private final DataAccess dataAccess;
 
-    public ChessService(MemoryDataAccess dataAccess) {
+    public ChessService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
     }
 
     // I want this next function to return a username field and an authToken field, maybe I will fix this when I make a
     // response class?
 
-    public UserData createUser(UserData user) throws DataAccessException {
+    public CreateUserResult createUser(CreateUserRequest user) throws DataAccessException {
         return dataAccess.createUser(user.username(), user.password(), user.email());
     }
 
