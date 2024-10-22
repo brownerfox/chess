@@ -4,9 +4,10 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import requests.ListGamesRequest;
 import requests.LogOutRequest;
-import requests.LoginRequest;
+import requests.LogInRequest;
 import requests.CreateUserRequest;
 import results.CreateUserResult;
+import results.LogInResult;
 import service.ChessService;
 import spark.*;
 
@@ -61,9 +62,11 @@ public class Server {
     }
 
     private Object loginUser(Request req, Response res) throws DataAccessException {
-        var user = new Gson().fromJson(req.body(), LoginRequest.class);
+        var loginRequest = new Gson().fromJson(req.body(), LogInRequest.class);
 
-        return new Gson().toJson(service.loginUser(user.username(), user.password()));
+        LogInResult loginResult = service.loginUser(loginRequest.username(), loginRequest.password());
+
+        return new Gson().toJson(service.loginUser(loginRequest.username(), loginRequest.password()));
     }
 
     private Object logoutUser(Request req, Response res) throws DataAccessException {

@@ -28,9 +28,7 @@ public class MemoryDataAccess implements DataAccess {
 
         UsersData.put(username, new UserData(username, password, email));
 
-        AuthData authData = new AuthData(generateToken(), username);
-
-        AuthDataMap.put(authData.authToken(), authData);
+        AuthData authData = createAuth(username);
 
         return new CreateUserResult(username, authData.authToken());
     }
@@ -86,9 +84,7 @@ public class MemoryDataAccess implements DataAccess {
             throw new DataAccessException("authToken already exists");
         }
 
-        String newAuthToken = "red";
-
-        AuthData newAuthData = new AuthData(newAuthToken, username);
+        AuthData newAuthData = new AuthData(generateToken(), username);
 
         AuthDataMap.put(newAuthData.authToken(), newAuthData);
 

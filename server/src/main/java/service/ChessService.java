@@ -2,13 +2,12 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccess;
-import dataaccess.MemoryDataAccess;
 import model.GameData;
 import model.UserData;
 import dataaccess.DataAccessException;
-import org.eclipse.jetty.server.Authentication;
 import requests.CreateUserRequest;
 import results.CreateUserResult;
+import results.LogInResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,14 +30,15 @@ public class ChessService {
 
     // I want this function to return a username field and an authtoken field
 
-    public UserData loginUser(String username, String password) throws DataAccessException {
+    public LogInResult loginUser(String username, String password) throws DataAccessException {
         UserData user = dataAccess.getUser(username);
 
         if (!Objects.equals(user.password(), password)) {
             throw new DataAccessException("Incorrect Password for Username");
         }
 
-        return user;
+        return new LogInResult(username, dataAccess.createAuth(user.username()).authToken());
+
     }
 
     // I want this function check my authtoken first and then delete my authtoken
