@@ -17,7 +17,7 @@ public class ChessService {
     private final DataAccess dataAccess;
 
     public ChessService(MemoryDataAccess dataAccess) {
-        this.dataAccess = new MemoryDataAccess();
+        this.dataAccess = dataAccess;
     }
 
     // I want this next function to return a username field and an authToken field, maybe I will fix this when I make a
