@@ -7,12 +7,11 @@ import model.GameData;
 import service.BadGameIDException;
 import service.ServiceException;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class MemoryDataAccess implements DataAccess {
-    final private HashMap<String, UserData> UsersData = new HashMap<>();
-    final private HashMap<String, AuthData> AuthDataMap = new HashMap<>();
+    final private HashMap<String, UserData> usersData = new HashMap<>();
+    final private HashMap<String, AuthData> authDataMap = new HashMap<>();
     final private HashMap<Integer, GameData> gameList = new HashMap<>();
 
     private int nextId = 1;
@@ -22,24 +21,24 @@ public class MemoryDataAccess implements DataAccess {
         if (checkForDuplicateEmails(email)) {
             throw new ServiceException("Error: already taken");
         }
-        if (UsersData.containsKey(username)) {
+        if (usersData.containsKey(username)) {
             throw new ServiceException("Error: already taken");
         }
 
         UserData user = new UserData(username, password, email);
 
-        UsersData.put(username, user);
+        usersData.put(username, user);
 
         return user;
     }
 
     public UserData getUser(String username) throws DataAccessException {
 
-        if (!UsersData.containsKey(username)) {
+        if (!usersData.containsKey(username)) {
             throw new DataAccessException("User does not exist");
         }
 
-        return UsersData.get(username);
+        return usersData.get(username);
     }
 
     public int createGame(String gameName) throws DataAccessException {
@@ -79,37 +78,37 @@ public class MemoryDataAccess implements DataAccess {
 
         AuthData newAuthData = new AuthData(generateToken(), username);
 
-        AuthDataMap.put(newAuthData.authToken(), newAuthData);
+        authDataMap.put(newAuthData.authToken(), newAuthData);
 
         return newAuthData;
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
-        if (!AuthDataMap.containsKey(authToken)) {
+        if (!authDataMap.containsKey(authToken)) {
             throw new DataAccessException("authToken does not exist");
         }
 
-        return AuthDataMap.get(authToken);
+        return authDataMap.get(authToken);
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        if (!AuthDataMap.containsKey(authToken)) {
+        if (!authDataMap.containsKey(authToken)) {
             throw new DataAccessException("authToken already does not exist");
         }
 
-        AuthDataMap.remove(authToken);
+        authDataMap.remove(authToken);
     }
 
     public void clear() {
-        UsersData.clear();
+        usersData.clear();
         gameList.clear();
-        AuthDataMap.clear();
+        authDataMap.clear();
     }
 
     public boolean checkForDuplicateEmails (String newEmail) {
         boolean isDuplicate = false;
-        for (String mapKey : UsersData.keySet()) {
-            UserData currUser = UsersData.get(mapKey);
+        for (String mapKey : usersData.keySet()) {
+            UserData currUser = usersData.get(mapKey);
 
             if (Objects.equals(newEmail, currUser.email())) {
                 isDuplicate = true;

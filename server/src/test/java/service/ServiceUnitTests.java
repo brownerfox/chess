@@ -12,6 +12,7 @@ import passoff.chess.ChessPositionTests;
 import passoff.model.*;
 import requests.CreateGameRequest;
 import requests.CreateUserRequest;
+import results.CreateGameResult;
 import results.CreateUserResult;
 import results.LogInResult;
 import server.Server;
@@ -31,7 +32,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("CreateUserSuccess")
-    public void CreateUserSuccess() throws Exception {
+    public void createUserSuccess() throws Exception {
 
         UserData expected = new UserData("Jeremy", "1234", "j@gmail.com");
 
@@ -44,7 +45,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("CreateUserFailure")
-    public void CreateUserFailure() throws Exception {
+    public void createUserFailure() throws Exception {
 
         UserData expected = new UserData("Jeremy", "1234", "j@gmail.com");
 
@@ -57,7 +58,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("LogInSuccess")
-    public void LogInSuccess() throws Exception {
+    public void logInSuccess() throws Exception {
 
         CreateUserRequest userRequest = new CreateUserRequest("Jeremy", "1234", "j@gmail.com");
 
@@ -70,7 +71,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("LogInFailure")
-    public void LogInFailure() throws Exception {
+    public void logInFailure() throws Exception {
 
         CreateUserRequest userRequest = new CreateUserRequest("Jeremy", "1234", "j@gmail.com");
 
@@ -83,7 +84,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("LogOutSuccess")
-    public void LogOutSuccess() throws Exception {
+    public void logOutSuccess() throws Exception {
 
         CreateUserRequest userRequest = new CreateUserRequest("Jeremy", "1234", "j@gmail.com");
 
@@ -94,7 +95,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("LogOutFailure")
-    public void LogOutFailure() throws Exception {
+    public void logOutFailure() throws Exception {
 
         CreateUserRequest userRequest = new CreateUserRequest("Jeremy", "1234", "j@gmail.com");
 
@@ -105,7 +106,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("GameListSuccess")
-    public void GameListSuccess() throws Exception {
+    public void gameListSuccess() throws Exception {
         AuthData authData = service.getDataAccess().createAuth("ooo");
 
         Assertions.assertDoesNotThrow(() -> service.listGames(authData.authToken()));
@@ -113,7 +114,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("GameListFailure")
-    public void GameListFailure() throws Exception {
+    public void gameListFailure() throws Exception {
         AuthData authData = service.getDataAccess().createAuth("ooo");
 
         Assertions.assertThrows(DataAccessException.class, () -> service.listGames("Wrong authToken"));
@@ -121,7 +122,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("CreateGameSuccess")
-    public void CreateGameSuccess() throws Exception {
+    public void createGameSuccess() throws Exception {
         AuthData authData = service.getDataAccess().createAuth("ooo");
 
         Assertions.assertDoesNotThrow(() -> service.createGame(authData.authToken(), "fun"));
@@ -129,7 +130,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("CreateGameFailure")
-    public void CreateGameFailure() throws Exception {
+    public void createGameFailure() throws Exception {
         AuthData authData = service.getDataAccess().createAuth("ooo");
 
         Assertions.assertThrows(DataAccessException.class, () -> service.createGame("No auth data", "fun"));
@@ -137,7 +138,7 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("JoinGameFailure")
-    public void JoinGameFailure() throws Exception {
+    public void joinGameFailure() throws Exception {
         AuthData authData = service.getDataAccess().createAuth("ooo");
         service.createGame(authData.authToken(), "fun");
 
@@ -147,10 +148,21 @@ public class ServiceUnitTests {
 
     @Test
     @DisplayName("JoinGameSuccess")
-    public void JoinGameSuccess() throws Exception {
+    public void joinGameSuccess() throws Exception {
         AuthData authData = service.getDataAccess().createAuth("ooo");
         service.createGame(authData.authToken(), "fun");
 
         Assertions.assertDoesNotThrow(() -> service.joinGame(authData.authToken(),"WHITE", 1));
     }
+
+    @Test
+    @DisplayName("ClearSuccess")
+    public void clearSuccess() throws Exception {
+        CreateUserResult userResult = service.createUser(new CreateUserRequest("a", "p", "e"));
+
+        service.createGame(userResult.authToken(), "Yep");
+
+        Assertions.assertDoesNotThrow(() -> service.clear());
+    }
+
 }
