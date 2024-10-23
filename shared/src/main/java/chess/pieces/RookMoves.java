@@ -8,8 +8,6 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static chess.ChessPiece.PieceType.KING;
-
 public class RookMoves implements PieceMoves {
     private ChessBoard board;
     private ChessPosition myPosition;
@@ -55,15 +53,8 @@ public class RookMoves implements PieceMoves {
     }
 
     public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validMoves = pieceMoves(this.board, this.myPosition);
+        MoveHelper kingCapture = new MoveHelper(board, myPosition);
 
-        for (ChessMove move : validMoves) {
-            ChessPiece targetPiece = board.getPiece(move.getEndPosition());
-            if (targetPiece != null && targetPiece.getPieceType() == KING &&
-                    targetPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                return true;
-            }
-        }
-        return false;
+        return kingCapture.canCaptureKing();
     }
 }

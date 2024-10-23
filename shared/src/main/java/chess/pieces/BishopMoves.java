@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-import static chess.ChessPiece.PieceType.KING;
-
 public class BishopMoves implements PieceMoves {
     private ChessBoard board;
     private ChessPosition myPosition;
@@ -19,8 +17,8 @@ public class BishopMoves implements PieceMoves {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         BishopMoves that = (BishopMoves) o;
         return Objects.equals(board, that.board) && Objects.equals(myPosition, that.myPosition);
     }
@@ -66,15 +64,8 @@ public class BishopMoves implements PieceMoves {
     }
 
     public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validMoves = pieceMoves(this.board, this.myPosition);
+        MoveHelper captureKing = new MoveHelper(board, myPosition);
 
-        for (ChessMove move : validMoves) {
-            ChessPiece targetPiece = board.getPiece(move.getEndPosition());
-            if (targetPiece != null && targetPiece.getPieceType() == KING &&
-                    targetPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                return true;
-            }
-        }
-        return false;
+        return captureKing.canCaptureKing();
     }
 }
