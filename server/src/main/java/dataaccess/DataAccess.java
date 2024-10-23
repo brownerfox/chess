@@ -3,6 +3,7 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
+import service.BadGameIDException;
 import service.ServiceException;
 
 import java.util.Collection;
@@ -14,7 +15,7 @@ public interface DataAccess  {
 
     int createGame (String game) throws DataAccessException;
 
-    GameData getGame (int gameID) throws DataAccessException;
+    GameData getGame (int gameID) throws BadGameIDException;
 
     Collection<GameData> listGames () throws DataAccessException;
 

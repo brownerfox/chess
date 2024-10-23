@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
+import service.BadGameIDException;
 import service.ServiceException;
 
 import java.lang.reflect.Array;
@@ -53,9 +54,9 @@ public class MemoryDataAccess implements DataAccess {
         return newGame.gameID();
     }
 
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws BadGameIDException {
         if (gameList.get(gameID) == null) {
-            throw new DataAccessException("There is no game with given ID");
+            throw new BadGameIDException("There is no game with given ID");
         }
 
         return gameList.get(gameID);

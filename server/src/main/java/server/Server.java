@@ -6,6 +6,7 @@ import dataaccess.MemoryDataAccess;
 import requests.*;
 import results.CreateUserResult;
 import results.ErrorResult;
+import service.BadGameIDException;
 import service.ChessService;
 import service.ServiceException;
 import spark.*;
@@ -138,6 +139,9 @@ public class Server {
 
         try {
             return new Gson().toJson(service.joinGame(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID()));
+        } catch (BadGameIDException e) {
+            res.status(400);
+            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
         } catch (DataAccessException e) {
             res.status(401);
             return new Gson().toJson(new ErrorResult("Error: unauthorized"));

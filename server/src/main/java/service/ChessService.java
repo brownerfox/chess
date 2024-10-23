@@ -21,6 +21,10 @@ public class ChessService {
         this.dataAccess = dataAccess;
     }
 
+    public DataAccess getDataAccess() {
+        return this.dataAccess;
+    }
+
     // I want this next function to return a username field and an authToken field, maybe I will fix this when I make a
     // response class?
 
