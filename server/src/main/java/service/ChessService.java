@@ -28,7 +28,7 @@ public class ChessService {
 
         AuthData authData = dataAccess.createAuth(user.username());
 
-        return new CreateUserResult(user.username(), authData.authToken());
+        return new CreateUserResult(newUser.username(), authData.authToken());
     }
 
     // I want this function to return a username field and an authtoken field
@@ -36,12 +36,11 @@ public class ChessService {
     public LogInResult loginUser(String username, String password) throws DataAccessException {
         UserData user = dataAccess.getUser(username);
 
-        if (!Objects.equals(user.password(), password)) {
-            throw new DataAccessException("Incorrect Password for Username");
+        if (!(user.password() == password)) {
+            throw new DataAccessException("Error: unauthorized");
         }
 
         return new LogInResult(username, dataAccess.createAuth(user.username()).authToken());
-
     }
 
     // I want this function check my authtoken first and then delete my authtoken

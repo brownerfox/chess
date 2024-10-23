@@ -75,10 +75,7 @@ public class MemoryDataAccess implements DataAccess {
         return newGame;
     }
 
-    public AuthData createAuth(String username) throws DataAccessException {
-        if (AuthDataMap.containsKey(username)) {
-            throw new DataAccessException("authToken already exists");
-        }
+    public AuthData createAuth(String username) {
 
         AuthData newAuthData = new AuthData(generateToken(), username);
 

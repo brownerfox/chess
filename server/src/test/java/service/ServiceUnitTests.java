@@ -10,10 +10,3 @@ public class ServiceUnitTests {
     private static ChessService service;
 
     private static TestUser newUser;
-
-    @BeforeEach
-    public static void init {
-        existingUser =
-    }
-
-}
