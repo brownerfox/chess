@@ -29,7 +29,11 @@ public class MoveHelper {
         return false;
     }
 
-    public Collection<ChessMove> findValidMoves (ChessBoard board, ChessPosition myPosition, int[][] moves) {
+    public Collection<ChessMove> findValidMoves(ChessBoard board, ChessPosition myPosition, int[][] moves) {
+        return iteratePotentialMoves(board, myPosition, moves);
+    }
+
+    public Collection<ChessMove> iteratePotentialMoves (ChessBoard board, ChessPosition myPosition, int[][] moves) {
         Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece piece;
         ChessPosition position;

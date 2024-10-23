@@ -53,8 +53,8 @@ public class RookMoves implements PieceMoves {
     }
 
     public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
-        MoveHelper kingCapture = new MoveHelper(board, myPosition);
+        MoveHelper kingCapture = new MoveHelper();
 
-        return kingCapture.canCaptureKing();
+        return kingCapture.canCaptureKing(board, myPosition);
     }
 }

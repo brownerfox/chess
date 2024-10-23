@@ -152,8 +152,8 @@ public class PawnMoves implements PieceMoves {
     }
 
     public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
-        MoveHelper captureKing = new MoveHelper(board, myPosition);
+        MoveHelper captureKing = new MoveHelper();
 
-        return captureKing.canCaptureKing();
+        return captureKing.canCaptureKing(board, myPosition);
     }
 }
