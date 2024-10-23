@@ -5,10 +5,8 @@ import model.AuthData;
 import model.UserData;
 import model.GameData;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class MemoryDataAccess implements DataAccess {
     final private HashMap<String, UserData> UsersData = new HashMap<>();
@@ -20,10 +18,10 @@ public class MemoryDataAccess implements DataAccess {
     public UserData createUser(String username, String password, String email) throws DataAccessException {
 
         if (checkForDuplicateEmails(email)) {
-            throw new DataAccessException("User with email already exists");
+            throw new DataAccessException("Error: already taken");
         }
         if (UsersData.containsKey(username)) {
-            throw new DataAccessException("User already exists");
+            throw new DataAccessException("Error: already taken");
         }
 
         UserData user = new UserData(username, password, email);

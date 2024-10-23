@@ -1,7 +1,9 @@
 package results;
 
-import java.util.Dictionary;
-import java.util.HashMap;
+import model.GameData;
 
-public record ListGamesResult(HashMap gameDictionary) {
+import java.lang.reflect.Array;
+import java.util.Collection;
+
+public record ListGamesResult(Collection<GameData> games) {
 }

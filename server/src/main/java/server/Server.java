@@ -80,32 +80,72 @@ public class Server {
             return new Gson().toJson(service.loginUser(loginRequest.username(), loginRequest.password()));
         } catch (DataAccessException ex) {
             res.status(401);
-            return new Gson().toJson(ex.getMessage());
+            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
         }
     }
 
     private Object logoutUser(Request req, Response res) throws DataAccessException {
-        var authData = new Gson().fromJson(req.headers("Authorization"), LogOutRequest.class);
-
-        return new Gson().toJson(service.logoutUser(authData.authToken()));
+        String authHeader = req.headers("Authorization");
+        String authToken = authHeader.replace("Bearer ", "");
+        //var authData = new Gson().fromJson(req.headers("Authorization"), LogOutRequest.class);
+        try {
+            return new Gson().toJson(service.logoutUser(authToken));
+        } catch (DataAccessException ex) {
+            res.status(401);
+            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
+        }
     }
 
     private Object listGames(Request req, Response res) throws DataAccessException {
-        var authData = new Gson().fromJson(req.body(), ListGamesRequest.class);
+        String authHeader = req.headers("Authorization");
+        String authToken = authHeader.replace("Bearer ", "");
 
-        return new Gson().toJson(service.listGames(authData.authToken()));
+        try {
+            return new Gson().toJson(service.listGames(authToken));
+        } catch (DataAccessException ex) {
+            res.status(401);
+            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
+        }
     }
 
     private Object createGame(Request req, Response res) throws  DataAccessException {
         var createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
 
-        return new Gson().toJson(service.createGame(createGameRequest.authToken(), createGameRequest.gameName()));
+        String authHeader = req.headers("Authorization");
+        String authToken = authHeader.replace("Bearer ", "");
+
+        if (createGameRequest == null || authToken == null || createGameRequest.gameName() == null) {
+            res.status(400);
+            return new Gson().toJson(new ErrorResult("Error: bad request"));
+        }
+
+        try {
+            return new Gson().toJson(service.createGame(createGameRequest.authToken(), createGameRequest.gameName()));
+        } catch (DataAccessException ex) {
+            res.status(401);
+            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
+        }
     }
 
     private Object joinGame(Request req, Response res) throws  DataAccessException {
         var joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
 
-        return new Gson().toJson(service.joinGame(joinGameRequest.authToken(), joinGameRequest.playerColor(), joinGameRequest.gameID()));
+        String authHeader = req.headers("Authorization");
+        String authToken = authHeader.replace("Bearer ", "");
+
+        Integer gameID = joinGameRequest.gameID();
+
+        if (joinGameRequest == null || authToken == null || joinGameRequest.playerColor() == null || gameID == null) {
+            res.status(400);
+            return new Gson().toJson(new ErrorResult("Error: bad request"));
+        }
+
+        try {
+            return new Gson().toJson(service.joinGame(joinGameRequest.authToken(), joinGameRequest.playerColor(), joinGameRequest.gameID()));
+        } catch (DataAccessException e) {
+            res.status(401);
+            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
+        }
     }
 
     private Object clear(Request req, Response res) throws DataAccessException {

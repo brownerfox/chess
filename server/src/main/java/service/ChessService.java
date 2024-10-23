@@ -8,6 +8,7 @@ import dataaccess.DataAccessException;
 import requests.CreateUserRequest;
 import results.*;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class ChessService {
     public LogInResult loginUser(String username, String password) throws DataAccessException {
         UserData user = dataAccess.getUser(username);
 
-        if (!(user.password() == password)) {
+        if (!(Objects.equals(user.password(), password))) {
             throw new DataAccessException("Error: unauthorized");
         }
 
@@ -58,11 +59,7 @@ public class ChessService {
         // Call getAuth and try to retrieve the AuthData
         dataAccess.getAuth(authToken);
 
-        HashMap<String, Collection<GameData>> listGameResult = new HashMap<>();
-
-        listGameResult.put("games", dataAccess.listGames());
-
-        return new ListGamesResult(listGameResult);
+        return new ListGamesResult(dataAccess.listGames());
     }
 
     // I want this function to check my auth token, check for a game and then add a new game to the game list
