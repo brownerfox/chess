@@ -7,9 +7,8 @@ import requests.*;
 import results.CreateUserResult;
 import results.ErrorResult;
 import service.ChessService;
+import service.ServiceException;
 import spark.*;
-
-import javax.xml.crypto.Data;
 
 public class Server {
     private final ChessService service = new ChessService(new MemoryDataAccess());
@@ -51,7 +50,6 @@ public class Server {
 
 
     private Object createUser(Request req, Response res) throws DataAccessException {
-        System.out.println("Check #1");
         var user = new Gson().fromJson(req.body(), CreateUserRequest.class);
 
         if (user == null || user.username() == null || user.password() == null || user.email() == null) {
@@ -67,7 +65,7 @@ public class Server {
             System.out.println(result.toString());
 
             return new Gson().toJson(result);
-        } catch (DataAccessException ex) {
+        } catch (ServiceException e) {
             res.status(403);
             return new Gson().toJson(new ErrorResult("Error: already taken"));
         }
@@ -111,8 +109,7 @@ public class Server {
     private Object createGame(Request req, Response res) throws  DataAccessException {
         var createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
 
-        String authHeader = req.headers("Authorization");
-        String authToken = authHeader.replace("Bearer ", "");
+        String authToken = req.headers("Authorization");
 
         if (createGameRequest == null || authToken == null || createGameRequest.gameName() == null) {
             res.status(400);
@@ -120,7 +117,7 @@ public class Server {
         }
 
         try {
-            return new Gson().toJson(service.createGame(createGameRequest.authToken(), createGameRequest.gameName()));
+            return new Gson().toJson(service.createGame(authToken, createGameRequest.gameName()));
         } catch (DataAccessException ex) {
             res.status(401);
             return new Gson().toJson(new ErrorResult("Error: unauthorized"));
@@ -130,8 +127,7 @@ public class Server {
     private Object joinGame(Request req, Response res) throws  DataAccessException {
         var joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
 
-        String authHeader = req.headers("Authorization");
-        String authToken = authHeader.replace("Bearer ", "");
+        String authToken = req.headers("Authorization");
 
         Integer gameID = joinGameRequest.gameID();
 
@@ -141,14 +137,17 @@ public class Server {
         }
 
         try {
-            return new Gson().toJson(service.joinGame(joinGameRequest.authToken(), joinGameRequest.playerColor(), joinGameRequest.gameID()));
+            return new Gson().toJson(service.joinGame(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID()));
         } catch (DataAccessException e) {
             res.status(401);
             return new Gson().toJson(new ErrorResult("Error: unauthorized"));
+        } catch (ServiceException e) {
+            res.status(403);
+            return new Gson().toJson(new ErrorResult("Error: already taken"));
         }
     }
 
     private Object clear(Request req, Response res) throws DataAccessException {
-        return service.clear();
+        return new Gson().toJson(service.clear());
     }
 }

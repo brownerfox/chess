@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
+import service.ServiceException;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -15,13 +16,13 @@ public class MemoryDataAccess implements DataAccess {
 
     private int nextId = 1;
 
-    public UserData createUser(String username, String password, String email) throws DataAccessException {
+    public UserData createUser(String username, String password, String email) throws ServiceException {
 
         if (checkForDuplicateEmails(email)) {
-            throw new DataAccessException("Error: already taken");
+            throw new ServiceException("Error: already taken");
         }
         if (UsersData.containsKey(username)) {
-            throw new DataAccessException("Error: already taken");
+            throw new ServiceException("Error: already taken");
         }
 
         UserData user = new UserData(username, password, email);
@@ -53,7 +54,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-        if (gameList.get(gameID) != null) {
+        if (gameList.get(gameID) == null) {
             throw new DataAccessException("There is no game with given ID");
         }
 

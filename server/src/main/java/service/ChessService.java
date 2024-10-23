@@ -24,7 +24,7 @@ public class ChessService {
     // I want this next function to return a username field and an authToken field, maybe I will fix this when I make a
     // response class?
 
-    public CreateUserResult createUser(CreateUserRequest user) throws DataAccessException {
+    public CreateUserResult createUser(CreateUserRequest user) throws ServiceException, DataAccessException {
         UserData newUser = dataAccess.createUser(user.username(), user.password(), user.email());
 
         AuthData authData = dataAccess.createAuth(user.username());
@@ -74,16 +74,24 @@ public class ChessService {
     // game exists, then it will check to see if there is already a player for the desired team. If all goes well
     // it will let the user join the game and update the game
 
-    public JoinGameResult joinGame(String authToken, String teamColor, int gameID) throws DataAccessException {
+    public JoinGameResult joinGame(String authToken, String teamColor, int gameID) throws ServiceException, DataAccessException {
         GameData newGame;
         AuthData authData = dataAccess.getAuth(authToken);
 
         GameData game = dataAccess.getGame(gameID);
 
-        if (teamColor == "White") {
-            newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());
+        if (Objects.equals(teamColor, "WHITE")) {
+            if (game.whiteUsername() == null) {
+                newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());
+            } else {
+                throw new ServiceException("");
+            }
         } else {
-            newGame = new GameData(gameID, game.blackUsername(), authData.username(), game.gameName(), game.game());
+            if (game.blackUsername() == null) {
+                newGame = new GameData(gameID, game.whiteUsername(), authData.username(), game.gameName(), game.game());
+            } else {
+                throw new ServiceException("");
+            }
         }
 
         dataAccess.updateGame(newGame);
