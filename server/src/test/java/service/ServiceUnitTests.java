@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.FailingDataAccess;
 import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.GameData;
@@ -168,11 +169,9 @@ public class ServiceUnitTests {
     @Test
     @DisplayName("ClearFailure")
     public void clearFailure() throws Exception {
-        CreateUserResult userResult = service.createUser(new CreateUserRequest("a", "p", "e"));
+        ChessService failingService = new ChessService(new FailingDataAccess());
 
-        service.createGame(userResult.authToken(), "Yep");
-
-        Assertions.assertDoesNotThrow(() -> service.clear());
+        Assertions.assertThrows(DataAccessException.class, failingService::clear);
     }
 
 }
