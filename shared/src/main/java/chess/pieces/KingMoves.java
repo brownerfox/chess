@@ -9,6 +9,7 @@ import java.util.Objects;
 public class KingMoves implements PieceMoves {
     private ChessBoard board;
     private ChessPosition myPosition;
+    MoveHelper moveHelper = new MoveHelper();
 
     public KingMoves(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
@@ -29,35 +30,11 @@ public class KingMoves implements PieceMoves {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        ChessPiece piece;
-        ChessPosition position;
         int[][] moves = {{1, 1}, {-1, -1}, {1, -1}, {-1, 1}, {1, 0}, {-1, 0}, {0, -1}, {0, 1}};
-
-        for (int[] move : moves) {
-            int currRow = myPosition.getRow();
-            int currCol = myPosition.getColumn();
-            currRow += move[0];
-            currCol += move[1];
-            if (currRow < 0 || currRow >= 8 || currCol < 0 || currCol >= 8) {
-                continue;
-            } else {
-                position = new ChessPosition(currRow + 1, currCol + 1);
-                piece = board.getPiece(position);
-                if (piece != null && piece.getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-                    continue;
-                } else {
-                    validMoves.add(new ChessMove(myPosition, position, null));
-                }
-            }
-        }
-
-        return validMoves;
+        return moveHelper.findValidSingleMoves(board, myPosition, moves);
     }
 
     public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {
-        MoveHelper captureKing = new MoveHelper();
-
-        return captureKing.canCaptureKing(board, myPosition);
+        return moveHelper.canCaptureKing(board, myPosition);
     }
 }

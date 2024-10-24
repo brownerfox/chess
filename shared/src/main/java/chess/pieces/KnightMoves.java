@@ -32,7 +32,7 @@ public class KnightMoves implements PieceMoves {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         int[][] moves = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
 
-        return moveHelper.findValidMoves(board, myPosition, moves);
+        return moveHelper.findValidSingleMoves(board, myPosition, moves);
     }
 
     public boolean canCaptureKing(ChessBoard board, ChessPosition myPosition) {

@@ -165,4 +165,14 @@ public class ServiceUnitTests {
         Assertions.assertDoesNotThrow(() -> service.clear());
     }
 
+    @Test
+    @DisplayName("ClearFailure")
+    public void clearFailure() throws Exception {
+        CreateUserResult userResult = service.createUser(new CreateUserRequest("a", "p", "e"));
+
+        service.createGame(userResult.authToken(), "Yep");
+
+        Assertions.assertDoesNotThrow(() -> service.clear());
+    }
+
 }
