@@ -24,7 +24,10 @@ public class RookMoves implements PieceMoves {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
         RookMoves rookMoves = (RookMoves) o;
-        return Objects.equals(board, rookMoves.board) && Objects.equals(myPosition, rookMoves.myPosition) && Objects.equals(moveHelper, rookMoves.moveHelper);
+        Boolean firstBoolean = Objects.equals(board, rookMoves.board);
+        Boolean secondBoolean = Objects.equals(myPosition, rookMoves.myPosition);
+        Boolean thirdBoolean = Objects.equals(moveHelper, rookMoves.moveHelper);
+        return firstBoolean && secondBoolean && thirdBoolean;
     }
 
     @Override

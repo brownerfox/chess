@@ -90,10 +90,40 @@ public class MoveHelper {
 
         return validMoves;
     }
+    public Collection<ChessMove> findPromotionMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition) {
+        Collection<ChessPiece.PieceType> potentialPromotions= new ArrayList<ChessPiece.PieceType>(Arrays.asList(BISHOP, ROOK, KNIGHT, QUEEN));
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessPiece piece;
+
+        for (ChessPiece.PieceType promotion : potentialPromotions) {
+            piece = board.getPiece(newPosition);
+            if (piece != null) {
+                break;
+            } else {
+                validMoves.add(new ChessMove(myPosition, newPosition, promotion));
+            }
+        }
+        return validMoves;
+    }
+
+    public Collection<ChessMove> findAttackingPromotionMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition) {
+        Collection<ChessPiece.PieceType> potentialPromotions= new ArrayList<ChessPiece.PieceType>(Arrays.asList(BISHOP, ROOK, KNIGHT, QUEEN));
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessPiece piece;
+
+        for (ChessPiece.PieceType promotion : potentialPromotions) {
+            piece = board.getPiece(newPosition);
+            if (piece == null) {
+                break;
+            } else {
+                validMoves.add(new ChessMove(myPosition, newPosition, promotion));
+            }
+        }
+        return validMoves;
+    }
 
     public Collection<ChessMove> findPawnForwardMoves (ChessBoard board, ChessPosition myPosition, int[][] moves, int initialRow, int promotionRow) {
         Collection<ChessMove> validMoves = new ArrayList<>();
-        Collection<ChessPiece.PieceType> potentialPromotions= new ArrayList<ChessPiece.PieceType>(Arrays.asList(BISHOP, ROOK, KNIGHT, QUEEN));
         ChessPiece piece;
         ChessPosition position;
 
@@ -105,14 +135,7 @@ public class MoveHelper {
                 if (position.getRow() < 0 || position.getRow() >= 8 || position.getColumn() < 0 || position.getColumn() >= 8) {
                     break;
                 } else if (position.getRow() == promotionRow) {
-                    for (ChessPiece.PieceType promotion : potentialPromotions) {
-                        piece = board.getPiece(position);
-                        if (piece != null) {
-                            break;
-                        } else {
-                            validMoves.add(new ChessMove(myPosition, position, promotion));
-                        }
-                    }
+                    validMoves.addAll(findPromotionMoves(board, myPosition, position));
                 } else {
                     piece = board.getPiece(position);
                     if (piece != null) {
@@ -129,7 +152,6 @@ public class MoveHelper {
 
     public Collection<ChessMove> findPawnAttackingMoves(ChessBoard board, ChessPosition myPosition, int[][] moves, int promotionRow) {
         Collection<ChessMove> validMoves = new ArrayList<>();
-        Collection<ChessPiece.PieceType> potentialPromotions= new ArrayList<ChessPiece.PieceType>(Arrays.asList(BISHOP, ROOK, KNIGHT, QUEEN));
         ChessPiece piece;
         ChessPosition position;
 
@@ -138,14 +160,7 @@ public class MoveHelper {
             if (position.getRow() < 0 || position.getRow() >= 8 || position.getColumn() < 0 || position.getColumn() >= 8) {
                 continue;
             } else if (position.getRow() == promotionRow) {
-                for (ChessPiece.PieceType promotion : potentialPromotions) {
-                    piece = board.getPiece(position);
-                    if (piece == null) {
-                        break;
-                    } else {
-                        validMoves.add(new ChessMove(myPosition, position, promotion));
-                    }
-                }
+                validMoves.addAll(findAttackingPromotionMoves(board, myPosition, position));
             } else {
                 piece = board.getPiece(position);
                 if (piece == null || piece.getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
