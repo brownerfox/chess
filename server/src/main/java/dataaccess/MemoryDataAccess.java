@@ -16,20 +16,20 @@ public class MemoryDataAccess implements DataAccess {
 
     private int nextId = 1;
 
-    public UserData createUser(String username, String password, String email) throws ServiceException {
+    public UserData createUser(UserData user) throws ServiceException {
 
-        if (checkForDuplicateEmails(email)) {
+        if (checkForDuplicateEmails(user.email())) {
             throw new ServiceException("Error: already taken");
         }
-        if (usersData.containsKey(username)) {
+        if (usersData.containsKey(user.username())) {
             throw new ServiceException("Error: already taken");
         }
 
-        UserData user = new UserData(username, password, email);
+        UserData newUser = new UserData(user.username(), user.password(), user.email());
 
-        usersData.put(username, user);
+        usersData.put(newUser.username(), newUser);
 
-        return user;
+        return newUser;
     }
 
     public UserData getUser(String username) throws DataAccessException {
