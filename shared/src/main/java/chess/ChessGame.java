@@ -262,5 +262,13 @@ public class ChessGame {
         }
         return this.board;
     }
+
+    @Override
+    public String toString() {
+        return "ChessGame : {" +
+                "team : " + team +
+                ", board : " + board +
+                '}';
+    }
 }
 

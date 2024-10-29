@@ -16,7 +16,7 @@ public class MemoryDataAccess implements DataAccess {
 
     private int nextId = 1;
 
-    public UserData createUser(UserData user) throws ServiceException {
+    public UserData createUser(UserData user) throws DataAccessException, ServiceException {
 
         if (checkForDuplicateEmails(user.email())) {
             throw new ServiceException("Error: already taken");
