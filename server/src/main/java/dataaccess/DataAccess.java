@@ -9,7 +9,7 @@ import service.ServiceException;
 import java.util.Collection;
 
 public interface DataAccess  {
-    UserData createUser (String username, String password, String email) throws ServiceException;
+    UserData createUser (UserData user) throws ServiceException;
 
     UserData getUser (String username) throws DataAccessException;
 
