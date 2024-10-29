@@ -29,7 +29,9 @@ public class ChessService {
     // response class?
 
     public CreateUserResult createUser(CreateUserRequest user) throws ServiceException, DataAccessException {
-        UserData newUser = dataAccess.createUser(user.username(), user.password(), user.email());
+        UserData userdata = new UserData(user.username(), user.password(), user.email());
+
+        UserData newUser = dataAccess.createUser(userdata);
 
         AuthData authData = dataAccess.createAuth(user.username());
 

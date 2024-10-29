@@ -12,7 +12,7 @@ import java.util.List;
 public class FailingDataAccess implements DataAccess {
 
     @Override
-    public UserData createUser(String username, String password, String email) throws ServiceException {
+    public UserData createUser(UserData user) throws ServiceException {
         return null;
     }
 
