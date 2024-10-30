@@ -40,7 +40,7 @@ public class ChessService {
 
     // I want this function to return a username field and an authtoken field
 
-    public LogInResult loginUser(String username, String password) throws DataAccessException {
+    public LogInResult loginUser(String username, String password) throws DataAccessException, ServiceException {
         UserData user = dataAccess.getUser(username);
 
         if (!(Objects.equals(user.password(), password))) {
@@ -52,7 +52,7 @@ public class ChessService {
 
     // I want this function check my authtoken first and then delete my authtoken
 
-    public Object logoutUser(String authToken) throws DataAccessException {
+    public Object logoutUser(String authToken) throws DataAccessException, ServiceException {
         dataAccess.deleteAuth(authToken);
 
         return new LogOutResult();
@@ -60,7 +60,7 @@ public class ChessService {
 
     // I want this function to check to see if my authToken is valid, and then it should return a list of games
 
-    public ListGamesResult listGames (String authToken) throws DataAccessException {
+    public ListGamesResult listGames (String authToken) throws DataAccessException, ServiceException {
 
         // Call getAuth and try to retrieve the AuthData
         dataAccess.getAuth(authToken);
@@ -70,7 +70,7 @@ public class ChessService {
 
     // I want this function to check my auth token, check for a game and then add a new game to the game list
 
-    public CreateGameResult createGame(String authToken, String gameName) throws DataAccessException {
+    public CreateGameResult createGame(String authToken, String gameName) throws DataAccessException, ServiceException {
         dataAccess.getAuth(authToken);
 
         return new CreateGameResult(dataAccess.createGame(gameName));
@@ -107,7 +107,7 @@ public class ChessService {
 
     // This function calls the clear function for each of our dataaccess objects and cleans out the database
 
-    public Object clear() throws DataAccessException {
+    public Object clear() throws DataAccessException, ServiceException {
         dataAccess.clear();
 
         return new ClearResult();

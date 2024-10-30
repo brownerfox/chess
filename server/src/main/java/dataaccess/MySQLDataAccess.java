@@ -6,9 +6,11 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
+import results.CreateGameResult;
 import service.BadGameIDException;
 import service.ServiceException;
 
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +27,7 @@ public class MySQLDataAccess implements DataAccess {
     @Override
     public UserData createUser(UserData user) throws DataAccessException, ServiceException {
         var statement = "INSERT INTO userdata (username, password, email) VALUES (?, ?, ?)";
-        String id = executeUpdate(statement, user.username(), user.password(), user.email()).getClass().getName();
+        var id = executeUpdate(statement, user.username(), user.password(), user.email()).getClass().getName();
         return new UserData(id, user.password(), user.email());
     }
 
@@ -55,13 +57,32 @@ public class MySQLDataAccess implements DataAccess {
     @Override
     public int createGame(String gameName) throws DataAccessException, ServiceException {
         var statement = "INSERT INTO gamedata (gameID, whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?, ?)";
-        String id = executeUpdate(statement, "", "", gameName, new ChessGame());
-        return new UserData(id, user.password(), user.email());
+        GameData newGame = new GameData(1, "", "", gameName, new ChessGame());
+        var id = executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), newGame.game());
+        return (int) id;
     }
 
     @Override
-    public GameData getGame(int gameID) throws BadGameIDException {
-        return null;
+    public GameData getGame(int gameID) throws BadGameIDException, DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameid, whiteusername, blackusername, gamename, game FROM gamedata WHERE gameid=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    } else {
+                        throw new BadGameIDException("User not found for username: " + gameID);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+    }
+
+    public GameData readGame(ResultSet rs) throws Exception {
+        return new GameData(rs.getInt("gameid"), rs.getString("whiteusername"), rs.getString("blackusername"), rs.getString("gamename"), rs.getObject("game", ChessGame.class));
     }
 
     @Override
@@ -78,8 +99,7 @@ public class MySQLDataAccess implements DataAccess {
     public AuthData createAuth(String username) throws DataAccessException, ServiceException {
         AuthData newAuthData = new AuthData(generateToken(), username);
         var statement = "INSERT INTO authdata (authtoken, username) VALUES (?, ?)";
-        String id = executeUpdate(statement, newAuthData.authToken(), newAuthData.username()).getClass().getName();
-
+        executeUpdate(statement, newAuthData.authToken(), newAuthData.username()).getClass().getName();
 
         return newAuthData;
     }
@@ -124,7 +144,6 @@ public class MySQLDataAccess implements DataAccess {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL UNIQUE,
-              `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`),
               INDEX(password),
               INDEX(email)
@@ -134,7 +153,6 @@ public class MySQLDataAccess implements DataAccess {
             CREATE TABLE IF NOT EXISTS authdata (
               `authtoken` varchar(512) NOT NULL,
               `username` varchar(256) NOT NULL,
-              `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`authtoken`),
               INDEX(username),
               FOREIGN KEY (`username`) REFERENCES user(`username`) ON DELETE CASCADE
@@ -147,7 +165,6 @@ public class MySQLDataAccess implements DataAccess {
               `blackusername` varchar(256) NOT NULL,
               `gamename` varchar(256) NOT NULL,
               `game` varchar(1024) NOT NULL,
-              `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`gameid`),
               INDEX(whiteusername),
               INDEX(blackusername),
@@ -187,28 +204,6 @@ public class MySQLDataAccess implements DataAccess {
                     return key;
                 }
                 return 0;
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
-    }
-
-    private String executeUpdateUser(String statement, Object... params) throws Exception {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getString(1);
-                }
-
-                return "";
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));

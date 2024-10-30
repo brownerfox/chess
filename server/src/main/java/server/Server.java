@@ -72,7 +72,7 @@ public class Server {
         }
     }
 
-    private Object loginUser(Request req, Response res) throws DataAccessException {
+    private Object loginUser(Request req, Response res) throws DataAccessException, ServiceException{
         var loginRequest = new Gson().fromJson(req.body(), LogInRequest.class);
 
         try {
@@ -83,7 +83,7 @@ public class Server {
         }
     }
 
-    private Object logoutUser(Request req, Response res) throws DataAccessException {
+    private Object logoutUser(Request req, Response res) throws DataAccessException, ServiceException {
         String authHeader = req.headers("Authorization");
         String authToken = authHeader.replace("Bearer ", "");
         //var authData = new Gson().fromJson(req.headers("Authorization"), LogOutRequest.class);
@@ -95,7 +95,7 @@ public class Server {
         }
     }
 
-    private Object listGames(Request req, Response res) throws DataAccessException {
+    private Object listGames(Request req, Response res) throws DataAccessException, ServiceException {
         String authHeader = req.headers("Authorization");
         String authToken = authHeader.replace("Bearer ", "");
 
@@ -107,7 +107,7 @@ public class Server {
         }
     }
 
-    private Object createGame(Request req, Response res) throws  DataAccessException {
+    private Object createGame(Request req, Response res) throws  DataAccessException, ServiceException {
         var createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
 
         String authToken = req.headers("Authorization");
@@ -125,7 +125,7 @@ public class Server {
         }
     }
 
-    private Object joinGame(Request req, Response res) throws  DataAccessException {
+    private Object joinGame(Request req, Response res) throws  DataAccessException, ServiceException {
         var joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
 
         String authToken = req.headers("Authorization");
@@ -151,7 +151,7 @@ public class Server {
         }
     }
 
-    private Object clear(Request req, Response res) throws DataAccessException {
+    private Object clear(Request req, Response res) throws DataAccessException, ServiceException {
         return new Gson().toJson(service.clear());
     }
 }

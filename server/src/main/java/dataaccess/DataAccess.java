@@ -15,7 +15,7 @@ public interface DataAccess  {
 
     int createGame (String game) throws DataAccessException, ServiceException;
 
-    GameData getGame (int gameID) throws BadGameIDException, ServiceException;
+    GameData getGame (int gameID) throws BadGameIDException, DataAccessException, ServiceException;
 
     Collection<GameData> listGames () throws DataAccessException, ServiceException;
 
