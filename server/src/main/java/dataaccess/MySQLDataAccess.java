@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 import service.BadGameIDException;
 import service.ServiceException;
 
@@ -19,12 +18,16 @@ import static java.sql.Types.NULL;
 
 public class MySQLDataAccess implements DataAccess {
 
-    public MySQLDataAccess() throws Exception {
-        configureDatabase();
+    public MySQLDataAccess() {
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public UserData createUser(UserData user) throws DataAccessException, ServiceException {
+    public UserData createUser(UserData user) throws DataAccessException{
         String checkStatement = "SELECT COUNT(*) FROM userdata WHERE username = ?";
         String insertStatement = "INSERT INTO userdata (username, password, email) VALUES (?, ?, ?)";
 
@@ -62,7 +65,7 @@ public class MySQLDataAccess implements DataAccess {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException("");
         }
     }
 
@@ -80,7 +83,7 @@ public class MySQLDataAccess implements DataAccess {
     }
 
     @Override
-    public GameData getGame(int gameID) throws BadGameIDException, DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameid, whiteusername, blackusername, gamename, game FROM gamedata WHERE gameid=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -89,7 +92,7 @@ public class MySQLDataAccess implements DataAccess {
                     if (rs.next()) {
                         return readGame(rs);
                     } else {
-                        throw new BadGameIDException("User not found for username: " + gameID);
+                        throw new BadGameIDException("");
                     }
                 }
             }
@@ -104,7 +107,7 @@ public class MySQLDataAccess implements DataAccess {
         String blackUsername = rs.getString("blackusername");
         String gameName = rs.getString("gamename");
         ChessGame game = new Gson().fromJson((String) rs.getObject("game"), ChessGame.class);
-        return new GameData(gameID, whiteUsername, blackUsername, gameName, rs.getObject("game", ChessGame.class));
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     @Override
@@ -139,7 +142,7 @@ public class MySQLDataAccess implements DataAccess {
     public AuthData createAuth(String username) throws DataAccessException {
         AuthData newAuthData = new AuthData(generateToken(), username);
         var statement = "INSERT INTO authdata (authtoken, username) VALUES (?, ?)";
-        executeUpdate(statement, newAuthData.authToken(), newAuthData.username()).getClass().getName();
+        executeUpdate(statement, newAuthData.authToken(), newAuthData.username());
 
         return newAuthData;
     }
@@ -173,20 +176,18 @@ public class MySQLDataAccess implements DataAccess {
         var deleteStatement = "DELETE FROM authdata WHERE authtoken = ?";
 
         try (var conn = DatabaseManager.getConnection()) {
-            // Check if authToken exists
             try (var psCheck = conn.prepareStatement(checkStatement)) {
                 psCheck.setString(1, authToken);
                 try (ResultSet rs = psCheck.executeQuery()) {
                     if (rs.next() && rs.getBoolean(1)) {
-                        // If exists, proceed with delete
                         executeUpdate(deleteStatement, authToken);
                     } else {
-                        throw new DataAccessException("Auth token does not exist.");
+                        throw new DataAccessException("");
                     }
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to delete auth token: " + e.getMessage());
+            throw new DataAccessException("");
         }
     }
 
@@ -195,7 +196,7 @@ public class MySQLDataAccess implements DataAccess {
         String[] tables = {"gamedata", "userdata", "authdata"};
         try (var conn = DatabaseManager.getConnection()) {
             for (String table : tables) {
-                var statement = "TRUNCATE TABLE " + table; // Or "DELETE FROM " + table
+                var statement = "TRUNCATE TABLE " + table;
                 try (var ps = conn.prepareStatement(statement)) {
                     ps.executeUpdate();
                 }

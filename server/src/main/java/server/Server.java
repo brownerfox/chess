@@ -15,6 +15,7 @@ import spark.*;
 import java.sql.SQLException;
 
 public class Server {
+
     private final ChessService service = new ChessService(new MySQLDataAccess());
 
     public Server () {}
@@ -61,8 +62,6 @@ public class Server {
             return new Gson().toJson(new ErrorResult("Error: bad request"));
         }
 
-        System.out.println(user.toString());
-
         try {
             CreateUserResult result = service.createUser(user);
 
@@ -75,7 +74,7 @@ public class Server {
         }
     }
 
-    private Object loginUser(Request req, Response res) throws DataAccessException, ServiceException{
+    private Object loginUser(Request req, Response res) {
         var loginRequest = new Gson().fromJson(req.body(), LogInRequest.class);
 
         try {
@@ -86,9 +85,9 @@ public class Server {
         }
     }
 
-    private Object logoutUser(Request req, Response res) throws DataAccessException, ServiceException {
+    private Object logoutUser(Request req, Response res) {
         String authToken = req.headers("Authorization");
-        //var authData = new Gson().fromJson(req.headers("Authorization"), LogOutRequest.class);
+
         try {
             return new Gson().toJson(service.logoutUser(authToken));
         } catch (DataAccessException ex) {
@@ -97,9 +96,8 @@ public class Server {
         }
     }
 
-    private Object listGames(Request req, Response res) throws DataAccessException, ServiceException {
-        String authHeader = req.headers("Authorization");
-        String authToken = authHeader.replace("Bearer ", "");
+    private Object listGames(Request req, Response res) throws ServiceException {
+        String authToken = req.headers("Authorization");
 
         try {
             return new Gson().toJson(service.listGames(authToken));
@@ -109,9 +107,8 @@ public class Server {
         }
     }
 
-    private Object createGame(Request req, Response res) throws  DataAccessException, ServiceException {
+    private Object createGame(Request req, Response res) throws  ServiceException {
         var createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
-
         String authToken = req.headers("Authorization");
 
         if (createGameRequest == null || authToken == null || createGameRequest.gameName() == null) {
@@ -127,7 +124,7 @@ public class Server {
         }
     }
 
-    private Object joinGame(Request req, Response res) throws  DataAccessException, ServiceException, SQLException {
+    private Object joinGame(Request req, Response res) throws SQLException {
         var joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
 
         String authToken = req.headers("Authorization");
@@ -143,7 +140,7 @@ public class Server {
             return new Gson().toJson(service.joinGame(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID()));
         } catch (BadGameIDException e) {
             res.status(400);
-            return new Gson().toJson(new ErrorResult("Error: unauthorized"));
+            return new Gson().toJson(new ErrorResult("Error: bad request"));
         } catch (DataAccessException e) {
             res.status(401);
             return new Gson().toJson(new ErrorResult("Error: unauthorized"));

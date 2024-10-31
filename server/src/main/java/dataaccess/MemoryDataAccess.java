@@ -16,7 +16,7 @@ public class MemoryDataAccess implements DataAccess {
 
     private int nextId = 1;
 
-    public UserData createUser(UserData user) throws DataAccessException, ServiceException {
+    public UserData createUser(UserData user) throws ServiceException {
 
         if (checkForDuplicateEmails(user.email())) {
             throw new ServiceException("Error: already taken");
@@ -61,7 +61,7 @@ public class MemoryDataAccess implements DataAccess {
         return gameList.get(gameID);
     }
 
-    public Collection<GameData> listGames() throws DataAccessException {
+    public Collection<GameData> listGames() {
         return gameList.values();
     }
 
