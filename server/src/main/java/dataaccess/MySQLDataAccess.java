@@ -5,15 +5,14 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
-import results.CreateGameResult;
+import org.mindrot.jbcrypt.BCrypt;
 import service.BadGameIDException;
 import service.ServiceException;
 
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -58,7 +57,8 @@ public class MySQLDataAccess implements DataAccess {
     public int createGame(String gameName) throws DataAccessException, ServiceException {
         var statement = "INSERT INTO gamedata (gameID, whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?, ?)";
         GameData newGame = new GameData(1, "", "", gameName, new ChessGame());
-        var id = executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), newGame.game());
+        String game = new Gson().toJson(newGame.game());
+        var id = executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), game);
         return (int) id;
     }
 
@@ -82,17 +82,40 @@ public class MySQLDataAccess implements DataAccess {
     }
 
     public GameData readGame(ResultSet rs) throws Exception {
-        return new GameData(rs.getInt("gameid"), rs.getString("whiteusername"), rs.getString("blackusername"), rs.getString("gamename"), rs.getObject("game", ChessGame.class));
+        int gameID = rs.getInt("gameid");
+        String whiteUsername = rs.getString("whiteusername");
+        String blackUsername = rs.getString("blackusername");
+        String gameName = rs.getString("gamename");
+        ChessGame game = new Gson().fromJson((String) rs.getObject("game"), ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, rs.getObject("game", ChessGame.class));
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return List.of();
+        var result = new ArrayList<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameid, whiteusername, blackusername, gamename, game FROM gamedata";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGame(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
     }
 
     @Override
-    public GameData updateGame(GameData newGame) throws DataAccessException {
-        return null;
+    public GameData updateGame(GameData newGame) throws DataAccessException, ServiceException, SQLException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "UPDATE gamedata SET whiteusername = ?, blackusername = ?, gamename = ?, game = ? WHERE gameid = ?";
+            String game = new Gson().toJson(newGame.game());
+            executeUpdate(statement, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), game, newGame.gameID());
+        }
+        return newGame;
     }
 
     @Override
@@ -135,6 +158,17 @@ public class MySQLDataAccess implements DataAccess {
 
     @Override
     public void clear() throws DataAccessException {
+        String[] tables = {"gamedata", "userdata", "authdata"};
+        try (var conn = DatabaseManager.getConnection()) {
+            for (String table : tables) {
+                var statement = "TRUNCATE TABLE " + table; // Or "DELETE FROM " + table
+                try (var ps = conn.prepareStatement(statement)) {
+                    ps.executeUpdate();
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to clear tables: " + e.getMessage());
+        }
 
     }
 
@@ -164,7 +198,7 @@ public class MySQLDataAccess implements DataAccess {
               `whiteusername` varchar(256) NOT NULL,
               `blackusername` varchar(256) NOT NULL,
               `gamename` varchar(256) NOT NULL,
-              `game` varchar(1024) NOT NULL,
+              `game` TEXT DEFAULT NULL,
               PRIMARY KEY (`gameid`),
               INDEX(whiteusername),
               INDEX(blackusername),
@@ -184,7 +218,6 @@ public class MySQLDataAccess implements DataAccess {
                     switch (param) {
                         case String p -> ps.setString(i + 1, p);
                         case Integer p -> ps.setInt(i + 1, p);
-                        case ChessGame p -> ps.setString(i + 1, p.toString());
                         case null -> ps.setNull(i + 1, NULL);
                         default -> {
                         }
@@ -225,5 +258,9 @@ public class MySQLDataAccess implements DataAccess {
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
+    }
+
+    String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 }

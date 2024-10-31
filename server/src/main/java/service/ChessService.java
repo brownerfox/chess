@@ -8,6 +8,7 @@ import dataaccess.DataAccessException;
 import requests.CreateUserRequest;
 import results.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ public class ChessService {
     // game exists, then it will check to see if there is already a player for the desired team. If all goes well
     // it will let the user join the game and update the game
 
-    public JoinGameResult joinGame(String authToken, String teamColor, int gameID) throws ServiceException, DataAccessException {
+    public JoinGameResult joinGame(String authToken, String teamColor, int gameID) throws ServiceException, DataAccessException, SQLException {
         GameData newGame;
         AuthData authData = dataAccess.getAuth(authToken);
 

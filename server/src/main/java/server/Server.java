@@ -11,6 +11,8 @@ import service.ChessService;
 import service.ServiceException;
 import spark.*;
 
+import java.sql.SQLException;
+
 public class Server {
     private final ChessService service = new ChessService(new MemoryDataAccess());
 
@@ -125,7 +127,7 @@ public class Server {
         }
     }
 
-    private Object joinGame(Request req, Response res) throws  DataAccessException, ServiceException {
+    private Object joinGame(Request req, Response res) throws  DataAccessException, ServiceException, SQLException {
         var joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
 
         String authToken = req.headers("Authorization");
