@@ -259,8 +259,4 @@ public class MySQLDataAccess implements DataAccess {
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }
-
-    String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
 }

@@ -5,13 +5,11 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import dataaccess.DataAccessException;
+import org.mindrot.jbcrypt.BCrypt;
 import requests.CreateUserRequest;
 import results.*;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class ChessService {
@@ -30,7 +28,7 @@ public class ChessService {
     // response class?
 
     public CreateUserResult createUser(CreateUserRequest user) throws ServiceException, DataAccessException {
-        UserData userdata = new UserData(user.username(), user.password(), user.email());
+        UserData userdata = new UserData(user.username(), hashPassword(user.password()), user.email());
 
         UserData newUser = dataAccess.createUser(userdata);
 
@@ -44,7 +42,7 @@ public class ChessService {
     public LogInResult loginUser(String username, String password) throws DataAccessException, ServiceException {
         UserData user = dataAccess.getUser(username);
 
-        if (!(Objects.equals(user.password(), password))) {
+        if (!(Objects.equals(user.password(), hashPassword(password)))) {
             throw new DataAccessException("Error: unauthorized");
         }
 
@@ -114,5 +112,7 @@ public class ChessService {
         return new ClearResult();
     }
 
-
+    String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
 }
