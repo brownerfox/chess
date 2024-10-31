@@ -19,15 +19,32 @@ import static java.sql.Types.NULL;
 
 public class MySQLDataAccess implements DataAccess {
 
-    public MySQLDataAccess() throws DataAccessException {
+    public MySQLDataAccess() throws Exception {
         configureDatabase();
     }
 
     @Override
     public UserData createUser(UserData user) throws DataAccessException, ServiceException {
-        var statement = "INSERT INTO userdata (username, password, email) VALUES (?, ?, ?)";
-        var id = executeUpdate(statement, user.username(), user.password(), user.email()).getClass().getName();
-        return new UserData(id, user.password(), user.email());
+        String checkStatement = "SELECT COUNT(*) FROM userdata WHERE username = ?";
+        String insertStatement = "INSERT INTO userdata (username, password, email) VALUES (?, ?, ?)";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var checkPs = conn.prepareStatement(checkStatement)) {
+                checkPs.setString(1, user.username());
+                try (var rs = checkPs.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        throw new DataAccessException("Username already exists.");
+                    }
+                }
+            }
+
+            // If the username doesn't exist, insert the new user
+            var id = executeUpdate(insertStatement, user.username(), user.password(), user.email()).toString();
+            return new UserData(id, user.password(), user.email());
+
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to create user: " + e.getMessage());
+        }
     }
 
     @Override
@@ -40,7 +57,7 @@ public class MySQLDataAccess implements DataAccess {
                     if (rs.next()) {
                         return readUser(rs);
                     } else {
-                        throw new DataAccessException("User not found for username: " + username);
+                        throw new DataAccessException("");
                     }
                 }
             }
@@ -109,7 +126,7 @@ public class MySQLDataAccess implements DataAccess {
     }
 
     @Override
-    public GameData updateGame(GameData newGame) throws DataAccessException, ServiceException, SQLException{
+    public GameData updateGame(GameData newGame) throws DataAccessException, SQLException{
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "UPDATE gamedata SET whiteusername = ?, blackusername = ?, gamename = ?, game = ? WHERE gameid = ?";
             String game = new Gson().toJson(newGame.game());
@@ -119,7 +136,7 @@ public class MySQLDataAccess implements DataAccess {
     }
 
     @Override
-    public AuthData createAuth(String username) throws DataAccessException, ServiceException {
+    public AuthData createAuth(String username) throws DataAccessException {
         AuthData newAuthData = new AuthData(generateToken(), username);
         var statement = "INSERT INTO authdata (authtoken, username) VALUES (?, ?)";
         executeUpdate(statement, newAuthData.authToken(), newAuthData.username()).getClass().getName();
@@ -137,12 +154,12 @@ public class MySQLDataAccess implements DataAccess {
                     if (rs.next()) {
                         return readAuth(rs);
                     } else {
-                        throw new DataAccessException("User not found for username: " + authToken);
+                        throw new DataAccessException("");
                     }
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException("");
         }
     }
 
@@ -151,9 +168,26 @@ public class MySQLDataAccess implements DataAccess {
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException, ServiceException {
-        var statement = "DELETE FROM authdata WHERE authtoken=?";
-        executeUpdate(statement, authToken);
+    public void deleteAuth(String authToken) throws DataAccessException {
+        var checkStatement = "SELECT EXISTS (SELECT 1 FROM authdata WHERE authtoken = ?)";
+        var deleteStatement = "DELETE FROM authdata WHERE authtoken = ?";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            // Check if authToken exists
+            try (var psCheck = conn.prepareStatement(checkStatement)) {
+                psCheck.setString(1, authToken);
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (rs.next() && rs.getBoolean(1)) {
+                        // If exists, proceed with delete
+                        executeUpdate(deleteStatement, authToken);
+                    } else {
+                        throw new DataAccessException("Auth token does not exist.");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to delete auth token: " + e.getMessage());
+        }
     }
 
     @Override
@@ -167,7 +201,7 @@ public class MySQLDataAccess implements DataAccess {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to clear tables: " + e.getMessage());
+            throw new DataAccessException("");
         }
 
     }
@@ -210,7 +244,7 @@ public class MySQLDataAccess implements DataAccess {
             """
     };
 
-    private Object executeUpdate(String statement, Object... params) throws DataAccessException, ServiceException {
+    private Object executeUpdate(String statement, Object... params) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
@@ -252,7 +286,7 @@ public class MySQLDataAccess implements DataAccess {
                 }
             }
         } catch (Exception ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException("");
         }
     }
 

@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
+import dataaccess.MySQLDataAccess;
 import requests.*;
 import results.CreateUserResult;
 import results.ErrorResult;
@@ -14,7 +15,7 @@ import spark.*;
 import java.sql.SQLException;
 
 public class Server {
-    private final ChessService service = new ChessService(new MemoryDataAccess());
+    private final ChessService service = new ChessService(new MySQLDataAccess());
 
     public Server () {}
 
@@ -52,7 +53,7 @@ public class Server {
     }
 
 
-    private Object createUser(Request req, Response res) throws DataAccessException {
+    private Object createUser(Request req, Response res) throws Exception {
         var user = new Gson().fromJson(req.body(), CreateUserRequest.class);
 
         if (user == null || user.username() == null || user.password() == null || user.email() == null) {
@@ -68,7 +69,7 @@ public class Server {
             System.out.println(result.toString());
 
             return new Gson().toJson(result);
-        } catch (ServiceException e) {
+        } catch (DataAccessException e) {
             res.status(403);
             return new Gson().toJson(new ErrorResult("Error: already taken"));
         }
@@ -86,8 +87,7 @@ public class Server {
     }
 
     private Object logoutUser(Request req, Response res) throws DataAccessException, ServiceException {
-        String authHeader = req.headers("Authorization");
-        String authToken = authHeader.replace("Bearer ", "");
+        String authToken = req.headers("Authorization");
         //var authData = new Gson().fromJson(req.headers("Authorization"), LogOutRequest.class);
         try {
             return new Gson().toJson(service.logoutUser(authToken));

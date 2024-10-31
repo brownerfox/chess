@@ -39,7 +39,7 @@ public class ChessService {
 
     // I want this function to return a username field and an authtoken field
 
-    public LogInResult loginUser(String username, String password) throws DataAccessException, ServiceException {
+    public LogInResult loginUser(String username, String password) throws DataAccessException{
         UserData user = dataAccess.getUser(username);
 
         if (!(Objects.equals(user.password(), hashPassword(password)))) {
@@ -51,7 +51,7 @@ public class ChessService {
 
     // I want this function check my authtoken first and then delete my authtoken
 
-    public Object logoutUser(String authToken) throws DataAccessException, ServiceException {
+    public Object logoutUser(String authToken) throws DataAccessException{
         dataAccess.deleteAuth(authToken);
 
         return new LogOutResult();

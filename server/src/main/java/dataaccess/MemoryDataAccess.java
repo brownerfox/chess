@@ -93,7 +93,7 @@ public class MemoryDataAccess implements DataAccess {
 
     public void deleteAuth(String authToken) throws DataAccessException {
         if (!authDataMap.containsKey(authToken)) {
-            throw new DataAccessException("authToken already does not exist");
+            throw new DataAccessException("authToken does not exist");
         }
 
         authDataMap.remove(authToken);
