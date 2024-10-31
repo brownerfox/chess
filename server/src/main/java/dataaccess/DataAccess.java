@@ -6,6 +6,7 @@ import model.GameData;
 import service.BadGameIDException;
 import service.ServiceException;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 public interface DataAccess  {
@@ -19,7 +20,7 @@ public interface DataAccess  {
 
     Collection<GameData> listGames () throws DataAccessException, ServiceException;
 
-    GameData updateGame (GameData newGame) throws DataAccessException, ServiceException;
+    GameData updateGame (GameData newGame) throws DataAccessException, ServiceException, SQLException;
 
     AuthData createAuth (String username) throws DataAccessException, ServiceException;
 
