@@ -1,26 +1,15 @@
 package service;
 
-import chess.ChessGame;
-import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.FailingDataAccess;
 import dataaccess.MemoryDataAccess;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import passoff.chess.ChessPositionTests;
-import passoff.model.*;
-import requests.CreateGameRequest;
 import requests.CreateUserRequest;
-import results.CreateGameResult;
 import results.CreateUserResult;
-import results.LogInResult;
-import server.Server;
-import service.ChessService;
-import spark.utils.Assert;
+import service.ChessService.*;
 
-import java.security.Provider;
 
 public class ServiceUnitTests {
 
@@ -35,7 +24,7 @@ public class ServiceUnitTests {
     @DisplayName("CreateUserSuccess")
     public void createUserSuccess() throws Exception {
 
-        UserData expected = new UserData("Jeremy", "1234", "j@gmail.com");
+        UserData expected = new UserData("Jeremy", service.hashPassword("1234"), "j@gmail.com");
 
         CreateUserRequest userRequest = new CreateUserRequest("Jeremy", "1234", "j@gmail.com");
 
