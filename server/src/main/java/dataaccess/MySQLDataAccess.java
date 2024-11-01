@@ -8,9 +8,9 @@ import model.UserData;
 import service.BadGameIDException;
 import service.ServiceException;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -235,25 +235,31 @@ public class MySQLDataAccess implements DataAccess {
             """
     };
 
+    private PreparedStatement iterateOverParameters (PreparedStatement ps, Object... params) throws SQLException {
+        for (var i = 0; i < params.length; i++) {
+            var param = params[i];
+            switch (param) {
+                case String p -> ps.setString(i + 1, p);
+                case Integer p -> ps.setInt(i + 1, p);
+                case null -> ps.setNull(i + 1, NULL);
+                default -> {
+                }
+            }
+        }
+
+        return ps;
+    }
+
     private Object executeUpdate(String statement, Object... params) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    switch (param) {
-                        case String p -> ps.setString(i + 1, p);
-                        case Integer p -> ps.setInt(i + 1, p);
-                        case null -> ps.setNull(i + 1, NULL);
-                        default -> {
-                        }
-                    }
-                }
+                var newPS = iterateOverParameters(ps, params);
 
                 // System.out.print(ps.toString());
 
-                ps.executeUpdate();
+                newPS.executeUpdate();
 
-                var rs = ps.getGeneratedKeys();
+                var rs = newPS.getGeneratedKeys();
                 if (rs.next()) {
                     Object key;
                     int generatedInt = rs.getInt(1);

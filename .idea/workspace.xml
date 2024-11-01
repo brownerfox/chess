@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="afb7ab95-ca7f-4bbd-bf05-269b81c8bfe5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/google_gson.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/junit_jupiter.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/mindrot_jbcrypt.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/mysql_connector_java.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/sparkjava_spark_core.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/dataaccess/MySQLDataAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/dataaccess/MySQLDataAccess.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Record" />
+        <option value="Exception" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/server/src/main/java/dataaccess/MySQLDataAccess.java" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2mCzlTbz3ZaAuH7qABf8MQQ9uHl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Debug",
+    "Downloaded.Files.Path.Enabled": "false",
+    "JUnit.All in shared.executor": "Run",
+    "JUnit.BishopMoveTests.executor": "Run",
+    "JUnit.ChessBoardTests.defaultGameBoard.executor": "Run",
+    "JUnit.ChessBoardTests.executor": "Run",
+    "JUnit.ChessBoardTests.getAddPiece.executor": "Run",
+    "JUnit.ChessBoardTests.pieceMoveAllPieces.executor": "Run",
+    "JUnit.ChessMoveTests.equalsTest.executor": "Run",
+    "JUnit.ChessMoveTests.executor": "Run",
+    "JUnit.ChessPositionTests.executor": "Run",
+    "JUnit.DatabaseTests.executor": "Debug",
+    "JUnit.DatabaseTests.persistenceTest.executor": "Debug",
+    "JUnit.FullGameTest.executor": "Run",
+    "JUnit.FullGameTest.scholarsMate.executor": "Run",
+    "JUnit.GameStatusTests.blackCheck.executor": "Debug",
+    "JUnit.GameStatusTests.executor": "Run",
+    "JUnit.GameStatusTests.noGameStatuses.executor": "Debug",
+    "JUnit.GameStatusTests.stalemate.executor": "Run",
+    "JUnit.KingMoveTests.executor": "Run",
+    "JUnit.KnightMoveTests.executor": "Run",
+    "JUnit.MakeMoveTests.executor": "Run",
+    "JUnit.MakeMoveTests.promotionMoves.executor": "Run",
+    "JUnit.PawnMoveTests.executor": "Run",
+    "JUnit.QueenMoveTests.executor": "Run",
+    "JUnit.RookMoveTests.executor": "Run",
+    "JUnit.ServiceUnitTests.CreateGameFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.CreateGameSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.CreateUserFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.CreateUserSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.GameListFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.GameListSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.JoinGameFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.JoinGameSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.LogInFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.LogInSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.LogOutFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.LogOutSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.clearFailure.executor": "Run",
+    "JUnit.ServiceUnitTests.clearSuccess.executor": "Run",
+    "JUnit.ServiceUnitTests.createUserSuccess.executor": "Debug",
+    "JUnit.ServiceUnitTests.executor": "Run",
+    "JUnit.StandardAPITests.badGameIDJoin.executor": "Run",
+    "JUnit.StandardAPITests.executor": "Debug",
+    "JUnit.StandardAPITests.goodJoin.executor": "Debug",
+    "JUnit.StandardAPITests.loginInvalidUser.executor": "Run",
+    "JUnit.StandardAPITests.staticFiles.executor": "Run",
+    "JUnit.StandardAPITests.successLogin.executor": "Debug",
+    "JUnit.ValidMovesTests.executor": "Run",
+    "JUnit.ValidMovesTests.forcedMove.executor": "Run",
+    "JUnit.ValidMovesTests.kingInDanger.executor": "Debug",
+    "JUnit.passoff.chess in shared.executor": "Run",
+    "JUnit.passoff.chess.game in shared.executor": "Run",
+    "JUnit.passoff.chess.piece in shared.executor": "Run",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/taftj/OneDrive/Desktop/cs240/chess",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15429688",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\taftj\OneDrive\Desktop\cs240\chess" />
+      <recent name="C:\Users\taftj\OneDrive\Desktop\cs240\chess\client" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.ChessMoveTests">
+    <configuration name="ChessBoardTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.chess.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.chess" />
+      <option name="MAIN_CLASS_NAME" value="passoff.chess.ChessBoardTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ChessMoveTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.chess.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.chess" />
+      <option name="MAIN_CLASS_NAME" value="passoff.chess.ChessMoveTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DatabaseTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.server" />
+      <option name="MAIN_CLASS_NAME" value="passoff.server.DatabaseTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DatabaseTests.persistenceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.server" />
+      <option name="MAIN_CLASS_NAME" value="passoff.server.DatabaseTests" />
+      <option name="METHOD_NAME" value="persistenceTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StandardAPITests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.server" />
+      <option name="MAIN_CLASS_NAME" value="passoff.server.StandardAPITests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.ChessMoveTests" />
+        <item itemvalue="JUnit.ChessBoardTests" />
+        <item itemvalue="JUnit.DatabaseTests" />
+        <item itemvalue="JUnit.DatabaseTests.persistenceTest" />
+        <item itemvalue="JUnit.StandardAPITests" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="afb7ab95-ca7f-4bbd-bf05-269b81c8bfe5" name="Changes" comment="" />
+      <created>1726595496415</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1726595496415</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/shared/src/test/java/passoff/chess/game/GameStatusTests.java</url>
+          <line>228</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/shared/src/test/java/passoff/chess/game/ValidMovesTests.java</url>
+          <line>89</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/shared/src/test/java/passoff/chess/game/ValidMovesTests.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/shared/src/test/java/passoff/chess/game/MakeMoveTests.java</url>
+          <line>372</line>
+          <option name="timeStamp" value="84" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JUnit">
+        <watch expression="expectedBoard.chessboard[1]" />
+        <watch expression="expectedBoard.chessboard" />
+        <watch expression="expectedBoard.chessboard" />
+        <watch expression="expectedBoard.chessboard" />
+        <watch expression="expectedBoard.chessboard" />
+        <watch expression="expectedBoard.chessboard" />
+        <watch expression="((chess.ChessPiece[][])this.chessboard)[0]" custom="chess.ChessPiece[][],chess.ChessBoard" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
