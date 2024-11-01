@@ -10,6 +10,7 @@ import service.ServiceException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -42,8 +43,8 @@ public class MySQLDataAccess implements DataAccess {
             }
 
             // If the username doesn't exist, insert the new user
-            var id = executeUpdate(insertStatement, user.username(), user.password(), user.email()).toString();
-            return new UserData(id, user.password(), user.email());
+            executeUpdate(insertStatement, user.username(), user.password(), user.email()).toString();
+            return new UserData(user.username(), user.password(), user.email());
 
         } catch (Exception e) {
             throw new DataAccessException("Unable to create user: " + e.getMessage());
@@ -75,10 +76,9 @@ public class MySQLDataAccess implements DataAccess {
 
     @Override
     public int createGame(String gameName) throws DataAccessException, ServiceException {
-        var statement = "INSERT INTO gamedata (gameID, whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?, ?)";
-        GameData newGame = new GameData(1, "", "", gameName, new ChessGame());
-        String game = new Gson().toJson(newGame.game());
-        var id = executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), game);
+        var statement = "INSERT INTO gamedata (gamename, game) VALUES (?, ?)";
+        String game = new Gson().toJson(new ChessGame());
+        var id = executeUpdate(statement, gameName, game);
         return (int) id;
     }
 
@@ -97,7 +97,7 @@ public class MySQLDataAccess implements DataAccess {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new BadGameIDException("");
         }
     }
 
@@ -213,34 +213,24 @@ public class MySQLDataAccess implements DataAccess {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL UNIQUE,
-              PRIMARY KEY (`username`),
-              INDEX(password),
-              INDEX(email)
+              PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
             CREATE TABLE IF NOT EXISTS authdata (
               `authtoken` varchar(512) NOT NULL,
               `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authtoken`),
-              INDEX(username),
-              FOREIGN KEY (`username`) REFERENCES user(`username`) ON DELETE CASCADE
+              PRIMARY KEY (`authtoken`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
             CREATE TABLE IF NOT EXISTS gamedata (
               `gameid` int NOT NULL AUTO_INCREMENT,
-              `whiteusername` varchar(256) NOT NULL,
-              `blackusername` varchar(256) NOT NULL,
+              `whiteusername` varchar(256) DEFAULT NULL,
+              `blackusername` varchar(256) DEFAULT NULL,
               `gamename` varchar(256) NOT NULL,
               `game` TEXT DEFAULT NULL,
-              PRIMARY KEY (`gameid`),
-              INDEX(whiteusername),
-              INDEX(blackusername),
-              INDEX(gamename),
-              INDEX(game),
-              FOREIGN KEY (`whiteusername`) REFERENCES user(`username`) ON DELETE SET NULL,
-              FOREIGN KEY (`blackusername`) REFERENCES user(`username`) ON DELETE SET NULL
+              PRIMARY KEY (`gameid`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -258,6 +248,9 @@ public class MySQLDataAccess implements DataAccess {
                         }
                     }
                 }
+
+                // System.out.print(ps.toString());
+
                 ps.executeUpdate();
 
                 var rs = ps.getGeneratedKeys();
