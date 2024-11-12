@@ -15,32 +15,46 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public CreateUserResult createUser () {
+    public CreateUserResult createUser (CreateUserRequest user) {
         var path = "/user";
+
+        return this.makeRequest("POST", path, user, CreateUserResult.class);
     }
 
-    public LoginResult loginUser () {
+    public LoginResult loginUser (LoginRequest loginRequest) {
         var path = "/session";
+
+        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
     }
 
-    public LogoutResult logoutUser () {
+    public LogoutResult logoutUser (LogoutRequest logoutRequest) {
         var path = "/session";
+
+        return this.makeRequest("DELETE", path, null, null);
     }
 
-    public ListGameResult listGames () {
+    public ListGameResult listGames (ListGameRequest listGameRequest) {
         var path = "/game";
+
+        return this.makeRequest("GET", path, null, ListGameResult.class);
     }
 
-    public CreateGameResult createGame () {
+    public CreateGameResult createGame (CreateGameRequest createGameRequest) {
         var path = "/game";
+
+        return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class);
     }
 
-    public JoinGameResult joinGame () {
+    public JoinGameResult joinGame (JoinGameRequest joinGameRequest) {
         var path = "/game";
+
+        return this.makeRequest("PUT", path, joinGameRequest, null);
     }
 
     public clear () {
         var path = "/db";
+
+        return this.makeRequest("DELETE", path, null, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
