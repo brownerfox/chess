@@ -10,30 +10,53 @@ import java.util.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    String authToken;
 
     public ServerFacade(String url) throws Exception {
         serverUrl = url;
     }
 
+    protected String getAuthToken() {
+        return authToken;
+    }
+
+    protected void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+
     public CreateUserResult createUser (CreateUserRequest user) {
         var path = "/user";
+        var body = Map.of("username", user.username(), "password", user.password(), "email", user.email());
+        var jsonBody = new Gson().toJson(body);
 
-        return this.makeRequest("POST", path, user, CreateUserResult.class);
+        CreateUserResult result = this.makeRequest("POST", path, jsonBody, CreateUserResult.class);
+        setAuthToken(result.authToken);
+
+        return result;
     }
 
     public LoginResult loginUser (LoginRequest loginRequest) {
         var path = "/session";
+        var body = Map.of("username", loginRequest.username(), "password", loginRequest.password());
+        var jsonBody = new Gson().toJson(body);
 
-        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        LoginResult result = this.makeRequest("POST", path, jsonBody, LoginResult.class);
+        setAuthToken(result.authToken);
+
+        return result;
     }
 
-    public LogoutResult logoutUser (LogoutRequest logoutRequest) {
+    public LogoutResult logoutUser () {
         var path = "/session";
 
-        return this.makeRequest("DELETE", path, null, null);
+        LogoutResult result = this.makeRequest("DELETE", path, null, null);
+        setAuthToken(null);
+
+        return result;
     }
 
-    public ListGameResult listGames (ListGameRequest listGameRequest) {
+    public ListGameResult listGames () {
         var path = "/game";
 
         return this.makeRequest("GET", path, null, ListGameResult.class);
@@ -41,18 +64,23 @@ public class ServerFacade {
 
     public CreateGameResult createGame (CreateGameRequest createGameRequest) {
         var path = "/game";
+        var body = Map.of("gameName", createGameRequest.gameName());
+        var jsonBody = new Gson().toJson(body);
 
-        return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class);
+        return this.makeRequest("POST", path, jsonBody, CreateGameResult.class);
     }
 
     public JoinGameResult joinGame (JoinGameRequest joinGameRequest) {
         var path = "/game";
+        var body = Map.of("playerColor", joinGameRequest.playerColor(), "gameID", joinGameRequest.gameID());
+        var jsonBody = new Gson().toJson(body);
 
-        return this.makeRequest("PUT", path, joinGameRequest, null);
+        return this.makeRequest("PUT", path, jsonBody, null);
     }
 
     public clear () {
         var path = "/db";
+        setAuthToken(null);
 
         return this.makeRequest("DELETE", path, null, null);
     }
@@ -63,6 +91,10 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if (getAuthToken() != null) {
+                http.addRequestProperty("authorization", facade.getAuthToken());
+            }
 
             writeBody(request, http);
             http.connect();
