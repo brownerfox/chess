@@ -42,7 +42,7 @@ public class ChessService {
     public LogInResult loginUser(String username, String password) throws DataAccessException{
         UserData user = dataAccess.getUser(username);
 
-        if (!(Objects.equals(user.password(), hashPassword(password)))) {
+        if (!(BCrypt.checkpw(password, user.password()))) {
             throw new DataAccessException("Error: unauthorized");
         }
 
@@ -86,13 +86,13 @@ public class ChessService {
         GameData game = dataAccess.getGame(gameID);
 
         if (Objects.equals(teamColor, "WHITE")) {
-            if (game.whiteUsername() == null) {
+            if (Objects.equals(game.whiteUsername(), null)) {
                 newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());
             } else {
                 throw new ServiceException("");
             }
         } else {
-            if (game.blackUsername() == null) {
+            if (Objects.equals(game.blackUsername(), null)) {
                 newGame = new GameData(gameID, game.whiteUsername(), authData.username(), game.gameName(), game.game());
             } else {
                 throw new ServiceException("");

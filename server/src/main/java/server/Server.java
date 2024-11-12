@@ -65,8 +65,6 @@ public class Server {
         try {
             CreateUserResult result = service.createUser(user);
 
-            System.out.println(result.toString());
-
             return new Gson().toJson(result);
         } catch (DataAccessException e) {
             res.status(403);
