@@ -16,31 +16,31 @@ public class ServerFacade {
     }
 
     public CreateUserResult createUser () {
-
+        var path = "/user";
     }
 
     public LoginResult loginUser () {
-
+        var path = "/session";
     }
 
     public LogoutResult logoutUser () {
-
+        var path = "/session";
     }
 
     public ListGameResult listGames () {
-
+        var path = "/game";
     }
 
     public CreateGameResult createGame () {
-
+        var path = "/game";
     }
 
     public JoinGameResult joinGame () {
-
+        var path = "/game";
     }
 
     public clear () {
-
+        var path = "/db";
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
