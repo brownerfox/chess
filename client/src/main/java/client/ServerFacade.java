@@ -11,6 +11,7 @@ import java.util.*;
 public class ServerFacade {
     private final String serverUrl;
     String authToken;
+    HashSet<GameData> gameList;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -62,9 +63,9 @@ public class ServerFacade {
         return this.makeRequest("GET", path, null, ListGameResult.class);
     }
 
-    public CreateGameResult createGame (CreateGameRequest createGameRequest) {
+    public CreateGameResult createGame (String gameName) {
         var path = "/game";
-        var body = Map.of("gameName", createGameRequest.gameName());
+        var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
 
         return this.makeRequest("POST", path, jsonBody, CreateGameResult.class);
