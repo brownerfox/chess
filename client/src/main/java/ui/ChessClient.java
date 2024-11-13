@@ -7,20 +7,23 @@ import requests.LogInRequest;
 import results.CreateGameResult;
 import results.ListGamesResult;
 import exception.ResponseException;
-import spark.Response;
+
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 
 public class ChessClient {
-    private String userName = null;
     private final ServerFacade server;
     private static final String SUCCESS_LOGOUT_MESSAGE = "You've successfully logged out!";
     private State state = State.SIGNEDOUT;
 
     public ChessClient (String serverUrl) {
         server = new ServerFacade(serverUrl);
+    }
+
+    public State getState() {
+        return state;
     }
 
     public String eval(String input) {
@@ -37,7 +40,6 @@ public class ChessClient {
                 case "joingame" -> joinGame(params);
                 case "observegame" -> observeGame(params);
                 case "clear" -> clear();
-                case "help" -> printHelpMenu();
                 default -> printHelpMenu();
             };
         } catch (ResponseException ex) {

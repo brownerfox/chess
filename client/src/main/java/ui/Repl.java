@@ -35,6 +35,8 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n >>> " + SET_TEXT_COLOR_GREEN);
+        String logInStatus = client.getState() == State.SIGNEDIN ? "LOGGED_IN" : "LOGGED_OUT";
+        String status = String.format("\n[%s] >>> ", logInStatus);
+        System.out.print(status + SET_TEXT_COLOR_GREEN);
     }
 }
