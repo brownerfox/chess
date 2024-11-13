@@ -34,29 +34,39 @@ public class ServerFacade {
         return gameList;
     }
 
-    public CreateUserResult createUser (CreateUserRequest user) {
+    public String createUser (CreateUserRequest user) {
         var path = "/user";
         var body = Map.of("username", user.username(), "password", user.password(), "email", user.email());
         var jsonBody = new Gson().toJson(body);
+        try {
+            CreateUserResult result = this.makeRequest("POST", path, jsonBody, CreateUserResult.class);
+            setAuthToken(result.authToken());
 
-        CreateUserResult result = this.makeRequest("POST", path, jsonBody, CreateUserResult.class);
-        setAuthToken(result.authToken());
+            return String.format("You signed in as %s!", user.username());
 
-        return result;
+        } catch (ResponseException e) {
+            e.setMessage("Failed to create user!");
+            return (e.getMessage());
+        }
     }
 
-    public LogInResult loginUser (LogInRequest loginRequest) {
+    public String logInUser (LogInRequest logInRequest) {
         var path = "/session";
-        var body = Map.of("username", loginRequest.username(), "password", loginRequest.password());
+        var body = Map.of("username", logInRequest.username(), "password", logInRequest.password());
         var jsonBody = new Gson().toJson(body);
 
-        LogInResult result = this.makeRequest("POST", path, jsonBody, LogInResult.class);
-        setAuthToken(result.authToken());
+        try {
+            LogInResult result = this.makeRequest("POST", path, jsonBody, LogInResult.class);
+            setAuthToken(result.authToken());
 
-        return result;
+            return String.format("You signed in as %s!", logInRequest.username());
+        } catch (ResponseException e) {
+            e.setMessage("Failed to login to user!");
+            return (e.getMessage());
+        }
     }
 
-    public LogOutResult logoutUser () {
+    public LogOutResult logOutUser () {
         var path = "/session";
 
         LogOutResult result = this.makeRequest("DELETE", path, null, null);

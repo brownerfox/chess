@@ -3,24 +3,29 @@ package ui;
 import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
+import model.UserData;
 import org.eclipse.jetty.http.MetaData;
+import requests.CreateUserRequest;
 import requests.JoinGameRequest;
+import requests.LogInRequest;
 import results.CreateGameResult;
+import results.CreateUserResult;
 import ui.State;
 import exception.ResponseException;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
 
 public class ChessClient {
     private String userName = null;
     private final ServerFacade server;
-    private final String serverUrl;
+
     private State state = State.SIGNEDOUT;
 
     public ChessClient (String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
     public String eval(String input) {
@@ -30,8 +35,8 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> createUser(params);
-                case "login" -> loginUser(params);
-                case "logout" -> logoutUser();
+                case "login" -> logInUser(params);
+                case "logout" -> logOutUser();
                 case "gamelist" -> listGames();
                 case "createagame" -> createGame(params);
                 case "joingame" -> joinGame(params);
@@ -45,36 +50,43 @@ public class ChessClient {
         }
     }
 
-    public String createUser(String... params) throws ResponseException {
-        if (params.length == 3) {
-            state = State.SIGNEDIN;
-            userName = params[0];
-            return String.format("You signed in as %s.", userName);
-        }
-        throw new ResponseException(400, "Expected: <yourname>");
-    }
-
-    public String loginUser(String... params) {
-        if (params.length != 2) {
-            return ("You need to insert your username and password");
+    public String createUser(String... params) {
+        if (params.length != 3) {
+            return ("You need to insert your username, password, and email!");
         } else {
-            state = State.SIGNEDIN;
-            userName = params[0];
-            return String.format("You signed in as %s.", userName);
+            CreateUserRequest user = new CreateUserRequest(params[0], params[1], params[2]);
+            String result = server.createUser(user);
+            if (Objects.equals(result, String.format("You signed in as %s!", user.username()))) {
+                state = State.SIGNEDIN;
+            }
+            return result;
         }
     }
 
-    public String logoutUser () {
+    public String logInUser(String... params) {
+        if (params.length != 2) {
+            return ("You need to insert your username and password!");
+        } else {
+            LogInRequest logInRequest = new LogInRequest(params[0], params[1]);
+            String result = server.logInUser(logInRequest);
+            if (Objects.equals(result, String.format("You signed in as %s!", logInRequest.username()))) {
+                state = State.SIGNEDIN;
+            }
+            return result;
+        }
+    }
+
+    public String logOutUser () {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
         try {
-            server.logoutUser();
+            server.logOutUser();
             state = State.SIGNEDOUT;
         } catch (Exception e) {
             return e.getMessage();
         }
-        return ("You've successfully logged out.");
+        return ("You've successfully logged out!");
     }
 
     public String listGames() throws ResponseException {
@@ -82,13 +94,13 @@ public class ChessClient {
             return ("You need to sign in!");
         }
         try {
-            Array<GameData> GameList = server.getGameList();
+            HashSet<GameData> GameList = server.getGameList();
         } catch (Exception e) {
             return e.getMessage();
         }
     }
 
-    public String createGame(String... params) throws ResponseException {
+    public String createGame(String... params) {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -97,11 +109,11 @@ public class ChessClient {
         } else {
             CreateGameResult gameResult = server.createGame(params[0]);
             int listGameID = findGameIndex(gameResult.gameID());
-            return String.format("Created game with ID %x.", listGameID + 1);
+            return String.format("Created game with ID %x!", listGameID + 1);
         }
     }
 
-    public String joinGame (String... params) throws ResponseException {
+    public String joinGame (String... params) {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -126,7 +138,7 @@ public class ChessClient {
         }
     }
 
-    public String observeGame (String[] params) throws ResponseException {
+    public String observeGame (String[] params) {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -174,7 +186,16 @@ public class ChessClient {
             System.out.print("login <USERNAME> <PASSWORD> - login to an existing user");
             System.out.print("quit - stop playing");
             System.out.print("help - show this menu");
+        } else {
+            System.out.print("create <NAME> - create a new game");
+            System.out.print("list - list all games");
+            System.out.print("join <ID> [WHITE|BLACK] - join a game as color");
+            System.out.print("observe <ID> - observe a game");
+            System.out.print("logout - log out of current user");
+            System.out.print("quit - stop playing");
+            System.out.print("help - show this menu");
         }
+        return("");
     }
 
 }
