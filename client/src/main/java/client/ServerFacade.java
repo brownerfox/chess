@@ -4,21 +4,31 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
 import requests.CreateUserRequest;
-import requests.JoinGameRequest;
 import requests.LogInRequest;
 import results.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    String userName;
     String authToken;
     HashSet<GameData> gameList;
 
     public ServerFacade(String url) {
         serverUrl = url;
     }
+
+    protected String getUserName() {return userName;}
+
+    protected void setUserName(String userName) {this.userName = userName;}
 
     protected String getAuthToken() {
         return authToken;
@@ -28,12 +38,6 @@ public class ServerFacade {
         this.authToken = authToken;
     }
 
-    public HashSet<GameData> getGameList() {
-        gameList.addAll(listGames().games());
-
-        return gameList;
-    }
-
     public String createUser (CreateUserRequest user) {
         var path = "/user";
         var body = Map.of("username", user.username(), "password", user.password(), "email", user.email());
@@ -41,8 +45,9 @@ public class ServerFacade {
         try {
             CreateUserResult result = this.makeRequest("POST", path, jsonBody, CreateUserResult.class);
             setAuthToken(result.authToken());
+            setUserName(user.username());
 
-            return String.format("You signed in as %s!", user.username());
+            return String.format("You signed in as %s!", getUserName());
 
         } catch (ResponseException e) {
             e.setMessage("Failed to create user!");
@@ -66,16 +71,20 @@ public class ServerFacade {
         }
     }
 
-    public LogOutResult logOutUser () {
+    public String logOutUser () {
         var path = "/session";
 
-        LogOutResult result = this.makeRequest("DELETE", path, null, null);
-        setAuthToken(null);
-
-        return result;
+        try {
+            this.makeRequest("DELETE", path, null, null);
+            setAuthToken(null);
+            return ("You've successfully logged out!");
+        } catch (ResponseException e) {
+            e.setMessage("Failed to logout user!");
+            return(e.getMessage());
+        }
     }
 
-    public ListGamesResult listGames () {
+    public ListGamesResult listGames () throws ResponseException {
         var path = "/game";
 
         return this.makeRequest("GET", path, null, ListGamesResult.class);
@@ -89,19 +98,30 @@ public class ServerFacade {
         return this.makeRequest("POST", path, jsonBody, CreateGameResult.class);
     }
 
-    public JoinGameResult joinGame (String playerColor, int gameID) {
+    public String joinGame (String playerColor, int gameID) {
         var path = "/game";
         var body = Map.of("playerColor", playerColor, "gameID", gameID);
         var jsonBody = new Gson().toJson(body);
 
-        this.makeRequest("PUT", path, jsonBody, null);
+        try {
+            this.makeRequest("PUT", path, jsonBody, null);
+            return String.format("Game joined as %s player!", getUserName());
+        } catch (ResponseException e) {
+            e.setMessage("Couldn't join game1");
+            return e.getMessage();
+        }
     }
 
-    public void clear () {
+    public String clear () {
         var path = "/db";
         setAuthToken(null);
-
-        this.makeRequest("DELETE", path, null, null);
+        try {
+            this.makeRequest("DELETE", path, null, null);
+            return ("Successfully cleared out the database!");
+        } catch (ResponseException e) {
+            e.setMessage("Unable to clear the database!");
+            return e.getMessage();
+        }
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {

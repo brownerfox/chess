@@ -7,6 +7,7 @@ import requests.LogInRequest;
 import results.CreateGameResult;
 import results.ListGamesResult;
 import exception.ResponseException;
+import spark.Response;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ import java.util.Objects;
 public class ChessClient {
     private String userName = null;
     private final ServerFacade server;
-
+    private static final String SUCCESS_LOGOUT_MESSAGE = "You've successfully logged out!";
     private State state = State.SIGNEDOUT;
 
     public ChessClient (String serverUrl) {
@@ -31,7 +32,7 @@ public class ChessClient {
                 case "register" -> createUser(params);
                 case "login" -> logInUser(params);
                 case "logout" -> logOutUser();
-                case "gamelist" -> listGames();
+                case "gamelist" -> printGames();
                 case "createagame" -> createGame(params);
                 case "joingame" -> joinGame(params);
                 case "observegame" -> observeGame(params);
@@ -74,26 +75,25 @@ public class ChessClient {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
-        try {
-            server.logOutUser();
+        String result = server.logOutUser();
+
+        if (Objects.equals(result, SUCCESS_LOGOUT_MESSAGE)) {
             state = State.SIGNEDOUT;
-        } catch (Exception e) {
-            return e.getMessage();
         }
-        return ("You've successfully logged out!");
+
+        return result;
     }
 
-    public HashSet<GameData> listGames() {
+    public HashSet<GameData> listGames() throws ResponseException {
         if (state == State.SIGNEDOUT) {
-            System.out.print("You need to sign in!");
-            return HashSet.newHashSet(8);
+            throw new ResponseException(400, "You need to sign in!");
         } else {
             ListGamesResult listGames = server.listGames();
             return listGames.games();
         }
     }
 
-    public StringBuilder printGames() {
+    public String printGames() throws ResponseException {
         StringBuilder result = new StringBuilder();
         HashSet<GameData> games = listGames();
         int i = 1;
@@ -104,10 +104,10 @@ public class ChessClient {
             result.append(String.format("Game ID: %d Game Name: %s White User: %s Black User %s %n", i, game.gameName(), whiteUser, blackUser));
             i++;
         }
-        return result;
+        return result.toString();
     }
 
-    public String createGame(String... params) {
+    public String createGame(String... params) throws ResponseException {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -120,7 +120,7 @@ public class ChessClient {
         }
     }
 
-    public String joinGame (String... params) {
+    public String joinGame (String... params) throws ResponseException {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -129,11 +129,11 @@ public class ChessClient {
         }
         int gameID = Integer.parseInt(params[0]);
 
-        if (server.getGameList().isEmpty() || server.getGameList().size() <= gameID) {
-            if (server.getGameList().isEmpty()) {
+        if (server.listGames().games().isEmpty() || server.listGames().games().size() <= gameID) {
+            if (server.listGames().games().isEmpty()) {
                 return ("Create a game first!");
             }
-            if (server.getGameList().size() <= gameID) {
+            if (server.listGames().games().size() <= gameID) {
                 return ("Enter a valid game ID!");
             }
         }
@@ -145,7 +145,7 @@ public class ChessClient {
         }
     }
 
-    public String observeGame (String[] params) {
+    public String observeGame (String[] params) throws ResponseException {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -155,11 +155,11 @@ public class ChessClient {
 
         int gameID = Integer.parseInt(params[0]);
 
-        if (server.getGameList().isEmpty() || server.getGameList().size() <= gameID) {
-            if (server.getGameList().isEmpty()) {
+        if (server.listGames().games().isEmpty() || server.listGames().games().size() <= gameID) {
+            if (server.listGames().games().isEmpty()) {
                 return ("Create a game first!");
             }
-            if (server.getGameList().size() <= gameID) {
+            if (server.listGames().games().size() <= gameID) {
                 return ("Enter a valid game ID!");
             }
         }
@@ -172,13 +172,12 @@ public class ChessClient {
     }
 
     public String clear () {
-        server.clear();
-        return ("Chess database cleared out!");
+        return server.clear();
     }
 
-    public int findGameIndex(int gameID) {
+    public int findGameIndex(int gameID) throws ResponseException {
         int index = 0;
-        for (GameData game : server.getGameList()) {
+        for (GameData game : server.listGames().games()) {
             if (game.gameID() == gameID) {
                 return index;
             }
