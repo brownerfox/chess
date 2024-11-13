@@ -12,7 +12,7 @@ public class ServerFacade {
     private final String serverUrl;
     String authToken;
 
-    public ServerFacade(String url) throws Exception {
+    public ServerFacade(String url) {
         serverUrl = url;
     }
 
