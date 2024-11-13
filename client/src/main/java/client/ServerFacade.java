@@ -1,9 +1,12 @@
 package client;
 
-import chess.ChessGame;
-import chess.ChessMove;
 import com.google.gson.Gson;
+import exception.ResponseException;
 import model.GameData;
+import requests.CreateUserRequest;
+import requests.JoinGameRequest;
+import requests.LogInRequest;
+import results.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -37,35 +40,35 @@ public class ServerFacade {
         var jsonBody = new Gson().toJson(body);
 
         CreateUserResult result = this.makeRequest("POST", path, jsonBody, CreateUserResult.class);
-        setAuthToken(result.authToken);
+        setAuthToken(result.authToken());
 
         return result;
     }
 
-    public LoginResult loginUser (LoginRequest loginRequest) {
+    public LogInResult loginUser (LogInRequest loginRequest) {
         var path = "/session";
         var body = Map.of("username", loginRequest.username(), "password", loginRequest.password());
         var jsonBody = new Gson().toJson(body);
 
-        LoginResult result = this.makeRequest("POST", path, jsonBody, LoginResult.class);
-        setAuthToken(result.authToken);
+        LogInResult result = this.makeRequest("POST", path, jsonBody, LogInResult.class);
+        setAuthToken(result.authToken());
 
         return result;
     }
 
-    public LogoutResult logoutUser () {
+    public LogOutResult logoutUser () {
         var path = "/session";
 
-        LogoutResult result = this.makeRequest("DELETE", path, null, null);
+        LogOutResult result = this.makeRequest("DELETE", path, null, null);
         setAuthToken(null);
 
         return result;
     }
 
-    public ListGameResult listGames () {
+    public ListGamesResult listGames () {
         var path = "/game";
 
-        return this.makeRequest("GET", path, null, ListGameResult.class);
+        return this.makeRequest("GET", path, null, ListGamesResult.class);
     }
 
     public CreateGameResult createGame (String gameName) {
@@ -76,9 +79,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, jsonBody, CreateGameResult.class);
     }
 
-    public JoinGameResult joinGame (JoinGameRequest joinGameRequest) {
+    public JoinGameResult joinGame (String playerColor, int gameID) {
         var path = "/game";
-        var body = Map.of("playerColor", joinGameRequest.playerColor(), "gameID", joinGameRequest.gameID());
+        var body = Map.of("playerColor", playerColor, "gameID", gameID);
         var jsonBody = new Gson().toJson(body);
 
         this.makeRequest("PUT", path, jsonBody, null);
@@ -99,7 +102,7 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             if (getAuthToken() != null) {
-                http.addRequestProperty("authorization", facade.getAuthToken());
+                http.addRequestProperty("authorization", getAuthToken());
             }
 
             writeBody(request, http);

@@ -13,8 +13,9 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to Chess!");
-        System.out.print(client.help());
+        System.out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
+        System.out.println(WHITE_KING + "Welcome to Chess!" + BLACK_KING);
+        System.out.print(client.printHelpMenu());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";

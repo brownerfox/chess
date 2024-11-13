@@ -1,10 +1,15 @@
 package ui;
 
+import chess.ChessGame;
 import client.ServerFacade;
+import model.GameData;
 import org.eclipse.jetty.http.MetaData;
+import requests.JoinGameRequest;
+import results.CreateGameResult;
 import ui.State;
 import exception.ResponseException;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class ChessClient {
@@ -33,7 +38,7 @@ public class ChessClient {
                 case "observegame" -> observeGame(params);
                 case "clear" -> clear();
                 case "help" -> printHelpMenu();
-                default -> help();
+                default -> printHelpMenu();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
@@ -104,7 +109,6 @@ public class ChessClient {
             return ("You need to specify a game ID and a team color!");
         }
         int gameID = Integer.parseInt(params[0]);
-        ChessGame.TeamColor teamColor = params[1];
 
         if (server.getGameList().isEmpty() || server.getGameList().size() <= gameID) {
             if (server.getGameList().isEmpty()) {
@@ -115,9 +119,8 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, teamColor);
-            server.joinGame(joinGameRequest);
-            return String.format("Game joined as %s player!", new String(teamColor));
+            server.joinGame(params[1], gameID);
+            return String.format("Game joined as %s player!", params[1]);
         } else {
             return ("Game does not exist!");
         }
@@ -142,16 +145,16 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, null);
-            server.joinGame(joinGameRequest);
+            server.joinGame(null, gameID);
             return ("Game joined as an observer!");
         } else {
             return ("Game does not exist!");
         }
     }
 
-    public void clear () {
+    public String clear () {
         server.clear();
+        return ("Chess database cleared out!");
     }
 
     public int findGameIndex(int gameID) {
@@ -165,5 +168,13 @@ public class ChessClient {
         return -1;
     }
 
+    public String printHelpMenu() {
+        if (state != State.SIGNEDIN) {
+            System.out.print("register <USERNAME> <PASSWORD> <EMAIL> - create a new user");
+            System.out.print("login <USERNAME> <PASSWORD> - login to an existing user");
+            System.out.print("quit - stop playing");
+            System.out.print("help - show this menu");
+        }
+    }
 
 }
