@@ -85,6 +85,10 @@ public class ChessService {
 
         GameData game = dataAccess.getGame(gameID);
 
+        if (teamColor == null) {
+            return new JoinGameResult();
+        }
+
         if (Objects.equals(teamColor, "WHITE")) {
             if (Objects.equals(game.whiteUsername(), null)) {
                 newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());

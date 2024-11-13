@@ -103,12 +103,22 @@ public class ServerFacade {
         var body = Map.of("playerColor", playerColor, "gameID", gameID);
         var jsonBody = new Gson().toJson(body);
 
-        try {
-            this.makeRequest("PUT", path, jsonBody, null);
-            return String.format("Game joined as %s player!", getUserName());
-        } catch (ResponseException e) {
-            e.setMessage("Couldn't join game1");
-            return e.getMessage();
+        if (playerColor != null) {
+            try {
+                this.makeRequest("PUT", path, jsonBody, null);
+                return String.format("Game joined as %s player!", getUserName());
+            } catch (ResponseException e) {
+                e.setMessage("Couldn't join game!");
+                return e.getMessage();
+            }
+        } else {
+            try {
+                this.makeRequest("PUT", path, jsonBody, null);
+                return ("Game joined as an observer!");
+            } catch (ResponseException e) {
+                e.setMessage("Couldn't join game!");
+                return e.getMessage();
+            }
         }
     }
 

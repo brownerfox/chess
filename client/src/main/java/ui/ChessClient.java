@@ -112,7 +112,7 @@ public class ChessClient {
             return ("You need to sign in!");
         }
         if (params.length != 1) {
-            return ("Include only the name of the game you want to create!");
+            return ("Only include the name of the game you want to create!");
         } else {
             CreateGameResult gameResult = server.createGame(params[0]);
             int listGameID = findGameIndex(gameResult.gameID());
@@ -138,8 +138,7 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            server.joinGame(params[1], gameID);
-            return String.format("Game joined as %s player!", params[1]);
+            return server.joinGame(params[1], gameID);
         } else {
             return ("Game does not exist!");
         }
@@ -164,8 +163,7 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            server.joinGame(null, gameID);
-            return ("Game joined as an observer!");
+            return server.joinGame(null, gameID);
         } else {
             return ("Game does not exist!");
         }
