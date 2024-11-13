@@ -2,8 +2,7 @@ package results;
 
 import model.GameData;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
+import java.util.HashSet;
 
-public record ListGamesResult(Collection<GameData> games) {
+public record ListGamesResult(HashSet<GameData> games) {
 }

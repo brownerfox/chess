@@ -1,19 +1,13 @@
 package ui;
 
-import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
-import model.UserData;
-import org.eclipse.jetty.http.MetaData;
 import requests.CreateUserRequest;
-import requests.JoinGameRequest;
 import requests.LogInRequest;
 import results.CreateGameResult;
-import results.CreateUserResult;
-import ui.State;
+import results.ListGamesResult;
 import exception.ResponseException;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -89,15 +83,28 @@ public class ChessClient {
         return ("You've successfully logged out!");
     }
 
-    public String listGames() throws ResponseException {
+    public HashSet<GameData> listGames() {
         if (state == State.SIGNEDOUT) {
-            return ("You need to sign in!");
+            System.out.print("You need to sign in!");
+            return HashSet.newHashSet(8);
+        } else {
+            ListGamesResult listGames = server.listGames();
+            return listGames.games();
         }
-        try {
-            HashSet<GameData> GameList = server.getGameList();
-        } catch (Exception e) {
-            return e.getMessage();
+    }
+
+    public StringBuilder printGames() {
+        StringBuilder result = new StringBuilder();
+        HashSet<GameData> games = listGames();
+        int i = 1;
+
+        for (GameData game : games) {
+            String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "open";
+            String blackUser = game.blackUsername() != null ? game.blackUsername() : "open";
+            result.append(String.format("Game ID: %d Game Name: %s White User: %s Black User %s %n", i, game.gameName(), whiteUser, blackUser));
+            i++;
         }
+        return result;
     }
 
     public String createGame(String... params) {
@@ -182,20 +189,23 @@ public class ChessClient {
 
     public String printHelpMenu() {
         if (state != State.SIGNEDIN) {
-            System.out.print("register <USERNAME> <PASSWORD> <EMAIL> - create a new user");
-            System.out.print("login <USERNAME> <PASSWORD> - login to an existing user");
-            System.out.print("quit - stop playing");
-            System.out.print("help - show this menu");
+            return """
+            register <USERNAME> <PASSWORD> <EMAIL> - create a new user
+            login <USERNAME> <PASSWORD> - login to an existing user
+            quit - stop playing
+            help - show this menu
+            """;
         } else {
-            System.out.print("create <NAME> - create a new game");
-            System.out.print("list - list all games");
-            System.out.print("join <ID> [WHITE|BLACK] - join a game as color");
-            System.out.print("observe <ID> - observe a game");
-            System.out.print("logout - log out of current user");
-            System.out.print("quit - stop playing");
-            System.out.print("help - show this menu");
+            return """
+            create <NAME> - create a new game
+            list - list all games
+            join <ID> [WHITE|BLACK] - join a game as color
+            observe <ID> - observe a game
+            logout - log out of current user
+            quit - stop playing
+            help - show this menu
+            """;
         }
-        return("");
     }
 
 }
