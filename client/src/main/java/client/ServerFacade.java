@@ -25,6 +25,11 @@ public class ServerFacade {
         this.authToken = authToken;
     }
 
+    public HashSet<GameData> getGameList() {
+        gameList.addAll(listGames().games());
+
+        return gameList;
+    }
 
     public CreateUserResult createUser (CreateUserRequest user) {
         var path = "/user";
@@ -76,14 +81,14 @@ public class ServerFacade {
         var body = Map.of("playerColor", joinGameRequest.playerColor(), "gameID", joinGameRequest.gameID());
         var jsonBody = new Gson().toJson(body);
 
-        return this.makeRequest("PUT", path, jsonBody, null);
+        this.makeRequest("PUT", path, jsonBody, null);
     }
 
-    public clear () {
+    public void clear () {
         var path = "/db";
         setAuthToken(null);
 
-        return this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {

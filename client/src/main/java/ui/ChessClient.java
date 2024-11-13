@@ -30,6 +30,7 @@ public class ChessClient {
                 case "gamelist" -> listGames();
                 case "createagame" -> createGame(params);
                 case "joingame" -> joinGame(params);
+                case "observegame" -> observeGame(params);
                 case "clear" -> clear();
                 case "help" -> printHelpMenu();
                 default -> help();
@@ -76,7 +77,7 @@ public class ChessClient {
             return ("You need to sign in!");
         }
         try {
-            Array<GameData> GameList = server.listGames();
+            Array<GameData> GameList = server.getGameList();
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -99,10 +100,61 @@ public class ChessClient {
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
-        if (params.length != )
+        if (params.length != 2 || !params[0].matches("\\d+") || !params[1].toUpperCase().matches("WHITE|BLACK")) {
+            return ("You need to specify a game ID and a team color!");
+        }
+        int gameID = Integer.parseInt(params[0]);
+        ChessGame.TeamColor teamColor = params[1];
+
+        if (server.getGameList().isEmpty() || server.getGameList().size() <= gameID) {
+            if (server.getGameList().isEmpty()) {
+                return ("Create a game first!");
+            }
+            if (server.getGameList().size() <= gameID) {
+                return ("Enter a valid game ID!");
+            }
+        }
+        if (findGameIndex(gameID) != -1) {
+            JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, teamColor);
+            server.joinGame(joinGameRequest);
+            return String.format("Game joined as %s player!", new String(teamColor));
+        } else {
+            return ("Game does not exist!");
+        }
     }
 
-    public int findGameIndex(Int gameID) {
+    public String observeGame (String[] params) throws ResponseException {
+        if (state == State.SIGNEDOUT) {
+            return ("You need to sign in!");
+        }
+        if (params.length != 1 || !params[0].matches("\\d+")) {
+            return ("You need to specify a game ID!");
+        }
+
+        int gameID = Integer.parseInt(params[0]);
+
+        if (server.getGameList().isEmpty() || server.getGameList().size() <= gameID) {
+            if (server.getGameList().isEmpty()) {
+                return ("Create a game first!");
+            }
+            if (server.getGameList().size() <= gameID) {
+                return ("Enter a valid game ID!");
+            }
+        }
+        if (findGameIndex(gameID) != -1) {
+            JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, null);
+            server.joinGame(joinGameRequest);
+            return ("Game joined as an observer!");
+        } else {
+            return ("Game does not exist!");
+        }
+    }
+
+    public void clear () {
+        server.clear();
+    }
+
+    public int findGameIndex(int gameID) {
         int index = 0;
         for (GameData game : server.getGameList()) {
             if (game.gameID() == gameID) {
