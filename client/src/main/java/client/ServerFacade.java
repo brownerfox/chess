@@ -40,12 +40,6 @@ public class ServerFacade {
         this.authToken = authToken;
     }
 
-    public void setGame(ChessGame game) {this.game = game;}
-
-    public ChessGame getGame() {
-        return this.game;
-    }
-
     public String createUser (CreateUserRequest user) {
         var path = "/user";
         var body = Map.of("username", user.username(), "password", user.password(), "email", user.email());
