@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import client.ChessClient;
 
 import java.util.Scanner;
 

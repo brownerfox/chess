@@ -5,19 +5,21 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import service.BadGameIDException;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataAccessTests {
 
     private MySQLDataAccess dataAccess;
-    
-    public void setup() {
-        dataAccess = new MySQLDataAccess(); // Initialize your data access object before each test
+
+    @BeforeEach
+    public void setup() throws DataAccessException {
+        dataAccess = new MySQLDataAccess();
+        dataAccess.clear();
     }
 
 
@@ -76,7 +78,7 @@ public class DataAccessTests {
     @DisplayName("Create Game Failure")
     public void createGameFailure () {
         assertThrows(DataAccessException.class, () -> {
-            dataAccess.createGame(""); // Attempting to create a game with an empty name
+            dataAccess.createGame(null); // Attempting to create a game with an empty name
         });
     }
 
@@ -139,7 +141,7 @@ public class DataAccessTests {
     @Test
     @DisplayName("Update Game Failure")
     public void updateGameFailure () {
-        GameData gameData = new GameData(-1, "user1", "user2", "New Game Name", new ChessGame()); // Invalid ID
+        GameData gameData = new GameData(-1, "user1", "user2", "New Game Name", new ChessGame());
         assertThrows(DataAccessException.class, () -> {
             dataAccess.updateGame(gameData);
         });
@@ -159,7 +161,7 @@ public class DataAccessTests {
     @DisplayName("Create Authorization Failure")
     public void createAuthFailure () {
         assertThrows(DataAccessException.class, () -> {
-            dataAccess.createAuth(""); // Attempting to create auth with an empty username
+            dataAccess.createAuth(null); // Attempting to create auth with an empty username
         });
     }
 

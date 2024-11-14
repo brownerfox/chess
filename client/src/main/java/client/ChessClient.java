@@ -1,17 +1,18 @@
-package ui;
+package client;
 
 import chess.ChessGame;
-import client.ServerFacade;
 import model.GameData;
 import requests.CreateUserRequest;
 import requests.LogInRequest;
 import results.CreateGameResult;
 import results.ListGamesResult;
 import exception.ResponseException;
+import ui.BoardCreator;
+import ui.State;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
 
 public class ChessClient {
@@ -87,18 +88,19 @@ public class ChessClient {
         return result;
     }
 
-    public HashSet<GameData> listGames() throws ResponseException {
+    public ArrayList<GameData> listGames() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You need to sign in!");
         } else {
             ListGamesResult listGames = server.listGames();
-            return listGames.games();
+
+            return new ArrayList<>(listGames.games());
         }
     }
 
     public String printGames() throws ResponseException {
         StringBuilder result = new StringBuilder();
-        HashSet<GameData> games = listGames();
+        ArrayList<GameData> games = listGames();
         int i = 1;
 
         for (GameData game : games) {

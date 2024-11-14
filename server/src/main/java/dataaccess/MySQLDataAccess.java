@@ -76,6 +76,9 @@ public class MySQLDataAccess implements DataAccess {
 
     @Override
     public int createGame(String gameName) throws DataAccessException, ServiceException {
+        if (gameName == null) {
+         throw new DataAccessException("");
+        }
         var statement = "INSERT INTO gamedata (gamename, game) VALUES (?, ?)";
         String game = new Gson().toJson(new ChessGame());
         var id = executeUpdate(statement, gameName, game);
@@ -130,16 +133,25 @@ public class MySQLDataAccess implements DataAccess {
 
     @Override
     public GameData updateGame(GameData newGame) throws DataAccessException, SQLException{
-        try (var conn = DatabaseManager.getConnection()) {
+        if (newGame.gameID() < 0) {
+            throw new DataAccessException("");
+        }
+        try {
             var statement = "UPDATE gamedata SET whiteusername = ?, blackusername = ?, gamename = ?, game = ? WHERE gameid = ?";
             String game = new Gson().toJson(newGame.game());
             executeUpdate(statement, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), game, newGame.gameID());
+
+            return newGame;
+        } catch (Exception e) {
+            throw new DataAccessException("");
         }
-        return newGame;
     }
 
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
+        if (username == null) {
+            throw new DataAccessException("");
+        }
         AuthData newAuthData = new AuthData(generateToken(), username);
         var statement = "INSERT INTO authdata (authtoken, username) VALUES (?, ?)";
         executeUpdate(statement, newAuthData.authToken(), newAuthData.username());
@@ -254,8 +266,6 @@ public class MySQLDataAccess implements DataAccess {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 var newPS = iterateOverParameters(ps, params);
-
-                // System.out.print(ps.toString());
 
                 newPS.executeUpdate();
 

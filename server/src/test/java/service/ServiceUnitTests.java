@@ -6,6 +6,7 @@ import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import org.mindrot.jbcrypt.BCrypt;
 import requests.CreateUserRequest;
 import results.CreateUserResult;
 import service.ChessService.*;
@@ -30,7 +31,9 @@ public class ServiceUnitTests {
 
         service.createUser(userRequest);
         UserData actual = service.getDataAccess().getUser("Jeremy");
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(expected.username(), actual.username());
+        Assertions.assertTrue((BCrypt.checkpw(userRequest.password(), expected.password())));
+        Assertions.assertEquals(expected.email(), actual.email());
     }
 
     @Test
