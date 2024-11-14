@@ -5,6 +5,7 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
 
 public class BoardCreator {
     ChessGame game;
@@ -28,10 +29,10 @@ public class BoardCreator {
                 output.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_RED).append(String.format(" %d ", row));
                 output.append(RESET_BG_COLOR);
                 output.append(RESET_TEXT_COLOR);
-                for (int col = 8; col > 0; col--) {
+                for (int col = 1; col < 9; col++) {
                     ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                    output.append(determineSquareColor(row, col));
                     if (piece != null) {
-                        determineSquareColor(row, col);
                         output.append(pieceToString(piece));
                     } else {
                         output.append("   ");
@@ -48,8 +49,9 @@ public class BoardCreator {
                 output.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_RED).append(String.format(" %d ", row));
                 output.append(RESET_BG_COLOR);
                 output.append(RESET_TEXT_COLOR);
-                for (int col = 1; col < 9; col++) {
+                for (int col = 8; col > 0; col--) {
                     ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                    output.append(determineSquareColor(row, col));
                     if (piece != null) {
                         output.append(pieceToString(piece));
                     } else {
@@ -115,7 +117,13 @@ public class BoardCreator {
     }
 
     private String determineSquareColor(int row, int col) {
-
+        StringBuilder output = new StringBuilder();
+        if ((row + col) % 2 == 0) {
+            output.append(SET_BG_COLOR_BLACK);
+        } else {
+            output.append(SET_BG_COLOR_WHITE);
+        }
+        return output.toString();
     }
 
 
