@@ -21,24 +21,70 @@ public class BoardCreator {
 
     public void printBoard(ChessGame.TeamColor teamColor) {
         StringBuilder output = new StringBuilder();
+
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            for (int i = 1; i < 9; i++) {
-                for (int j = 1; j < 9; i++) {
-                    ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+            output.append(startAndEndRow(teamColor));
+            for (int row = 8; row > 0; row--) {
+                output.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_RED).append(String.format(" %d ", row));
+                output.append(RESET_BG_COLOR);
+                output.append(RESET_TEXT_COLOR);
+                for (int col = 8; col > 0; col--) {
+                    ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                    if (piece != null) {
+                        determineSquareColor(row, col);
+                        output.append(pieceToString(piece));
+                    } else {
+                        output.append("   ");
+                    }
+                }
+                output.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_RED).append(String.format(" %d ", row));
+                output.append(RESET_BG_COLOR);
+                output.append(RESET_TEXT_COLOR);
+            }
+            output.append(startAndEndRow(teamColor));
+        } else {
+            output.append(startAndEndRow(teamColor));
+            for (int row = 1; row < 9; row++) {
+                output.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_RED).append(String.format(" %d ", row));
+                output.append(RESET_BG_COLOR);
+                output.append(RESET_TEXT_COLOR);
+                for (int col = 1; col < 9; col++) {
+                    ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                     if (piece != null) {
                         output.append(pieceToString(piece));
                     } else {
-
+                        output.append("   ");
                     }
                 }
+                output.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_RED).append(String.format(" %d ", row));
+                output.append(RESET_BG_COLOR);
+                output.append(RESET_TEXT_COLOR);
             }
-        } else {
-            for (int i = 8; i > 0; i--) {
-                for (int j = 8; j > 0; j--) {
-                    ChessPiece piece = board.getPiece(new ChessPosition(i, j));
-                }
-            }
+            output.append(startAndEndRow(teamColor));
         }
+
+        System.out.print(output.toString());
+    }
+
+    private String startAndEndRow (ChessGame.TeamColor teamColor) {
+        StringBuilder output = new StringBuilder();
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            output.append(SET_BG_COLOR_LIGHT_GREY);
+            output.append(SET_TEXT_COLOR_RED);
+            output.append("    a  b  c  d  e  f  g  h    ");
+            output.append(RESET_BG_COLOR);
+            output.append(RESET_TEXT_COLOR);
+            output.append("\n");
+        } else {
+            output.append(SET_BG_COLOR_LIGHT_GREY);
+            output.append(SET_TEXT_COLOR_RED);
+            output.append("    h  g  f  e  d  c  b  a    ");
+            output.append(RESET_BG_COLOR);
+            output.append(RESET_TEXT_COLOR);
+            output.append("\n");
+        }
+
+        return output.toString();
     }
 
     private String pieceToString (ChessPiece piece) {
@@ -66,7 +112,11 @@ public class BoardCreator {
             }
         }
             return output.toString();
-        }
+    }
+
+    private String determineSquareColor(int row, int col) {
+
+    }
 
 
 }
