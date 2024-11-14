@@ -98,7 +98,7 @@ public class ServerFacade {
         return this.makeRequest("GET", path, null, ListGamesResult.class);
     }
 
-    public CreateGameResult createGame (String gameName) {
+    public CreateGameResult createGame (String gameName) throws ResponseException {
         var path = "/game";
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);

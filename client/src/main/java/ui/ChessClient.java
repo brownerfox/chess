@@ -117,9 +117,14 @@ public class ChessClient {
         if (params.length != 1) {
             return ("Only include the name of the game you want to create!");
         } else {
-            CreateGameResult gameResult = server.createGame(params[0]);
-            int listGameID = findGameIndex(gameResult.gameID());
-            return String.format("Created game with ID %x!", listGameID + 1);
+            try {
+                CreateGameResult gameResult = server.createGame(params[0]);
+                int listGameID = findGameIndex(gameResult.gameID());
+                return String.format("Created game with ID %x!", listGameID + 1);
+            } catch (ResponseException e) {
+                e.setMessage("Couldn't create game!");
+                return e.getMessage();
+            }
         }
     }
 
