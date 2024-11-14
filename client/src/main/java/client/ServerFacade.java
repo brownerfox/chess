@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
@@ -21,6 +22,7 @@ public class ServerFacade {
     String userName;
     String authToken;
     HashSet<GameData> gameList;
+    ChessGame game;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -36,6 +38,12 @@ public class ServerFacade {
 
     protected void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public void setGame(ChessGame game) {this.game = game;}
+
+    public ChessGame getGame() {
+        return this.game;
     }
 
     public String createUser (CreateUserRequest user) {

@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
 import requests.CreateUserRequest;
@@ -123,26 +124,34 @@ public class ChessClient {
     }
 
     public String joinGame (String... params) throws ResponseException {
+        BoardCreator boardCreator = new BoardCreator(new ChessGame());
+        StringBuilder output = new StringBuilder();
         if (state == State.SIGNEDOUT) {
-            return ("You need to sign in!");
+            output.append("You need to sign in!");
+            return output.toString();
         }
         if (params.length != 2 || !params[0].matches("\\d+") || !params[1].toUpperCase().matches("WHITE|BLACK")) {
-            return ("You need to specify a game ID and a team color!");
+            output.append("You need to specify a game ID and a team color!");
+            return output.toString();
         }
         int gameID = Integer.parseInt(params[0]);
 
         if (server.listGames().games().isEmpty() || server.listGames().games().size() <= gameID) {
             if (server.listGames().games().isEmpty()) {
-                return ("Create a game first!");
+                output.append("Create a game first!");
+                return output.toString();
             }
             if (server.listGames().games().size() <= gameID) {
-                return ("Enter a valid game ID!");
+                output.append("Enter a valid game ID!");
+                return output.toString();
             }
         }
         if (findGameIndex(gameID) != -1) {
-            return server.joinGame(params[1], gameID);
+            output.append(server.joinGame(params[1], gameID));
+            return output.toString();
         } else {
-            return ("Game does not exist!");
+            output.append("Game does not exist!");
+            return output.toString();
         }
     }
 
