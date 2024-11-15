@@ -143,6 +143,7 @@ public class ServerFacade {
             return ("Successfully cleared out the database!");
         } catch (ResponseException e) {
             e.setMessage("Unable to clear the database!");
+            e.statusCode();
             return e.getMessage();
         }
     }
