@@ -129,7 +129,7 @@ public class Server {
 
         Integer gameID = joinGameRequest.gameID();
 
-        if (joinGameRequest == null || authToken == null ||  gameID == null) {
+        if (joinGameRequest == null || authToken == null || joinGameRequest.playerColor() == null || gameID == null) {
             res.status(400);
             return new Gson().toJson(new ErrorResult("Error: bad request"));
         }
