@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
 import requests.CreateUserRequest;
+import requests.JoinGameRequest;
 import requests.LogInRequest;
 import results.*;
 
@@ -41,29 +42,36 @@ public class ServerFacade {
     }
 
     public String createUser (CreateUserRequest user) {
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            return ("You need to insert your username, password, and email!");
+        }
+        StringBuilder output = new StringBuilder();
         var path = "/user";
         var body = Map.of("username", user.username(), "password", user.password(), "email", user.email());
-        var jsonBody = new Gson().toJson(body);
+
         try {
-            CreateUserResult result = this.makeRequest("POST", path, jsonBody, CreateUserResult.class);
+            CreateUserResult result = this.makeRequest("POST", path, body, CreateUserResult.class);
             setAuthToken(result.authToken());
             setUserName(user.username());
 
-            return String.format("You signed in as %s!", getUserName());
+            output.append(String.format("You signed in as %s!", getUserName()));
+            return output.toString();
 
         } catch (ResponseException e) {
-            e.setMessage("Failed to create user!");
-            return (e.getMessage());
+            output.append("Failed to create user!");
+            return output.toString();
         }
     }
 
     public String logInUser (LogInRequest logInRequest) {
+        if (logInRequest.username() == null || logInRequest.password() == null) {
+            return "You need to insert a username and a password!";
+        }
         var path = "/session";
         var body = Map.of("username", logInRequest.username(), "password", logInRequest.password());
-        var jsonBody = new Gson().toJson(body);
 
         try {
-            LogInResult result = this.makeRequest("POST", path, jsonBody, LogInResult.class);
+            LogInResult result = makeRequest("POST", path, body, LogInResult.class);
             setAuthToken(result.authToken());
 
             return String.format("You signed in as %s!", logInRequest.username());
@@ -95,19 +103,17 @@ public class ServerFacade {
     public CreateGameResult createGame (String gameName) throws ResponseException {
         var path = "/game";
         var body = Map.of("gameName", gameName);
-        var jsonBody = new Gson().toJson(body);
 
-        return this.makeRequest("POST", path, jsonBody, CreateGameResult.class);
+        return this.makeRequest("POST", path, body, CreateGameResult.class);
     }
 
-    public String joinGame (String playerColor, int gameID) {
+    public String joinGame (JoinGameRequest joinGameRequest) {
         var path = "/game";
-        var body = Map.of("playerColor", playerColor, "gameID", gameID);
-        var jsonBody = new Gson().toJson(body);
+        var body = Map.of("playerColor", joinGameRequest.playerColor(), "gameID", joinGameRequest.gameID());
 
-        if (playerColor != null) {
+        if (joinGameRequest.playerColor() != null) {
             try {
-                this.makeRequest("PUT", path, jsonBody, null);
+                this.makeRequest("PUT", path, body, null);
                 return String.format("Game joined as %s player!", getUserName());
             } catch (ResponseException e) {
                 e.setMessage("Couldn't join game!");
@@ -115,7 +121,7 @@ public class ServerFacade {
             }
         } else {
             try {
-                this.makeRequest("PUT", path, jsonBody, null);
+                this.makeRequest("PUT", path, body, null);
                 return ("Game joined as an observer!");
             } catch (ResponseException e) {
                 e.setMessage("Couldn't join game!");

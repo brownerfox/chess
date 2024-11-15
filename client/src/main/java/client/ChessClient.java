@@ -3,6 +3,7 @@ package client;
 import chess.ChessGame;
 import model.GameData;
 import requests.CreateUserRequest;
+import requests.JoinGameRequest;
 import requests.LogInRequest;
 import results.CreateGameResult;
 import results.ListGamesResult;
@@ -19,6 +20,7 @@ public class ChessClient {
     private final ServerFacade server;
     private static final String SUCCESS_LOGOUT_MESSAGE = "You've successfully logged out!";
     private State state = State.SIGNEDOUT;
+    BoardCreator boardCreator = new BoardCreator(new ChessGame());
 
     public ChessClient (String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -37,10 +39,10 @@ public class ChessClient {
                 case "register" -> createUser(params);
                 case "login" -> logInUser(params);
                 case "logout" -> logOutUser();
-                case "gamelist" -> printGames();
-                case "createagame" -> createGame(params);
-                case "joingame" -> joinGame(params);
-                case "observegame" -> observeGame(params);
+                case "list" -> printGames();
+                case "create" -> createGame(params);
+                case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 case "clear" -> clear();
                 default -> printHelpMenu();
             };
@@ -131,8 +133,10 @@ public class ChessClient {
     }
 
     public String joinGame (String... params) throws ResponseException {
-        BoardCreator boardCreator = new BoardCreator(new ChessGame());
         StringBuilder output = new StringBuilder();
+        //boardCreator.printBoard(ChessGame.TeamColor.WHITE);
+        //boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+
         if (state == State.SIGNEDOUT) {
             output.append("You need to sign in!");
             return output.toString();
@@ -142,6 +146,8 @@ public class ChessClient {
             return output.toString();
         }
         int gameID = Integer.parseInt(params[0]);
+
+        JoinGameRequest joinGameRequest = new JoinGameRequest(server.getAuthToken(), params[1], gameID);
 
         if (server.listGames().games().isEmpty() || server.listGames().games().size() <= gameID) {
             if (server.listGames().games().isEmpty()) {
@@ -154,7 +160,7 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            output.append(server.joinGame(params[1], gameID));
+            output.append(server.joinGame(joinGameRequest));
             return output.toString();
         } else {
             output.append("Game does not exist!");
@@ -163,6 +169,9 @@ public class ChessClient {
     }
 
     public String observeGame (String[] params) throws ResponseException {
+        //boardCreator.printBoard(ChessGame.TeamColor.WHITE);
+        //boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -172,22 +181,27 @@ public class ChessClient {
 
         int gameID = Integer.parseInt(params[0]);
 
-        if (server.listGames().games().isEmpty() || server.listGames().games().size() <= gameID) {
-            if (server.listGames().games().isEmpty()) {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(server.getAuthToken(), null, gameID);
+
+        ListGamesResult listGames = server.listGames();
+
+        if (listGames.games().isEmpty() || listGames.games().size() <= gameID) {
+            if (listGames.games().isEmpty()) {
                 return ("Create a game first!");
             }
-            if (server.listGames().games().size() <= gameID) {
+            if (listGames.games().size() < gameID) {
                 return ("Enter a valid game ID!");
             }
         }
         if (findGameIndex(gameID) != -1) {
-            return server.joinGame(null, gameID);
+            return server.joinGame(joinGameRequest);
         } else {
             return ("Game does not exist!");
         }
     }
 
     public String clear () {
+        state = State.SIGNEDOUT;
         return server.clear();
     }
 

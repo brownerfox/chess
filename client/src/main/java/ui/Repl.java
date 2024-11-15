@@ -9,7 +9,6 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
 
-    BoardCreator boardCreator = new BoardCreator(new ChessGame());
     private final ChessClient client;
 
     public Repl(String serverUrl) {
@@ -30,9 +29,7 @@ public class Repl {
             try {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
-                if (line.equals("joingame") || line.equals("observegame")) {
-                    boardCreator.printBoard(ChessGame.TeamColor.WHITE);
-                    boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+                if (line.equals("join") || line.equals("observe")) {
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
