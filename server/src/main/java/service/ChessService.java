@@ -87,7 +87,7 @@ public class ChessService {
 
         if (teamColor == null) {
             return new JoinGameResult();
-        } else if (Objects.equals(teamColor, "WHITE")) {
+        } else if (Objects.equals(teamColor.toUpperCase(), "WHITE")) {
             if (Objects.equals(game.whiteUsername(), null)) {
                 newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());
             } else {

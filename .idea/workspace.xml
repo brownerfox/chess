@@ -6,12 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="bdbc6d01-8ecf-4f3b-84d5-c8b9b3b141aa" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/ui/Repl.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/ui/Repl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/exception/ResponseException.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/exception/ResponseException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/ui/BoardCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/ui/BoardCreator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/server/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/service/ChessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/service/ChessService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +33,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Main (1).executor": "Debug",
+    "Application.Main (1).executor": "Run",
     "Application.Main.executor": "Debug",
     "Downloaded.Files.Path.Enabled": "false",
     "JUnit.All in server (1).executor": "Run",
@@ -43,10 +44,17 @@
     "JUnit.DataAccessTests.updateGameFailure.executor": "Run",
     "JUnit.DataAccessTests.updateGameSuccess.executor": "Run",
     "JUnit.DatabaseTests.executor": "Run",
+    "JUnit.ServerFacadeTests.createGameFailure.executor": "Run",
+    "JUnit.ServerFacadeTests.createGameSuccess.executor": "Run",
     "JUnit.ServerFacadeTests.createUserFailure.executor": "Run",
     "JUnit.ServerFacadeTests.createUserSuccess.executor": "Run",
-    "JUnit.ServerFacadeTests.executor": "Debug",
-    "JUnit.ServerFacadeTests.logInUserSuccess.executor": "Run",
+    "JUnit.ServerFacadeTests.executor": "Run",
+    "JUnit.ServerFacadeTests.joinGameSuccess.executor": "Run",
+    "JUnit.ServerFacadeTests.listGameFailure.executor": "Run",
+    "JUnit.ServerFacadeTests.listGameSuccess.executor": "Run",
+    "JUnit.ServerFacadeTests.logInUserFailure.executor": "Run",
+    "JUnit.ServerFacadeTests.logInUserSuccess.executor": "Debug",
+    "JUnit.ServerFacadeTests.logOutUserSuccess.executor": "Run",
     "JUnit.ServiceUnitTests.createUserSuccess.executor": "Run",
     "JUnit.StandardAPITests.executor": "Debug",
     "Repository.Attach.Annotations": "false",
@@ -65,22 +73,8 @@
       <recent name="client" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
-    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="server" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="client" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ServerFacadeTests.createUserFailure" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.ServerFacadeTests">
+    <configuration name="ServerFacadeTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="client" />
       <extension name="coverage">
         <pattern>
@@ -90,13 +84,28 @@
       </extension>
       <option name="PACKAGE_NAME" value="client" />
       <option name="MAIN_CLASS_NAME" value="client.ServerFacadeTests" />
-      <option name="METHOD_NAME" value="createUserFailure" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerFacadeTests.joinGameSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="client" />
+      <option name="MAIN_CLASS_NAME" value="client.ServerFacadeTests" />
+      <option name="METHOD_NAME" value="joinGameSuccess" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ServerFacadeTests.createUserSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ServerFacadeTests.listGameSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="client" />
       <extension name="coverage">
         <pattern>
@@ -106,7 +115,23 @@
       </extension>
       <option name="PACKAGE_NAME" value="client" />
       <option name="MAIN_CLASS_NAME" value="client.ServerFacadeTests" />
-      <option name="METHOD_NAME" value="createUserSuccess" />
+      <option name="METHOD_NAME" value="listGameSuccess" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerFacadeTests.logInUserFailure" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="client" />
+      <option name="MAIN_CLASS_NAME" value="client.ServerFacadeTests" />
+      <option name="METHOD_NAME" value="logInUserFailure" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -130,11 +155,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Main" />
-        <item itemvalue="Application.Main (1)" />
+        <item itemvalue="JUnit.ServerFacadeTests" />
         <item itemvalue="JUnit.ServerFacadeTests.logInUserSuccess" />
-        <item itemvalue="JUnit.ServerFacadeTests.createUserFailure" />
-        <item itemvalue="JUnit.ServerFacadeTests.createUserSuccess" />
+        <item itemvalue="JUnit.ServerFacadeTests.joinGameSuccess" />
+        <item itemvalue="JUnit.ServerFacadeTests.listGameSuccess" />
+        <item itemvalue="JUnit.ServerFacadeTests.logInUserFailure" />
       </list>
     </recent_temporary>
   </component>
@@ -173,29 +198,49 @@
           <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java</url>
-          <line>44</line>
-          <option name="timeStamp" value="45" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/server/src/main/java/server/Server.java</url>
           <line>125</line>
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java</url>
-          <line>110</line>
-          <option name="timeStamp" value="51" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>174</line>
+          <line>189</line>
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java</url>
-          <line>121</line>
-          <option name="timeStamp" value="54" />
+          <line>115</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
+          <line>139</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
+          <line>147</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java</url>
+          <line>87</line>
+          <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java</url>
+          <line>125</line>
+          <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java</url>
+          <line>86</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="64" />
         </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">
           <properties class="com.google.gson.JsonSyntaxException" package="com.google.gson" />

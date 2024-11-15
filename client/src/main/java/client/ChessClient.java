@@ -105,10 +105,14 @@ public class ChessClient {
         ArrayList<GameData> games = listGames();
         int i = 1;
 
+        if (games.isEmpty()) {
+            result.append("You need to create a game first!");
+        }
+
         for (GameData game : games) {
             String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "open";
             String blackUser = game.blackUsername() != null ? game.blackUsername() : "open";
-            result.append(String.format("Game ID: %d Game Name: %s White User: %s Black User %s %n", i, game.gameName(), whiteUser, blackUser));
+            result.append(String.format("Game ID: %d Game Name: %s White Player: %s Black Player: %s %n", i, game.gameName(), whiteUser, blackUser));
             i++;
         }
         return result.toString();
@@ -134,27 +138,37 @@ public class ChessClient {
 
     public String joinGame (String... params) throws ResponseException {
         StringBuilder output = new StringBuilder();
-        //boardCreator.printBoard(ChessGame.TeamColor.WHITE);
-        //boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+        boardCreator.printBoard(ChessGame.TeamColor.WHITE);
+        boardCreator.printBoard(ChessGame.TeamColor.BLACK);
 
         if (state == State.SIGNEDOUT) {
             output.append("You need to sign in!");
             return output.toString();
         }
         if (params.length != 2 || !params[0].matches("\\d+") || !params[1].toUpperCase().matches("WHITE|BLACK")) {
-            output.append("You need to specify a game ID and a team color!");
-            return output.toString();
+            if (params.length != 2) {
+                output.append("You need to specify a game ID and a team color!");
+                return output.toString();
+            } else if (!params[0].matches("\\d+")) {
+                output.append("Enter a valid game ID!");
+                return output.toString();
+            } else {
+                output.append("Enter a valid team color: WHITE|BLACK!");
+                return output.toString();
+            }
         }
         int gameID = Integer.parseInt(params[0]);
 
         JoinGameRequest joinGameRequest = new JoinGameRequest(server.getAuthToken(), params[1], gameID);
 
-        if (server.listGames().games().isEmpty() || server.listGames().games().size() <= gameID) {
-            if (server.listGames().games().isEmpty()) {
+        ListGamesResult listGames = server.listGames();
+
+        if (listGames.games().isEmpty() || listGames.games().size() <= gameID) {
+            if (listGames.games().isEmpty()) {
                 output.append("Create a game first!");
                 return output.toString();
             }
-            if (server.listGames().games().size() <= gameID) {
+            if (listGames.games().size() < gameID) {
                 output.append("Enter a valid game ID!");
                 return output.toString();
             }

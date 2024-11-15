@@ -72,6 +72,7 @@ public class ServerFacade {
 
         try {
             LogInResult result = makeRequest("POST", path, body, LogInResult.class);
+            setUserName(result.username());
             setAuthToken(result.authToken());
 
             return String.format("You signed in as %s!", logInRequest.username());
@@ -87,6 +88,7 @@ public class ServerFacade {
         try {
             this.makeRequest("DELETE", path, null, null);
             setAuthToken(null);
+            setUserName(null);
             return ("You've successfully logged out!");
         } catch (ResponseException e) {
             e.setMessage("Failed to logout user!");
@@ -95,6 +97,9 @@ public class ServerFacade {
     }
 
     public ListGamesResult listGames () throws ResponseException {
+        if (getAuthToken() == null) {
+            throw new ResponseException(403, "");
+        }
         var path = "/game";
 
         return this.makeRequest("GET", path, null, ListGamesResult.class);
@@ -114,7 +119,7 @@ public class ServerFacade {
         if (joinGameRequest.playerColor() != null) {
             try {
                 this.makeRequest("PUT", path, body, null);
-                return String.format("Game joined as %s player!", getUserName());
+                return String.format("%s joined as %s player!", getUserName(), joinGameRequest.playerColor().toLowerCase());
             } catch (ResponseException e) {
                 e.setMessage("Couldn't join game!");
                 return e.getMessage();

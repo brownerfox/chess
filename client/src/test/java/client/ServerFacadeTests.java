@@ -1,8 +1,13 @@
 package client;
 
+import exception.ResponseException;
 import org.junit.jupiter.api.*;
+import requests.CreateGameRequest;
 import requests.CreateUserRequest;
+import requests.JoinGameRequest;
 import requests.LogInRequest;
+import results.CreateGameResult;
+import results.ListGamesResult;
 import server.Server;
 import client.ServerFacade;
 
@@ -25,95 +30,124 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
-    @Test
-    @DisplayName("CreateUserSuccess")
-    public void createUserSuccess() throws Exception {
-        CreateUserRequest userRequest = new CreateUserRequest("Jeremy", "1234", "j@gmail.com");
-        String actual = serverFacade.createUser(userRequest);
-        String expected = String.format("You signed in as %s!", userRequest.username());
-
-        Assertions.assertEquals(actual, expected);
-    }
-
-    @Test
-    @DisplayName("CreateUserFailure")
-    public void createUserFailure() throws Exception {
-        CreateUserRequest userRequest = new CreateUserRequest("Jeremy", null, "j@gmail.com");
-        String actual = serverFacade.createUser(userRequest);
-        String expected = "You need to insert your username, password, and email!";
-
-        Assertions.assertEquals(actual, expected);
+    @AfterEach
+    void clearServer() {
+        serverFacade.clear();
     }
 
     @Test
     @DisplayName("LogInUserSuccess")
     public void logInUserSuccess() throws Exception {
-        LogInRequest logInRequest = new LogInRequest("jeremy", "jeremyiscool");
+        serverFacade.createUser(new CreateUserRequest("taft", "password", "email"));
+        serverFacade.logOutUser();
+
+        String actual = serverFacade.logInUser(new LogInRequest("taft", "password"));
+        String expected = "You signed in as taft!";
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+
+    @Test
+    @DisplayName("LogInUserFailure")
+    public void logInUserFailure() throws Exception {
+        LogInRequest logInRequest = new LogInRequest("nonexistentUser", "wrongPassword");
 
         String actual = serverFacade.logInUser(logInRequest);
-        String expected = "You signed in as jeremy!";
+        String expected = "Failed to login to user!";
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    @DisplayName("LogInUserFailure")
-    public void logInUserFailure() throws Exception {
-
-    }
-
-    @Test
     @DisplayName("LogOutUserSuccess")
     public void logOutUserSuccess() throws Exception {
+        CreateUserRequest createUserRequest = new CreateUserRequest("jeremy", "jeremyiscool", "email");
+        serverFacade.createUser(createUserRequest);
 
+        String actual = serverFacade.logOutUser();
+        String expected = "You've successfully logged out!";
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("LogOutUserFailure")
     public void logOutUserFailure() throws Exception {
+        String actual = serverFacade.logOutUser();
+        String expected = "Failed to logout user!";
 
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("ListGameSuccess")
     public void listGameSuccess() throws Exception {
+        CreateUserRequest createUserRequest = new CreateUserRequest("taft", "taftiscool", "e");
+        serverFacade.createUser(createUserRequest);
+        serverFacade.createGame("gamename");
+        ListGamesResult result = serverFacade.listGames();
 
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.games().isEmpty(), "Expected at least one game in the list.");
     }
 
     @Test
     @DisplayName("ListGameFailure")
     public void listGameFailure() throws Exception {
-
+        Assertions.assertThrows(ResponseException.class, () -> {
+            serverFacade.listGames();});
     }
 
     @Test
     @DisplayName("CreateGameSuccess")
     public void createGameSuccess() throws Exception {
+        CreateUserRequest createUserRequest = new CreateUserRequest("jeremy", "jeremyiscool", "email");
+        serverFacade.createUser(createUserRequest);
 
+        String gameName = "TestGame";
+
+        Assertions.assertDoesNotThrow(() -> serverFacade.createGame(gameName));
     }
 
     @Test
     @DisplayName("CreateGameFailure")
     public void createGameFailure() throws Exception {
-
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            serverFacade.createGame(null); // Invalid game name
+        });
     }
 
     @Test
     @DisplayName("JoinGameSuccess")
     public void joinGameSuccess() throws Exception {
+        CreateUserRequest createUserRequest = new CreateUserRequest("jeremy", "jeremyiscool", "email");
+        serverFacade.createUser(createUserRequest);
+        serverFacade.createGame("gamename");
+        JoinGameRequest joinGameRequest = new JoinGameRequest(serverFacade.getAuthToken(), "white", 1);
+        String actual = serverFacade.joinGame(joinGameRequest);
+        String expected = "jeremy joined as white player!";
 
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("JoinGameFailure")
     public void joinGameFailure() throws Exception {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(serverFacade.getAuthToken(), "white", -1);
 
+        String actual = serverFacade.joinGame(joinGameRequest);
+        String expected = "Couldn't join game!";
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("clearSuccess")
     public void clearSuccess() throws Exception {
+        String actual = serverFacade.clear();
+        String expected = "Successfully cleared out the database!";
 
+        Assertions.assertEquals(expected, actual);
     }
 }

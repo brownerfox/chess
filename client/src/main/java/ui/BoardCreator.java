@@ -29,7 +29,7 @@ public class BoardCreator {
         int rowStep = (teamColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
 
         for (int row = rowStart; row != rowEnd; row += rowStep) {
-            output.append(SET_BG_COLOR_LIGHT_GREY).append(SET_TEXT_COLOR_RED)
+            output.append(SET_BG_COLOR_DARK_GREY).append(SET_TEXT_COLOR_RED)
                     .append(String.format(" %d ", row)).append(RESET_BG_COLOR).append(RESET_TEXT_COLOR);
 
             int colStart = (teamColor == ChessGame.TeamColor.WHITE) ? 1 : 8;
@@ -47,8 +47,8 @@ public class BoardCreator {
                 output.append(RESET_BG_COLOR).append(RESET_TEXT_COLOR);
             }
 
-            output.append(SET_BG_COLOR_LIGHT_GREY).append(SET_TEXT_COLOR_RED)
-                    .append(String.format(" %d \n", row)).append(RESET_BG_COLOR).append(RESET_TEXT_COLOR);
+            output.append(SET_BG_COLOR_DARK_GREY).append(SET_TEXT_COLOR_RED)
+                    .append(String.format(" %d ", row)).append(RESET_BG_COLOR).append(RESET_TEXT_COLOR).append("\n");
         }
 
         output.append(startAndEndRow(teamColor));
@@ -59,14 +59,14 @@ public class BoardCreator {
     private String startAndEndRow (ChessGame.TeamColor teamColor) {
         StringBuilder output = new StringBuilder();
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            output.append(SET_BG_COLOR_LIGHT_GREY);
+            output.append(SET_BG_COLOR_DARK_GREY);
             output.append(SET_TEXT_COLOR_RED);
             output.append("    a  b  c  d  e  f  g  h    ");
             output.append(RESET_BG_COLOR);
             output.append(RESET_TEXT_COLOR);
             output.append("\n");
         } else {
-            output.append(SET_BG_COLOR_LIGHT_GREY);
+            output.append(SET_BG_COLOR_DARK_GREY);
             output.append(SET_TEXT_COLOR_RED);
             output.append("    h  g  f  e  d  c  b  a    ");
             output.append(RESET_BG_COLOR);
@@ -82,6 +82,7 @@ public class BoardCreator {
 
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             output.append(SET_TEXT_COLOR_GREEN);
+            output.append(SET_TEXT_BOLD);
             switch (piece.getPieceType()) {
                 case QUEEN -> output.append(" Q ");
                 case KING -> output.append(" K ");
@@ -92,6 +93,7 @@ public class BoardCreator {
             }
         } else {
             output.append(SET_TEXT_COLOR_MAGENTA);
+            output.append(SET_TEXT_BOLD);
             switch (piece.getPieceType()) {
                 case QUEEN -> output.append(" Q ");
                 case KING -> output.append(" K ");
@@ -101,7 +103,8 @@ public class BoardCreator {
                 case PAWN -> output.append(" P ");
             }
         }
-            return output.toString();
+        output.append(RESET_TEXT_BOLD_FAINT);
+        return output.toString();
     }
 
     private String determineSquareColor(int row, int col) {
@@ -109,7 +112,7 @@ public class BoardCreator {
         if ((row + col) % 2 == 0) {
             output.append(SET_BG_COLOR_BLACK);
         } else {
-            output.append(SET_BG_COLOR_WHITE);
+            output.append(SET_BG_COLOR_LIGHT_GREY);
         }
         return output.toString();
     }
