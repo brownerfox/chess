@@ -150,4 +150,13 @@ public class ServerFacadeTests {
 
         Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    @DisplayName("clearFailure")
+    public void clearFailure() throws Exception {
+        String actual = serverFacade.clear();
+        String expected = "Successfully cleared out the database!";
+
+        Assertions.assertEquals(expected, actual);
+    }
 }
