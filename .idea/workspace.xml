@@ -6,6 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="bdbc6d01-8ecf-4f3b-84d5-c8b9b3b141aa" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/exception/ResponseException.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/exception/ResponseException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/server_1/server_1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/server_1/src/Main.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,8 +33,11 @@
     "Application.Main (1).executor": "Run",
     "Application.Main.executor": "Debug",
     "Downloaded.Files.Path.Enabled": "false",
+    "JUnit.All in client.executor": "Run",
     "JUnit.All in server (1).executor": "Run",
+    "JUnit.All in server (2).executor": "Run",
     "JUnit.All in server.executor": "Run",
+    "JUnit.All in shared (1).executor": "Run",
     "JUnit.All in shared.executor": "Run",
     "JUnit.DataAccessTests.createAuthFailure.executor": "Run",
     "JUnit.DataAccessTests.createGameFailure.executor": "Run",
@@ -66,7 +73,7 @@
       <recent name="client" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.All in shared (1)">
+  <component name="RunManager" selected="JUnit.All in server (2)">
     <configuration name="All in client" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="client" />
       <option name="PACKAGE_NAME" value="" />
@@ -76,6 +83,14 @@
       </method>
     </configuration>
     <configuration name="All in server (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in server (2)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="server" />
       <option name="PACKAGE_NAME" value="" />
       <option name="TEST_OBJECT" value="package" />
@@ -99,21 +114,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="All in shared" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="shared" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.All in server (2)" />
         <item itemvalue="JUnit.All in shared (1)" />
         <item itemvalue="JUnit.All in server (1)" />
         <item itemvalue="JUnit.All in client" />
         <item itemvalue="JUnit.All in server" />
-        <item itemvalue="JUnit.All in shared" />
       </list>
     </recent_temporary>
   </component>
