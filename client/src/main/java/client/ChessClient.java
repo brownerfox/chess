@@ -138,8 +138,6 @@ public class ChessClient {
 
     public String joinGame (String... params) throws ResponseException {
         StringBuilder output = new StringBuilder();
-        boardCreator.printBoard(ChessGame.TeamColor.WHITE);
-        boardCreator.printBoard(ChessGame.TeamColor.BLACK);
 
         if (state == State.SIGNEDOUT) {
             output.append("You need to sign in!");
@@ -174,8 +172,16 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            output.append(server.joinGame(joinGameRequest));
-            return output.toString();
+            String result = server.joinGame(joinGameRequest);
+            if (Objects.equals(result, "Couldn't join game!")) {
+                output.append(result);
+                return output.toString();
+            } else {
+                boardCreator.printBoard(ChessGame.TeamColor.WHITE);
+                boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+                output.append(result);
+                return output.toString();
+            }
         } else {
             output.append("Game does not exist!");
             return output.toString();
@@ -183,8 +189,6 @@ public class ChessClient {
     }
 
     public String observeGame (String[] params) throws ResponseException {
-        //boardCreator.printBoard(ChessGame.TeamColor.WHITE);
-        //boardCreator.printBoard(ChessGame.TeamColor.BLACK);
 
         if (state == State.SIGNEDOUT) {
             return ("You need to sign in!");
@@ -208,7 +212,10 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            return server.joinGame(joinGameRequest);
+            boardCreator.printBoard(ChessGame.TeamColor.WHITE);
+            boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+            return "Observer pre gameplay";
+            //return server.joinGame(joinGameRequest);
         } else {
             return ("Game does not exist!");
         }

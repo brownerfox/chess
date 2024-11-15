@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bdbc6d01-8ecf-4f3b-84d5-c8b9b3b141aa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +27,8 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Main (1).executor": "Run",
-    "Application.Main.executor": "Debug",
+    "Application.Main (1).executor": "Debug",
+    "Application.Main.executor": "Run",
     "Downloaded.Files.Path.Enabled": "false",
     "JUnit.All in client.executor": "Run",
     "JUnit.All in server (1).executor": "Run",
@@ -40,6 +41,7 @@
     "JUnit.DataAccessTests.updateGameFailure.executor": "Run",
     "JUnit.DataAccessTests.updateGameSuccess.executor": "Run",
     "JUnit.DatabaseTests.executor": "Run",
+    "JUnit.ServerFacadeTests.clearFailure.executor": "Debug",
     "JUnit.ServerFacadeTests.createGameFailure.executor": "Run",
     "JUnit.ServerFacadeTests.createGameSuccess.executor": "Run",
     "JUnit.ServerFacadeTests.createUserFailure.executor": "Run",
@@ -69,19 +71,17 @@
       <recent name="client" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ServerFacadeTests.clearFailure">
-    <configuration name="All in client" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Application.Main (1)">
+    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="client" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="All in server (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="server" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -120,11 +120,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main (1)" />
+        <item itemvalue="Application.Main" />
         <item itemvalue="JUnit.ServerFacadeTests.clearFailure" />
         <item itemvalue="JUnit.All in server (2)" />
         <item itemvalue="JUnit.All in shared (1)" />
-        <item itemvalue="JUnit.All in server (1)" />
-        <item itemvalue="JUnit.All in client" />
       </list>
     </recent_temporary>
   </component>
@@ -169,7 +169,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>189</line>
+          <line>193</line>
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -184,7 +184,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>147</line>
+          <line>145</line>
           <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -206,6 +206,11 @@
           <url>file://$PROJECT_DIR$/client/src/test/java/client/ServerFacadeTests.java</url>
           <line>40</line>
           <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
+          <line>179</line>
+          <option name="timeStamp" value="65" />
         </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">
           <properties class="com.google.gson.JsonSyntaxException" package="com.google.gson" />
