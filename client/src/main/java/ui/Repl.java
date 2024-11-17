@@ -22,9 +22,10 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
+        String line = "";
+        while (!line.equals("quit")) {
             printPrompt();
-            String line = scanner.nextLine();
+            line = scanner.nextLine();
 
             try {
                 result = client.eval(line);
