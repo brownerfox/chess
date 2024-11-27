@@ -19,24 +19,35 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case CONNECT -> enter(action.getAuthToken(), session);
-            case MAKE_MOVE -> makeMove();
-            case LEAVE -> exit(action.getAuthToken());
-            case RESIGN -> resign();
+            case JOIN_PLAYER -> joinPlayer(action);
+            case JOIN_OBSERVER -> joinObserver(action);
+            case MAKE_MOVE -> makeMove(action);
+            case LEAVE -> exit(action);
+            case RESIGN -> resign(action);
         }
     }
 
-    private void enter(String playerName, Session session) throws IOException {
+    private void joinPlayer(UserGameCommand action) throws IOException {
         connections.add(playerName, session);
-        var message = String.format("%s is in the shop", playerName);
+        var outgoingMessage = String.format("%s is in the shop", playerName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(playerName, notification);
     }
 
-    private void exit(String visitorName) throws IOException {
+    private void joinObserver(UserGameCommand action) {
+    }
+
+    private void exit(UserGameCommand action) throws IOException {
         connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
+        var outgoingMessage = String.format("%s left the shop", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(visitorName, notification);
+    }
+
+    private void makeMove(UserGameCommand action) {
+
+    }
+
+    private void resign (UserGameCommand action) {
     }
 }

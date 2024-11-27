@@ -7,6 +7,7 @@ import dataaccess.MySQLDataAccess;
 import requests.*;
 import results.CreateUserResult;
 import results.ErrorResult;
+import server.websocket.WebSocketHandler;
 import service.BadGameIDException;
 import service.ChessService;
 import service.ServiceException;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
 public class Server {
 
     private final ChessService service = new ChessService(new MySQLDataAccess());
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public Server () {}
 
@@ -27,6 +29,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/ws", webSocketHandler);
 
         Spark.post("/user", this::createUser);
         Spark.post("/session", this::loginUser);
