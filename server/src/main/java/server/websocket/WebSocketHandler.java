@@ -2,7 +2,7 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -14,6 +14,16 @@ import java.io.IOException;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+
+    @OnWebSocketConnect
+    public void onConnect(Session session) {
+        connections.add(0, session);
+    }
+
+    @OnWebSocketClose
+    public void onClose(Session session) {
+        connections.remove(session);
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -28,7 +38,6 @@ public class WebSocketHandler {
     }
 
     private void joinPlayer(UserGameCommand action) throws IOException {
-        connections.add(playerName, session);
         var outgoingMessage = String.format("%s is in the shop", playerName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(playerName, notification);

@@ -9,15 +9,19 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, Connection> connections = new ConcurrentHashMap<>();
 
-    public void add(String playerName, Session session) {
-        var connection = new Connection(playerName, session);
-        connections.put(playerName, connection);
+    public void add(int gameID, Session session) {
+        var connection = new Connection(gameID, session);
+        connections.put(gameID, connection);
     }
 
-    public void remove(String visitorName) {
+    public void remove(Session session) {
         connections.remove(visitorName);
+    }
+
+    public Connection findConnectionBySession(Session session) {
+        return connections.get(session);
     }
 
     public void broadcast(String excludePlayerName, ServerMessage notification) throws IOException {
