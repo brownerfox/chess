@@ -19,9 +19,9 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case CONNECT -> enter(action.visitorName(), session);
+            case CONNECT -> enter(action.getAuthToken(), session);
             case MAKE_MOVE -> makeMove();
-            case LEAVE -> exit(action.visitorName());
+            case LEAVE -> exit(action.getAuthToken());
             case RESIGN -> resign();
         }
     }
