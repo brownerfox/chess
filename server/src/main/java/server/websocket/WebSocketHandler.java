@@ -1,12 +1,11 @@
 package server.websocket;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccess;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.Action;
-import webSocketMessages.Notification;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
@@ -18,24 +17,26 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        Action action = new Gson().fromJson(message, Action.class);
-        switch (action.type()) {
-            case ENTER -> enter(action.visitorName(), session);
-            case EXIT -> exit(action.visitorName());
+        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
+        switch (action.getCommandType()) {
+            case CONNECT -> enter(action.visitorName(), session);
+            case MAKE_MOVE -> makeMove();
+            case LEAVE -> exit(action.visitorName());
+            case RESIGN -> resign();
         }
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
+    private void enter(String playerName, Session session) throws IOException {
+        connections.add(playerName, session);
+        var message = String.format("%s is in the shop", playerName);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connections.broadcast(playerName, notification);
     }
 
     private void exit(String visitorName) throws IOException {
         connections.remove(visitorName);
         var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(visitorName, notification);
     }
 }
