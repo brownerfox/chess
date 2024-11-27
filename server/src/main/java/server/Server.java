@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class Server {
 
     private final ChessService service = new ChessService(new MySQLDataAccess());
-    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler(service.getDataAccess());
 
     public Server () {}
 
