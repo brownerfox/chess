@@ -2,7 +2,6 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
-import exception.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -38,15 +37,5 @@ public class WebSocketHandler {
         var message = String.format("%s left the shop", visitorName);
         var notification = new Notification(Notification.Type.DEPARTURE, message);
         connections.broadcast(visitorName, notification);
-    }
-
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
     }
 }
