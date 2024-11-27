@@ -9,25 +9,20 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<Integer, Connection> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Session, Integer> connections = new ConcurrentHashMap<>();
 
     public void add(int gameID, Session session) {
-        var connection = new Connection(gameID, session);
-        connections.put(gameID, connection);
+        connections.put(session, gameID);
     }
 
     public void remove(Session session) {
-        connections.remove(visitorName);
-    }
-
-    public Connection findConnectionBySession(Session session) {
-        return connections.get(session);
+        connections.remove(session);
     }
 
     public void broadcast(String excludePlayerName, ServerMessage notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
+        var removeList = new ArrayList<Session>();
+        for (var c : connections.keySet()) {
+            if (c.isOpen()) {
                 if (!c.playerName.equals(excludePlayerName)) {
                     c.send(notification.toString());
                 }
@@ -38,7 +33,7 @@ public class ConnectionManager {
 
         // Clean up any connections that were left open.
         for (var c : removeList) {
-            connections.remove(c.playerName);
+            connections.remove(c);
         }
     }
 }

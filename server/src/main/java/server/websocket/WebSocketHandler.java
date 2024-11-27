@@ -1,6 +1,7 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -47,7 +48,6 @@ public class WebSocketHandler {
     }
 
     private void exit(UserGameCommand action) throws IOException {
-        connections.remove(visitorName);
         var outgoingMessage = String.format("%s left the shop", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(visitorName, notification);
