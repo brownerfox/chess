@@ -41,6 +41,10 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
 
+        if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
+
+        }
+
         try {
             UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
             authData = dataAccess.getAuth(action.getAuthToken());
