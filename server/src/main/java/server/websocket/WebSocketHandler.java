@@ -19,6 +19,8 @@ import java.io.IOException;
 public class WebSocketHandler {
 
     DataAccess dataAccess;
+    AuthData authData;
+    GameData gameData;
 
     public WebSocketHandler (DataAccess dataAccess) {
        this.dataAccess = dataAccess;
@@ -41,8 +43,8 @@ public class WebSocketHandler {
 
         try {
             UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-            AuthData authData = dataAccess.getAuth(action.getAuthToken());
-            GameData gameData = dataAccess.getGame(action.getGameID());
+            authData = dataAccess.getAuth(action.getAuthToken());
+            gameData = dataAccess.getGame(action.getGameID());
             switch (action.getCommandType()) {
                 case JOIN_PLAYER -> joinPlayer(action);
                 case JOIN_OBSERVER -> joinObserver(action);
@@ -56,7 +58,7 @@ public class WebSocketHandler {
     }
 
     private void joinPlayer(UserGameCommand action) throws IOException {
-        var outgoingMessage = String.format("%s is in the shop", playerName);
+        var outgoingMessage = String.format("%s is in the shop", authData.username());
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(notification);
     }
@@ -65,7 +67,7 @@ public class WebSocketHandler {
     }
 
     private void exit(UserGameCommand action) throws IOException {
-        var outgoingMessage = String.format("%s left the shop", visitorName);
+        var outgoingMessage = String.format("%s left the shop", authData.username());
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(notification);
     }
