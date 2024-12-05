@@ -1,12 +1,13 @@
 package server.websocket;
 
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import results.ErrorResult;
@@ -19,6 +20,7 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 
 @WebSocket
@@ -36,7 +38,12 @@ public class WebSocketHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        connections.add(0, session);
+        String query = session.getUpgradeRequest().getQueryString();
+        if (query == null || !query.contains("authToken")) {
+            System.out.println("Unauthorized connection attempt.");
+            session.close(StatusCode.NORMAL, "Unauthorized");
+            return;
+        }
     }
 
     @OnWebSocketClose
@@ -50,14 +57,17 @@ public class WebSocketHandler {
         if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
             JoinGameCommand action = new Gson().fromJson(message,JoinGameCommand.class);
             setData(session, action.authToken(), action.gameID());
+            connections.add(action.gameID(), session);
             joinPlayer(session, action);
         } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
             MakeMoveCommand action = new Gson().fromJson(message, MakeMoveCommand.class);
             setData(session, action.authToken(), action.gameID());
+            connections.add(action.gameID(), session);
             makeMove(session, action);
         } else {
             UserGameCommand action = new Gson().fromJson(message,UserGameCommand.class);
             setData(session, action.getAuthToken(), action.getGameID());
+            connections.add(action.getGameID(), session);
             determineAction(session, action);
         }
     }
@@ -70,27 +80,60 @@ public class WebSocketHandler {
         String expectedUsername = (color == ChessGame.TeamColor.WHITE) ? gameData.whiteUsername() : gameData.blackUsername();
 
         if (!Objects.equals(expectedUsername, authData.username())) {
-            sendError(session, new ErrorResult("Error: attempting to join with wrong color"));
+            sendError(session, new ErrorResult("Error: attempting to join with wrong color!"));
             return;
         }
 
-        var outgoingMessage = String.format("%s has joined %s team", authData.username(), stringOfColor);
+        var outgoingMessage = String.format("%s has joined the %s team!", authData.username(), stringOfColor);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, outgoingMessage);
         connections.broadcast(session, notification);
     }
 
-    private void joinObserver(Session session, UserGameCommand action) {
-        
-    }
-
-    private void exit(Session session, UserGameCommand action) throws IOException {
-        var outgoingMessage = String.format("%s left the game", authData.username());
+    private void joinObserver(Session session, UserGameCommand action) throws IOException {
+        var outgoingMessage = String.format("%s has joined as an observer!", authData.username());
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, outgoingMessage);
         connections.broadcast(session, notification);
     }
 
-    private void makeMove(Session session, MakeMoveCommand action) {
+    private void leaveGame(Session session, UserGameCommand action) throws IOException {
+        var outgoingMessage = String.format("%s left the game!", authData.username());
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
+        connections.broadcast(session, notification);
+    }
 
+    private void makeMove(Session session, MakeMoveCommand action) throws IOException{
+        String piece = gameData.game().getBoard().getPiece(action.move().getStartPosition()).getPieceType().toString();
+        String startPosition = action.move().getStartPosition().toString();
+        String endPosition = action.move().getEndPosition().toString();
+        ChessGame.TeamColor oppoColor = action.color().equalsIgnoreCase("white") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        String oppoName = action.color().equalsIgnoreCase("white") ? gameData.blackUsername() : gameData.whiteUsername();
+        if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())){
+            sendError(session, new ErrorResult("Error: You are only observing this game!"));
+            return;
+        }
+        try {
+            if (gameData.game().getTeamTurn().toString().equalsIgnoreCase(action.color())) {
+                if (gameData.game().validMoves(action.move().getStartPosition()).contains(action.move())) {
+                    gameData.game().makeMove(action.move());
+                }
+            }
+            
+            String outgoingMessage;
+            if (gameData.game().isInCheckmate(oppoColor)) {
+                outgoingMessage = String.format("The game has ended in checkmate in favor of %s!", authData.username());
+            } else if (gameData.game().isInStalemate(oppoColor)) {
+                outgoingMessage = "The game has ended in stalemate!";
+            } else if (gameData.game().isInCheck(oppoColor)) {
+                outgoingMessage = String.format("%s has put %s in check!", authData.username(), oppoName);
+            } else {
+                outgoingMessage = String.format("%s is moving %s from %s to %s", authData.username(), piece, startPosition, endPosition);
+            }
+
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
+            connections.broadcast(session, notification);
+        } catch (Exception e) {
+            sendError(session, new ErrorResult("Not a valid move"));
+        }
     }
 
     private void resign (Session session, UserGameCommand action) {
@@ -104,7 +147,7 @@ public class WebSocketHandler {
     public void determineAction (Session session, UserGameCommand action) throws IOException {
         switch (action.getCommandType()) {
             case JOIN_OBSERVER -> joinObserver(session, action);
-            case LEAVE -> exit(session, action);
+            case LEAVE -> leaveGame(session, action);
             case RESIGN -> resign(session, action);
         }
     }
