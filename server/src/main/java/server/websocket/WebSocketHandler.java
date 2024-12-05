@@ -11,6 +11,7 @@ import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import results.ErrorResult;
+import server.Server;
 import service.BadGameIDException;
 import service.ServiceException;
 import websocket.commands.JoinGameCommand;
@@ -57,22 +58,21 @@ public class WebSocketHandler {
         if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
             JoinGameCommand action = new Gson().fromJson(message,JoinGameCommand.class);
             setData(session, action.authToken(), action.gameID());
-            connections.add(action.gameID(), session);
             joinPlayer(session, action);
         } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
             MakeMoveCommand action = new Gson().fromJson(message, MakeMoveCommand.class);
             setData(session, action.authToken(), action.gameID());
-            connections.add(action.gameID(), session);
             makeMove(session, action);
         } else {
             UserGameCommand action = new Gson().fromJson(message,UserGameCommand.class);
             setData(session, action.getAuthToken(), action.getGameID());
-            connections.add(action.getGameID(), session);
             determineAction(session, action);
         }
     }
 
     private void joinPlayer(Session session, JoinGameCommand action) throws IOException {
+        connections.add(action.gameID(), session);
+
         ChessGame.TeamColor color = action.color().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
         String stringOfColor = action.color().equalsIgnoreCase("white") ? "WHITE" : "BLACK";
@@ -92,6 +92,8 @@ public class WebSocketHandler {
     }
 
     private void joinObserver(Session session, UserGameCommand action) throws IOException {
+        connections.add(gameData.gameID(), session);
+
         var outgoingMessage = String.format("%s has joined as an observer!", authData.username());
         LoadGameMessage loadGameMessage = new LoadGameMessage(outgoingMessage, gameData.game());
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
@@ -119,30 +121,46 @@ public class WebSocketHandler {
             if (gameData.game().getTeamTurn().toString().equalsIgnoreCase(action.color())) {
                 if (gameData.game().validMoves(action.move().getStartPosition()).contains(action.move())) {
                     gameData.game().makeMove(action.move());
+
+                    LoadGameMessage loadGameMessage = new LoadGameMessage("", gameData.game());
+                    connections.sendMessage(session, loadGameMessage);
+                    connections.broadcast(session, loadGameMessage);
+
+                    var outgoingMessage = String.format("%s has made a move!", authData.username());
+                    ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
+                    connections.broadcast(session, notification);
                 }
             } else {
                 sendError(session, new ErrorResult("It is not your move!"));
                 return;
             }
-
-            String outgoingMessage;
-            if (gameData.game().isInCheckmate(oppoColor)) {
-                outgoingMessage = String.format("The game has ended in checkmate in favor of %s!", authData.username());
-            } else if (gameData.game().isInStalemate(oppoColor)) {
-                outgoingMessage = "The game has ended in stalemate!";
-            } else if (gameData.game().isInCheck(oppoColor)) {
-                outgoingMessage = String.format("%s has put %s in check!", authData.username(), oppoName);
-            } else {
-                outgoingMessage = String.format("%s has made a move!", authData.username());
-            }
-
-            LoadGameMessage loadGameMessage = new LoadGameMessage(outgoingMessage, gameData.game());
-            connections.broadcast(session, loadGameMessage);
+            
+            boolean checkMate = gameData.game().isInCheckmate(oppoColor);
+            boolean staleMate = gameData.game().isInStalemate(oppoColor);
+            boolean check = gameData.game().isInCheck(oppoColor);
+            if (checkMate || staleMate || check) {
+                ServerMessage notification = getServerMessage(checkMate, staleMate, oppoName);
+                connections.broadcast(session, notification);
+                }
 
             dataAccess.updateGame(gameData);
         } catch (Exception e) {
             sendError(session, new ErrorResult("Not a valid move"));
         }
+    }
+
+    private ServerMessage getServerMessage(boolean checkMate, boolean staleMate, String oppoName) {
+        String outgoingMessage;
+        if (checkMate) {
+            outgoingMessage = String.format("The game has ended in checkmate in favor of %s!", authData.username());
+        } else if (staleMate) {
+            outgoingMessage = "The game has ended in stalemate!";
+        } else {
+            outgoingMessage = String.format("%s has put %s in check!", authData.username(), oppoName);
+        }
+
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
+        return notification;
     }
 
     private void resign (Session session, UserGameCommand action) throws IOException {
