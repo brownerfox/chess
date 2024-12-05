@@ -40,24 +40,6 @@ public class ConnectionManager {
         }
     }
 
-    public void gameBroadcast(Session session, LoadGameMessage notification) throws IOException {
-        var removeList = new ArrayList<Session>();
-        for (var c : connections.keySet()) {
-            if (c.isOpen()) {
-                if (c != session) {
-                    if (Objects.equals(connections.get(c), connections.get(session))) {
-                        sendMessage(c, notification);
-                    }
-                }
-            } else {
-                removeList.add(c);
-            }
-        }
-        for (var c : removeList) {
-            connections.remove(c);
-        }
-    }
-
     public void sendMessage(Session session, ServerMessage message) throws IOException {
         session.getRemote().sendString(new Gson().toJson(message));
     }

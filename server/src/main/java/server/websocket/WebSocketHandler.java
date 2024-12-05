@@ -86,19 +86,26 @@ public class WebSocketHandler {
 
         var outgoingMessage = String.format("%s has joined the %s team!", authData.username(), stringOfColor);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, outgoingMessage);
-        connections.broadcast(session, notification);
+        LoadGameMessage loadGameMessage = new LoadGameMessage("", gameData.game());
+        connections.broadcast(session, notification); //Sends the message that they joined to everyone
+        connections.sendMessage(session, loadGameMessage); //Sends the board to the person who joined
     }
 
     private void joinObserver(Session session, UserGameCommand action) throws IOException {
         var outgoingMessage = String.format("%s has joined as an observer!", authData.username());
-        var notification = new LoadGameMessage(outgoingMessage, gameData.game());
+        LoadGameMessage loadGameMessage = new LoadGameMessage(outgoingMessage, gameData.game());
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
+
         connections.broadcast(session, notification);
+        connections.sendMessage(session, loadGameMessage);
     }
 
     private void leaveGame(Session session, UserGameCommand action) throws IOException {
         var outgoingMessage = String.format("%s left the game!", authData.username());
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
         connections.broadcast(session, notification);
+
+        session.close();
     }
 
     private void makeMove(Session session, MakeMoveCommand action) throws IOException{
@@ -130,7 +137,7 @@ public class WebSocketHandler {
             }
 
             LoadGameMessage loadGameMessage = new LoadGameMessage(outgoingMessage, gameData.game());
-            connections.gameBroadcast(session, loadGameMessage);
+            connections.broadcast(session, loadGameMessage);
 
             dataAccess.updateGame(gameData);
         } catch (Exception e) {
