@@ -13,10 +13,14 @@ public class ChessGame {
 
     private TeamColor team;
     private ChessBoard board;
+    private Boolean gameStatus = false;
 
     public ChessGame() {
     }
 
+    public Boolean getGameStatus() {return this.gameStatus;}
+
+    public void setGameStatus(Boolean status) {this.gameStatus = status;}
     /**
      * @return Which team's turn it is
      */
@@ -76,6 +80,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (getGameStatus()) {
+            throw new InvalidMoveException("Game is over!");
+        }
         ChessPiece piece = getBoard().getPiece(move.getStartPosition());
 
         if (piece == null || piece.getTeamColor() != getTeamTurn()) {
@@ -197,6 +204,8 @@ public class ChessGame {
             }
         }
 
+        setGameStatus(true);
+
         return inCheck;
     }
 
@@ -217,6 +226,8 @@ public class ChessGame {
             if (isInCheck(teamColor)) {
                 return false;
             } else {
+                setGameStatus(true);
+
                 return true;
             }
         }

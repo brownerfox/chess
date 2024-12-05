@@ -139,7 +139,7 @@ public class WebSocketHandler {
             boolean staleMate = gameData.game().isInStalemate(oppoColor);
             boolean check = gameData.game().isInCheck(oppoColor);
             if (checkMate || staleMate || check) {
-                ServerMessage notification = getServerMessage(checkMate, staleMate, oppoName);
+                ServerMessage notification = getStatusMessage(checkMate, staleMate, oppoName);
                 connections.broadcast(session, notification);
                 }
 
@@ -149,7 +149,7 @@ public class WebSocketHandler {
         }
     }
 
-    private ServerMessage getServerMessage(boolean checkMate, boolean staleMate, String oppoName) {
+    private ServerMessage getStatusMessage(boolean checkMate, boolean staleMate, String oppoName) {
         String outgoingMessage;
         if (checkMate) {
             outgoingMessage = String.format("The game has ended in checkmate in favor of %s!", authData.username());
@@ -159,23 +159,19 @@ public class WebSocketHandler {
             outgoingMessage = String.format("%s has put %s in check!", authData.username(), oppoName);
         }
 
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
-        return notification;
+        return new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
     }
 
     private void resign (Session session, UserGameCommand action) throws IOException {
-        ChessGame.TeamColor color, oppoColor;
+        ChessGame.TeamColor color;
         ChessGame game = gameData.game();
 
-        if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())){
+        if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())) {
             sendError(session, new ErrorResult("Error: You are only observing this game!"));
             return;
         }
 
-        color = Objects.equals(authData.username(), gameData.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-        oppoColor = color == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-
-        if (game.isInCheckmate(color) || game.isInCheckmate(oppoColor) || game.isInStalemate(color) || game.isInStalemate(oppoColor)) {
+        if (game.getGameStatus()) {
             sendError(session, new ErrorResult("Error: Game is already finished"));
         }
 
