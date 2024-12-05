@@ -40,7 +40,7 @@ public class ConnectionManager {
         }
     }
 
-    public void gameBroadcast(Session session, LoadGameMessage notification) {
+    public void gameBroadcast(Session session, LoadGameMessage notification) throws IOException {
         var removeList = new ArrayList<Session>();
         for (var c : connections.keySet()) {
             if (c.isOpen()) {

@@ -139,12 +139,24 @@ public class WebSocketHandler {
     }
 
     private void resign (Session session, UserGameCommand action) throws IOException {
+        ChessGame.TeamColor color, oppoColor;
+        ChessGame game = gameData.game();
+
         if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())){
             sendError(session, new ErrorResult("Error: You are only observing this game!"));
             return;
         }
 
+        color = Objects.equals(authData.username(), gameData.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        oppoColor = color == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
 
+        if (game.isInCheckmate(color) || game.isInCheckmate(oppoColor) || game.isInStalemate(color) || game.isInStalemate(oppoColor)) {
+            sendError(session, new ErrorResult("Error: Game is already finished"));
+        }
+
+        String outgoingMessage = String.format("%s has forfeited the game!", authData.username());
+        ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
+        connections.broadcast(session, serverMessage);
     }
 
     private void sendError(Session session, ErrorResult error) throws IOException {
