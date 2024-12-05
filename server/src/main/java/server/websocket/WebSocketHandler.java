@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
@@ -16,8 +17,8 @@ import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.Objects;
 
 
 @WebSocket
@@ -48,39 +49,51 @@ public class WebSocketHandler {
 
         if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
             JoinGameCommand action = new Gson().fromJson(message,JoinGameCommand.class);
-            setData(session, action.getAuthToken(), action.getGameID());
-            joinPlayer(action);
+            setData(session, action.authToken(), action.gameID());
+            joinPlayer(session, action);
         } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
             MakeMoveCommand action = new Gson().fromJson(message, MakeMoveCommand.class);
-            setData(session, action.getAuthToken(), action.getGameID());
-            makeMove(action);
+            setData(session, action.authToken(), action.gameID());
+            makeMove(session, action);
         } else {
             UserGameCommand action = new Gson().fromJson(message,UserGameCommand.class);
             setData(session, action.getAuthToken(), action.getGameID());
-            determineAction(action);
+            determineAction(session, action);
         }
     }
 
-    private void joinPlayer(JoinGameCommand action) throws IOException {
-        var outgoingMessage = String.format("%s is in the shop", authData.username());
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(notification);
+    private void joinPlayer(Session session, JoinGameCommand action) throws IOException {
+        ChessGame.TeamColor color = action.color().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
+        String stringOfColor = action.color().equalsIgnoreCase("white") ? "WHITE" : "BLACK";
+
+        String expectedUsername = (color == ChessGame.TeamColor.WHITE) ? gameData.whiteUsername() : gameData.blackUsername();
+
+        if (!Objects.equals(expectedUsername, authData.username())) {
+            sendError(session, new ErrorResult("Error: attempting to join with wrong color"));
+            return;
+        }
+
+        var outgoingMessage = String.format("%s has joined %s team", authData.username(), stringOfColor);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, outgoingMessage);
+        connections.broadcast(session, notification);
     }
 
-    private void joinObserver(UserGameCommand action) {
+    private void joinObserver(Session session, UserGameCommand action) {
+        
     }
 
-    private void exit(UserGameCommand action) throws IOException {
-        var outgoingMessage = String.format("%s left the shop", authData.username());
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(notification);
+    private void exit(Session session, UserGameCommand action) throws IOException {
+        var outgoingMessage = String.format("%s left the game", authData.username());
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, outgoingMessage);
+        connections.broadcast(session, notification);
     }
 
-    private void makeMove(MakeMoveCommand action) {
+    private void makeMove(Session session, MakeMoveCommand action) {
 
     }
 
-    private void resign (UserGameCommand action) {
+    private void resign (Session session, UserGameCommand action) {
     }
 
     private void sendError(Session session, ErrorResult error) throws IOException {
@@ -88,11 +101,11 @@ public class WebSocketHandler {
         session.getRemote().sendString(new Gson().toJson(error));
     }
 
-    public void determineAction (UserGameCommand action) throws IOException {
+    public void determineAction (Session session, UserGameCommand action) throws IOException {
         switch (action.getCommandType()) {
-            case JOIN_OBSERVER -> joinObserver(action);
-            case LEAVE -> exit(action);
-            case RESIGN -> resign(action);
+            case JOIN_OBSERVER -> joinObserver(session, action);
+            case LEAVE -> exit(session, action);
+            case RESIGN -> resign(session, action);
         }
     }
 
