@@ -16,11 +16,11 @@ import service.ServiceException;
 import websocket.commands.JoinGameCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 
 @WebSocket
@@ -91,7 +91,7 @@ public class WebSocketHandler {
 
     private void joinObserver(Session session, UserGameCommand action) throws IOException {
         var outgoingMessage = String.format("%s has joined as an observer!", authData.username());
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, outgoingMessage);
+        var notification = new LoadGameMessage(outgoingMessage, gameData.game());
         connections.broadcast(session, notification);
     }
 
@@ -102,9 +102,6 @@ public class WebSocketHandler {
     }
 
     private void makeMove(Session session, MakeMoveCommand action) throws IOException{
-        String piece = gameData.game().getBoard().getPiece(action.move().getStartPosition()).getPieceType().toString();
-        String startPosition = action.move().getStartPosition().toString();
-        String endPosition = action.move().getEndPosition().toString();
         ChessGame.TeamColor oppoColor = action.color().equalsIgnoreCase("white") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         String oppoName = action.color().equalsIgnoreCase("white") ? gameData.blackUsername() : gameData.whiteUsername();
         if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())){
@@ -116,8 +113,11 @@ public class WebSocketHandler {
                 if (gameData.game().validMoves(action.move().getStartPosition()).contains(action.move())) {
                     gameData.game().makeMove(action.move());
                 }
+            } else {
+                sendError(session, new ErrorResult("It is not your move!"));
+                return;
             }
-            
+
             String outgoingMessage;
             if (gameData.game().isInCheckmate(oppoColor)) {
                 outgoingMessage = String.format("The game has ended in checkmate in favor of %s!", authData.username());
@@ -126,21 +126,28 @@ public class WebSocketHandler {
             } else if (gameData.game().isInCheck(oppoColor)) {
                 outgoingMessage = String.format("%s has put %s in check!", authData.username(), oppoName);
             } else {
-                outgoingMessage = String.format("%s is moving %s from %s to %s", authData.username(), piece, startPosition, endPosition);
+                outgoingMessage = String.format("%s has made a move!", authData.username());
             }
 
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
-            connections.broadcast(session, notification);
+            LoadGameMessage loadGameMessage = new LoadGameMessage(outgoingMessage, gameData.game());
+            connections.gameBroadcast(session, loadGameMessage);
+
+            dataAccess.updateGame(gameData);
         } catch (Exception e) {
             sendError(session, new ErrorResult("Not a valid move"));
         }
     }
 
-    private void resign (Session session, UserGameCommand action) {
+    private void resign (Session session, UserGameCommand action) throws IOException {
+        if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())){
+            sendError(session, new ErrorResult("Error: You are only observing this game!"));
+            return;
+        }
+
+
     }
 
     private void sendError(Session session, ErrorResult error) throws IOException {
-        System.out.printf("Error: %s%n", new Gson().toJson(error));
         session.getRemote().sendString(new Gson().toJson(error));
     }
 

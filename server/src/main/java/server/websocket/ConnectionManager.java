@@ -1,9 +1,9 @@
 package server.websocket;
 
 import com.google.gson.Gson;
-import com.mysql.cj.exceptions.ConnectionIsClosedException;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.*;
+import server.Server;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -35,9 +35,24 @@ public class ConnectionManager {
                 removeList.add(c);
             }
         }
+        for (var c : removeList) {
+            connections.remove(c);
+        }
+    }
 
-
-        // Clean up any connections that were left open.
+    public void gameBroadcast(Session session, LoadGameMessage notification) {
+        var removeList = new ArrayList<Session>();
+        for (var c : connections.keySet()) {
+            if (c.isOpen()) {
+                if (c != session) {
+                    if (Objects.equals(connections.get(c), connections.get(session))) {
+                        sendMessage(c, notification);
+                    }
+                }
+            } else {
+                removeList.add(c);
+            }
+        }
         for (var c : removeList) {
             connections.remove(c);
         }
