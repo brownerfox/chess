@@ -56,11 +56,11 @@ public class WebSocketHandler {
 
         if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
             JoinGameCommand action = new Gson().fromJson(message,JoinGameCommand.class);
-            setData(session, action.authToken(), action.gameID());
+            setData(session, action.getAuthToken(), action.getGameID());
             joinPlayer(session, action);
         } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
             MakeMoveCommand action = new Gson().fromJson(message, MakeMoveCommand.class);
-            setData(session, action.authToken(), action.gameID());
+            setData(session, action.getAuthToken(), action.getGameID());
             makeMove(session, action);
         } else {
             UserGameCommand action = new Gson().fromJson(message,UserGameCommand.class);
@@ -70,11 +70,11 @@ public class WebSocketHandler {
     }
 
     private void joinPlayer(Session session, JoinGameCommand action) throws IOException {
-        connections.add(action.gameID(), session);
+        connections.add(action.getGameID(), session);
 
-        ChessGame.TeamColor color = action.color().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        ChessGame.TeamColor color = action.getColor().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
-        String stringOfColor = action.color().equalsIgnoreCase("white") ? "WHITE" : "BLACK";
+        String stringOfColor = action.getColor().equalsIgnoreCase("white") ? "WHITE" : "BLACK";
 
         String expectedUsername = (color == ChessGame.TeamColor.WHITE) ? gameData.whiteUsername() : gameData.blackUsername();
 
@@ -110,16 +110,16 @@ public class WebSocketHandler {
     }
 
     private void makeMove(Session session, MakeMoveCommand action) throws IOException{
-        ChessGame.TeamColor oppoColor = action.color().equalsIgnoreCase("white") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-        String oppoName = action.color().equalsIgnoreCase("white") ? gameData.blackUsername() : gameData.whiteUsername();
+        ChessGame.TeamColor oppoColor = action.getColor().equalsIgnoreCase("white") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        String oppoName = action.getColor().equalsIgnoreCase("white") ? gameData.blackUsername() : gameData.whiteUsername();
         if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())){
             sendError(session, new ErrorResult("Error: You are only observing this game!"));
             return;
         }
         try {
-            if (gameData.game().getTeamTurn().toString().equalsIgnoreCase(action.color())) {
-                if (gameData.game().validMoves(action.move().getStartPosition()).contains(action.move())) {
-                    gameData.game().makeMove(action.move());
+            if (gameData.game().getTeamTurn().toString().equalsIgnoreCase(action.getColor())) {
+                if (gameData.game().validMoves(action.getMove().getStartPosition()).contains(action.getMove())) {
+                    gameData.game().makeMove(action.getMove());
 
                     LoadGameMessage loadGameMessage = new LoadGameMessage("", gameData.game());
                     connections.sendMessage(session, loadGameMessage);

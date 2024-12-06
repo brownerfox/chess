@@ -19,11 +19,11 @@ import static ui.EscapeSequences.*;
 
 public class WebSocketFacade {
 
-    Session session;
-    private BoardCreator boardCreator;
+    private final Session session;
+    private ChessGame.TeamColor teamColor;
 
-    public WebSocketFacade(String url, BoardCreator boardCreator) throws ResponseException {
-        this.boardCreator = boardCreator;
+    public WebSocketFacade(String url, ChessGame.TeamColor teamColor) throws ResponseException {
+        this.teamColor = teamColor;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -41,10 +41,6 @@ public class WebSocketFacade {
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
-    }
-
-    public BoardCreator getBoardCreator() {
-        return boardCreator;
     }
 
     private void receiveMessage(String message) {
@@ -67,7 +63,7 @@ public class WebSocketFacade {
     }
 
     public void printBoard(ChessGame game) {
-        BoardCreator boardCreator = getBoardCreator();
+        BoardCreator boardCreator = new BoardCreator(game, teamColor);
         System.out.print(ERASE_LINE + "\n");
         boardCreator.printBoard();
 

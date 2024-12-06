@@ -7,10 +7,9 @@
     <list default="true" id="bdbc6d01-8ecf-4f3b-84d5-c8b9b3b141aa" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ServerFacade.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/client/websocket/WebSocketFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/websocket/WebSocketFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/ui/BoardCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/ui/BoardCreator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/JoinGameCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/JoinGameCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/MakeMoveCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/MakeMoveCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/server/websocket/WebSocketHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/server/websocket/WebSocketHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,27 +162,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>44</line>
+          <line>53</line>
           <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>64</line>
+          <line>73</line>
           <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>204</line>
+          <line>216</line>
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>149</line>
+          <line>158</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>155</line>
+          <line>164</line>
           <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">

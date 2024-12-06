@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.WebSocketFacade;
 import model.GameData;
 import requests.CreateUserRequest;
 import requests.JoinGameRequest;
@@ -10,6 +11,8 @@ import results.ListGamesResult;
 import exception.ResponseException;
 import ui.BoardCreator;
 import ui.State;
+import websocket.commands.JoinGameCommand;
+import websocket.commands.UserGameCommand;
 
 
 import java.util.ArrayList;
@@ -21,18 +24,24 @@ public class ChessClient {
     private static final String SUCCESS_LOGOUT_MESSAGE = "You've successfully logged out!";
     private State loginState = State.SIGNEDOUT;
     private ChessGame.TeamColor teamColor;
-    boolean inGame = false;
-    BoardCreator boardCreator = new BoardCreator(new ChessGame(), teamColor);
+    private WebSocketFacade ws;
+    private boolean inGame = false;
+    private String serverUrl;
 
     public ChessClient (String serverUrl) {
+        this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
+    }
+
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
     }
 
     public State getLoginState() {
         return loginState;
     }
 
-    public ChessGame.TeamColor getTeamColor () {
+    public ChessGame.TeamColor getTeamColor() {
         return teamColor;
     }
 
@@ -190,6 +199,9 @@ public class ChessClient {
                 return output.toString();
             } else {
                 setTeamColor(teamColor);
+                setInGame(true);
+                ws = new WebSocketFacade(this.serverUrl, getTeamColor());
+                ws.joinPlayer(new JoinGameCommand(server.authToken, gameID, getTeamColor().toString()));
                 output.append(result);
                 return output.toString();
             }
@@ -223,7 +235,10 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            return "Observer pre gameplay";
+            setInGame(true);
+            ws = new WebSocketFacade(this.serverUrl, getTeamColor());
+            ws.joinObserver(new UserGameCommand(UserGameCommand.CommandType.JOIN_OBSERVER, server.authToken, gameID));
+            return ("");
             //return server.joinGame(joinGameRequest);
         } else {
             return ("Game does not exist!");

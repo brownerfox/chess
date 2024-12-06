@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.WebSocketFacade;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
@@ -24,6 +25,7 @@ public class ServerFacade {
     String authToken;
     HashSet<GameData> gameList;
     ChessGame game;
+    WebSocketFacade ws;
 
     public ServerFacade(String url) {
         serverUrl = url;
