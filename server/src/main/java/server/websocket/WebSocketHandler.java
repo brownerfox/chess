@@ -11,7 +11,6 @@ import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import results.ErrorResult;
-import server.Server;
 import service.BadGameIDException;
 import service.ServiceException;
 import websocket.commands.JoinGameCommand;
@@ -163,7 +162,6 @@ public class WebSocketHandler {
     }
 
     private void resign (Session session, UserGameCommand action) throws IOException {
-        ChessGame.TeamColor color;
         ChessGame game = gameData.game();
 
         if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())) {
@@ -178,6 +176,7 @@ public class WebSocketHandler {
         String outgoingMessage = String.format("%s has forfeited the game!", authData.username());
         ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, outgoingMessage);
         connections.broadcast(session, serverMessage);
+        game.setGameStatus(true);
     }
 
     private void sendError(Session session, ErrorResult error) throws IOException {

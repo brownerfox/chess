@@ -19,15 +19,16 @@ import java.util.Objects;
 public class ChessClient {
     private final ServerFacade server;
     private static final String SUCCESS_LOGOUT_MESSAGE = "You've successfully logged out!";
-    private State state = State.SIGNEDOUT;
+    private State loginState = State.SIGNEDOUT;
     BoardCreator boardCreator = new BoardCreator(new ChessGame());
+    boolean inGame = false;
 
     public ChessClient (String serverUrl) {
         server = new ServerFacade(serverUrl);
     }
 
-    public State getState() {
-        return state;
+    public State getLoginState() {
+        return loginState;
     }
 
     public String eval(String input) {
@@ -58,7 +59,7 @@ public class ChessClient {
             CreateUserRequest user = new CreateUserRequest(params[0], params[1], params[2]);
             String result = server.createUser(user);
             if (Objects.equals(result, String.format("You signed in as %s!", user.username()))) {
-                state = State.SIGNEDIN;
+                loginState = State.SIGNEDIN;
             }
             return result;
         }
@@ -71,27 +72,27 @@ public class ChessClient {
             LogInRequest logInRequest = new LogInRequest(params[0], params[1]);
             String result = server.logInUser(logInRequest);
             if (Objects.equals(result, String.format("You signed in as %s!", logInRequest.username()))) {
-                state = State.SIGNEDIN;
+                loginState = State.SIGNEDIN;
             }
             return result;
         }
     }
 
     public String logOutUser () {
-        if (state == State.SIGNEDOUT) {
+        if (loginState == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
         String result = server.logOutUser();
 
         if (Objects.equals(result, SUCCESS_LOGOUT_MESSAGE)) {
-            state = State.SIGNEDOUT;
+            loginState = State.SIGNEDOUT;
         }
 
         return result;
     }
 
     public ArrayList<GameData> listGames() throws ResponseException {
-        if (state == State.SIGNEDOUT) {
+        if (loginState == State.SIGNEDOUT) {
             throw new ResponseException(400, "You need to sign in!");
         } else {
             ListGamesResult listGames = server.listGames();
@@ -119,7 +120,7 @@ public class ChessClient {
     }
 
     public String createGame(String... params) throws ResponseException {
-        if (state == State.SIGNEDOUT) {
+        if (loginState == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
         if (params.length != 1) {
@@ -139,7 +140,7 @@ public class ChessClient {
     public String joinGame (String... params) throws ResponseException {
         StringBuilder output = new StringBuilder();
 
-        if (state == State.SIGNEDOUT) {
+        if (loginState == State.SIGNEDOUT) {
             output.append("You need to sign in!");
             return output.toString();
         }
@@ -190,7 +191,7 @@ public class ChessClient {
 
     public String observeGame (String[] params) throws ResponseException {
 
-        if (state == State.SIGNEDOUT) {
+        if (loginState == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
         if (params.length != 1 || !params[0].matches("\\d+")) {
@@ -222,7 +223,7 @@ public class ChessClient {
     }
 
     public String clear () {
-        state = State.SIGNEDOUT;
+        loginState = State.SIGNEDOUT;
         return server.clear();
     }
 
@@ -238,7 +239,7 @@ public class ChessClient {
     }
 
     public String printHelpMenu() {
-        if (state != State.SIGNEDIN) {
+        if (loginState != State.SIGNEDIN) {
             return """
             register <USERNAME> <PASSWORD> <EMAIL> - create a new user
             login <USERNAME> <PASSWORD> - login to an existing user

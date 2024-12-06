@@ -1,6 +1,5 @@
 package ui;
 
-import chess.ChessGame;
 import client.ChessClient;
 
 import java.util.Scanner;
@@ -41,7 +40,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        String logInStatus = client.getState() == State.SIGNEDIN ? "LOGGED_IN" : "LOGGED_OUT";
+        String logInStatus = client.getLoginState() == State.SIGNEDIN ? "LOGGED_IN" : "LOGGED_OUT";
         String status = String.format("\n[%s] >>> ", logInStatus);
         System.out.print(status + SET_TEXT_COLOR_GREEN);
     }
