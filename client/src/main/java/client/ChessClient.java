@@ -1,6 +1,9 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import client.websocket.WebSocketFacade;
 import model.GameData;
 import requests.CreateUserRequest;
@@ -28,7 +31,7 @@ public class ChessClient {
     private boolean inGame = false;
     private String serverUrl;
 
-    public ChessClient (String serverUrl) {
+    public ChessClient(String serverUrl) {
         this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
     }
@@ -45,7 +48,7 @@ public class ChessClient {
         return teamColor;
     }
 
-    public void setTeamColor (ChessGame.TeamColor newTeamColor) {
+    public void setTeamColor(ChessGame.TeamColor newTeamColor) {
         teamColor = newTeamColor;
     }
 
@@ -62,6 +65,11 @@ public class ChessClient {
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
+                case "move" -> makeMove(params);
+                case "redraw" -> redrawBoard();
+                case "leave" -> leaveGame();
+                case "resign" -> resignGame();
+                case "legal" -> highlightLegalMoves(params);
                 case "clear" -> clear();
                 default -> printHelpMenu();
             };
@@ -96,7 +104,7 @@ public class ChessClient {
         }
     }
 
-    public String logOutUser () {
+    public String logOutUser() {
         if (loginState == State.SIGNEDOUT) {
             return ("You need to sign in!");
         }
@@ -155,7 +163,7 @@ public class ChessClient {
         }
     }
 
-    public String joinGame (String... params) throws ResponseException {
+    public String joinGame(String... params) throws ResponseException {
         StringBuilder output = new StringBuilder();
 
         if (loginState == State.SIGNEDOUT) {
@@ -211,7 +219,7 @@ public class ChessClient {
         }
     }
 
-    public String observeGame (String[] params) throws ResponseException {
+    public String observeGame(String[] params) throws ResponseException {
 
         if (loginState == State.SIGNEDOUT) {
             return ("You need to sign in!");
@@ -245,6 +253,50 @@ public class ChessClient {
         }
     }
 
+    private String makeMove(String[] params) {
+        ChessPosition to = null;
+        ChessPosition from = null;
+        ChessPiece promotion = null;
+        if (params.length >= 3 && params[1].matches("[a-h][1-8]") && params[2].matches("[a-h][1-8]")) {
+            from = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - ('a' - 1));
+            to = new ChessPosition(params[2].charAt(1) - '0', params[2].charAt(0) - ('a' - 1));
+
+            if (params.length == 4) {
+                promotion = switch (params[3]) {
+                    case "queen" -> new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
+                    case "rook" -> new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+                    case "bishop" -> new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+                    case "knight" -> new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+                    default -> null;
+                };
+            }
+            if (promotion == null) { // If it was improperly typed by the user
+                return ("Insert a valid promotion piece: 'queen', 'rook', 'bishop', 'knight'");
+            }
+
+            ws.makeMove(gameID, new ChessMove(from, to, promotion.getPieceType()));
+            return "";
+        } else {
+            return ("Please provide a to and from coordinate (ex: 'c3 d5')");
+        }
+    }
+
+    private void leaveGame() {
+        ws.leave();
+    }
+
+    private void redrawBoard () {
+        ws.printBoard();
+    }
+
+    private void resignGame() {
+        ws.resign();
+    }
+
+    private void highlightLegalMoves(String[] params) {
+        ws.printHighlightedBoard(move, game);
+    }
+
     public String clear () {
         loginState = State.SIGNEDOUT;
         return server.clear();
@@ -262,20 +314,29 @@ public class ChessClient {
     }
 
     public String printHelpMenu() {
-        if (loginState != State.SIGNEDIN) {
+        if (loginState == State.SIGNEDIN && inGame){
             return """
-            register <USERNAME> <PASSWORD> <EMAIL> - create a new user
-            login <USERNAME> <PASSWORD> - login to an existing user
-            quit - stop playing
-            help - show this menu
+            redraw - redraws the chessboard
+            leave - removes you from the game
+            move <from> <to> <promotion_piece> - makes a move if you're playing
+            resign - forfeits the match
+            legal <piece position> - highlights the legal moves
             """;
-        } else {
+        }
+        else if (loginState == State.SIGNEDIN) {
             return """
             create <NAME> - create a new game
             list - list all games
             join <ID> [WHITE|BLACK] - join a game as color
             observe <ID> - observe a game
             logout - log out of current user
+            quit - stop playing
+            help - show this menu
+            """;
+        } else {
+            return """
+            register <USERNAME> <PASSWORD> <EMAIL> - create a new user
+            login <USERNAME> <PASSWORD> - login to an existing user
             quit - stop playing
             help - show this menu
             """;
