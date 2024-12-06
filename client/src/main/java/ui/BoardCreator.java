@@ -1,9 +1,11 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static ui.EscapeSequences.*;
 import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
 
@@ -18,15 +20,7 @@ public class BoardCreator {
         board = game.getBoard();
     }
 
-    public ChessGame.TeamColor getTeamColor() {
-        return this.teamColor;
-    }
-
-    public void updateGame(ChessGame game) {
-        this.game = game;
-    }
-
-    public void printBoard() {
+    public void printBoard(Collection<ChessMove> validMoves) {
         StringBuilder output = new StringBuilder();
         output.append(startAndEndRow(teamColor));
 
@@ -43,7 +37,11 @@ public class BoardCreator {
             int colStep = (teamColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
 
             for (int col = colStart; col != colEnd; col += colStep) {
-                output.append(determineSquareColor(row, col));
+                if (validMoves == null) {
+                    output.append(determineSquareColor(row, col));
+                } else {
+                    output.append(determineSquareColor(row, col, validMoves));
+                }
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 if (piece != null) {
                     output.append(pieceToString(piece));
@@ -87,38 +85,48 @@ public class BoardCreator {
         StringBuilder output = new StringBuilder();
 
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            output.append(SET_TEXT_COLOR_GREEN);
-            output.append(SET_TEXT_BOLD);
-            switch (piece.getPieceType()) {
-                case QUEEN -> output.append(" Q ");
-                case KING -> output.append(" K ");
-                case BISHOP -> output.append(" B ");
-                case KNIGHT -> output.append(" k ");
-                case ROOK -> output.append(" R ");
-                case PAWN -> output.append(" P ");
-            }
+            output.append(SET_TEXT_COLOR_RED);
         } else {
-            output.append(SET_TEXT_COLOR_MAGENTA);
-            output.append(SET_TEXT_BOLD);
-            switch (piece.getPieceType()) {
-                case QUEEN -> output.append(" Q ");
-                case KING -> output.append(" K ");
-                case BISHOP -> output.append(" B ");
-                case KNIGHT -> output.append(" k ");
-                case ROOK -> output.append(" R ");
-                case PAWN -> output.append(" P ");
-            }
+            output.append(SET_TEXT_COLOR_BLUE);
+        }
+        output.append(SET_TEXT_BOLD);
+        switch (piece.getPieceType()) {
+            case QUEEN -> output.append(" Q ");
+            case KING -> output.append(" K ");
+            case BISHOP -> output.append(" B ");
+            case KNIGHT -> output.append(" k ");
+            case ROOK -> output.append(" R ");
+            case PAWN -> output.append(" P ");
         }
         output.append(RESET_TEXT_BOLD_FAINT);
         return output.toString();
     }
 
     private String determineSquareColor(int row, int col) {
+        return determineSquareColor(row, col, null);
+    }
+
+    private String determineSquareColor(int row, int col, Collection<ChessMove> validMoves) {
+        Set<ChessPosition> validPositions;
+        validPositions = validMoves.stream()
+                .map(ChessMove::getEndPosition)
+                .collect(Collectors.toSet());
+
+        ChessPosition position = new ChessPosition(row, col);
+
         StringBuilder output = new StringBuilder();
         if ((row + col) % 2 == 0) {
-            output.append(SET_BG_COLOR_BLACK);
+            if (validPositions.contains(position)) {
+                output.append(SET_BG_COLOR_DARK_GREEN);
+            } else {
+                output.append(SET_BG_COLOR_BLACK);
+            }
         } else {
-            output.append(SET_BG_COLOR_LIGHT_GREY);
+            if (validPositions.contains(position)) {
+                output.append(SET_BG_COLOR_GREEN);
+            } else {
+                output.append(SET_BG_COLOR_LIGHT_GREY);
+            }
         }
         return output.toString();
     }

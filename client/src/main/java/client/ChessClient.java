@@ -230,8 +230,6 @@ public class ChessClient {
 
         int gameID = Integer.parseInt(params[0]);
 
-        JoinGameRequest joinGameRequest = new JoinGameRequest(server.getAuthToken(), null, gameID);
-
         ListGamesResult listGames = server.listGames();
 
         if (listGames.games().isEmpty() || listGames.games().size() <= gameID) {
@@ -270,14 +268,14 @@ public class ChessClient {
                     default -> null;
                 };
             }
-            if (promotion == null) { // If it was improperly typed by the user
+            if (promotion == null) {
                 return ("Insert a valid promotion piece: 'queen', 'rook', 'bishop', 'knight'");
             }
 
-            ws.makeMove(gameID, new ChessMove(from, to, promotion.getPieceType()));
+            ws.makeMove(new ChessMove(from, to, promotion.getPieceType()));
             return "";
         } else {
-            return ("Please provide a to and from coordinate (ex: 'c3 d5')");
+            return ("Please provide a start position and an end position (ex: 'a2 a3')");
         }
     }
 
@@ -294,7 +292,14 @@ public class ChessClient {
     }
 
     private void highlightLegalMoves(String[] params) {
-        ws.printHighlightedBoard(move, game);
+        if (params.length == 2 && params[1].matches("[a-h][1-8]")) {
+            ChessPosition position = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - ('a'-1));
+            ws.printHighlightedBoard(position);
+        }
+        else {
+            System.out.println("Please provide a coordinate (ex: 'c3')");
+        }
+        ws.printHighlightedBoard(move);
     }
 
     public String clear () {
