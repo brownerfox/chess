@@ -4,6 +4,9 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import ui.BoardCreator;
+import websocket.commands.JoinGameCommand;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
@@ -17,13 +20,13 @@ import static ui.EscapeSequences.*;
 public class WebSocketFacade {
 
     Session session;
-    NotificationHandler notificationHandler;
+    private BoardCreator boardCreator;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, BoardCreator boardCreator) throws ResponseException {
+        this.boardCreator = boardCreator;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-            this.notificationHandler = notificationHandler;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -38,6 +41,10 @@ public class WebSocketFacade {
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+
+    public BoardCreator getBoardCreator() {
+        return boardCreator;
     }
 
     private void receiveMessage(String message) {
@@ -56,15 +63,39 @@ public class WebSocketFacade {
     }
 
     public void printMessage(String message) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(ERASE_LINE).append(message);
-        System.out.print(stringBuilder);
+        System.out.print(ERASE_LINE + message);
     }
 
     public void printBoard(ChessGame game) {
-        BoardCreator boardCreator = new BoardCreator(game);
+        BoardCreator boardCreator = getBoardCreator();
         System.out.print(ERASE_LINE + "\n");
         boardCreator.printBoard();
 
     }
+
+    public void sendMessage(UserGameCommand command) {
+        String message = new Gson().toJson(command);
+        this.session.getAsyncRemote().sendText(message);
+    }
+
+    public void joinPlayer(JoinGameCommand command) {
+        sendMessage(command);
+    }
+
+    public void joinObserver(UserGameCommand command) {
+        sendMessage(command);
+    }
+
+    public void makeMove(MakeMoveCommand command) {
+        sendMessage(command);
+    }
+
+    public void leave(UserGameCommand command) {
+        sendMessage(command);
+    }
+
+    public void resign(UserGameCommand command) {
+        sendMessage(command);
+    }
+
 }

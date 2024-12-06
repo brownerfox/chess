@@ -10,17 +10,23 @@ import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
 public class BoardCreator {
     ChessGame game;
     ChessBoard board;
+    private final ChessGame.TeamColor teamColor;
 
-    public BoardCreator(ChessGame game) {
+    public BoardCreator(ChessGame game, ChessGame.TeamColor teamColor) {
         this.game = game;
+        this.teamColor = teamColor;
         board = game.getBoard();
+    }
+
+    public ChessGame.TeamColor getTeamColor() {
+        return this.teamColor;
     }
 
     public void updateGame(ChessGame game) {
         this.game = game;
     }
 
-    public void printBoard(ChessGame.TeamColor teamColor) {
+    public void printBoard() {
         StringBuilder output = new StringBuilder();
         output.append(startAndEndRow(teamColor));
 

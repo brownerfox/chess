@@ -20,8 +20,9 @@ public class ChessClient {
     private final ServerFacade server;
     private static final String SUCCESS_LOGOUT_MESSAGE = "You've successfully logged out!";
     private State loginState = State.SIGNEDOUT;
-    BoardCreator boardCreator = new BoardCreator(new ChessGame());
+    private ChessGame.TeamColor teamColor;
     boolean inGame = false;
+    BoardCreator boardCreator = new BoardCreator(new ChessGame(), teamColor);
 
     public ChessClient (String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -29,6 +30,14 @@ public class ChessClient {
 
     public State getLoginState() {
         return loginState;
+    }
+
+    public ChessGame.TeamColor getTeamColor () {
+        return teamColor;
+    }
+
+    public void setTeamColor (ChessGame.TeamColor newTeamColor) {
+        teamColor = newTeamColor;
     }
 
     public String eval(String input) {
@@ -158,6 +167,8 @@ public class ChessClient {
         }
         int gameID = Integer.parseInt(params[0]);
 
+        teamColor = params[1].equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
         JoinGameRequest joinGameRequest = new JoinGameRequest(server.getAuthToken(), params[1], gameID);
 
         ListGamesResult listGames = server.listGames();
@@ -178,8 +189,7 @@ public class ChessClient {
                 output.append(result);
                 return output.toString();
             } else {
-                boardCreator.printBoard(ChessGame.TeamColor.WHITE);
-                boardCreator.printBoard(ChessGame.TeamColor.BLACK);
+                setTeamColor(teamColor);
                 output.append(result);
                 return output.toString();
             }
@@ -213,8 +223,6 @@ public class ChessClient {
             }
         }
         if (findGameIndex(gameID) != -1) {
-            boardCreator.printBoard(ChessGame.TeamColor.WHITE);
-            boardCreator.printBoard(ChessGame.TeamColor.BLACK);
             return "Observer pre gameplay";
             //return server.joinGame(joinGameRequest);
         } else {
