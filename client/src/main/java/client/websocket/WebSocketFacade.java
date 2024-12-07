@@ -6,10 +6,7 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import ui.BoardCreator;
-import websocket.commands.JoinGameCommand;
-import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
-import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -28,8 +25,9 @@ public class WebSocketFacade {
     private String authToken;
     private ChessGame game;
 
-    public WebSocketFacade(String url, ChessGame.TeamColor teamColor) throws ResponseException {
+    public WebSocketFacade(String url, ChessGame.TeamColor teamColor, ChessGame game) throws ResponseException {
         this.teamColor = teamColor;
+        this.game = game;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -55,12 +53,10 @@ public class WebSocketFacade {
             printMessage(notification.getMessage());
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
-            Error error = new Gson().fromJson(message, Error.class);
+           ServerMessage error = new Gson().fromJson(message, ServerMessage.class);
             printMessage(error.getMessage());
         }
         else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
-            LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
-            setGame(loadGame.getGame());
             printBoard();
         }
     }
@@ -86,7 +82,7 @@ public class WebSocketFacade {
         this.session.getAsyncRemote().sendText(message);
     }
 
-    public void joinPlayer(JoinGameCommand command) {
+    public void joinPlayer(UserGameCommand command) {
         setAuthToken(command.getAuthToken());
         setGameID(command.getGameID());
         sendMessage(command);
@@ -99,15 +95,15 @@ public class WebSocketFacade {
     }
 
     public void makeMove(ChessMove move) {
-        sendMessage(new MakeMoveCommand(authToken, gameID, move, teamColor.toString()));
+        sendMessage(new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move, teamColor.toString()));
     }
 
     public void leave() {
-        sendMessage(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID));
+        sendMessage(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, null, null));
     }
 
     public void resign() {
-        sendMessage(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID));
+        sendMessage(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, null, null));
     }
 
     public void setGameID(int gameID) {

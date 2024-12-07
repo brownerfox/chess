@@ -12,9 +12,7 @@ import requests.LogInRequest;
 import results.CreateGameResult;
 import results.ListGamesResult;
 import exception.ResponseException;
-import ui.BoardCreator;
 import ui.State;
-import websocket.commands.JoinGameCommand;
 import websocket.commands.UserGameCommand;
 
 
@@ -71,6 +69,7 @@ public class ChessClient {
                 case "resign" -> resignGame();
                 case "legal" -> highlightLegalMoves(params);
                 case "clear" -> clear();
+                case "quit" -> "";
                 default -> printHelpMenu();
             };
         } catch (ResponseException ex) {
@@ -208,8 +207,9 @@ public class ChessClient {
             } else {
                 setTeamColor(teamColor);
                 setInGame(true);
-                ws = new WebSocketFacade(this.serverUrl, getTeamColor());
-                ws.joinPlayer(new JoinGameCommand(server.authToken, gameID, getTeamColor().toString()));
+                ws = new WebSocketFacade(this.serverUrl, getTeamColor(), getGame(gameID));
+                ws.joinPlayer(new UserGameCommand(UserGameCommand.CommandType.CONNECT, server.authToken, gameID, null, getTeamColor().toString()));
+                ws.printBoard();
                 output.append(result);
                 return output.toString();
             }
@@ -242,8 +242,8 @@ public class ChessClient {
         }
         if (findGameIndex(gameID) != -1) {
             setInGame(true);
-            ws = new WebSocketFacade(this.serverUrl, getTeamColor());
-            ws.joinObserver(new UserGameCommand(UserGameCommand.CommandType.JOIN_OBSERVER, server.authToken, gameID));
+            ws = new WebSocketFacade(this.serverUrl, getTeamColor(), getGame(gameID));
+            ws.joinObserver(new UserGameCommand(UserGameCommand.CommandType.CONNECT, server.authToken, gameID, null, null));
             return ("");
             //return server.joinGame(joinGameRequest);
         } else {
@@ -279,32 +279,46 @@ public class ChessClient {
         }
     }
 
-    private void leaveGame() {
+    private String leaveGame() {
         ws.leave();
+        return "";
     }
 
-    private void redrawBoard () {
+    private String redrawBoard () {
         ws.printBoard();
+        return "";
     }
 
-    private void resignGame() {
+    private String resignGame() {
         ws.resign();
+        return "";
     }
 
-    private void highlightLegalMoves(String[] params) {
+    private String highlightLegalMoves(String[] params) {
         if (params.length == 2 && params[1].matches("[a-h][1-8]")) {
             ChessPosition position = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - ('a'-1));
             ws.printHighlightedBoard(position);
+            return "";
         }
         else {
-            System.out.println("Please provide a coordinate (ex: 'c3')");
+            return ("Please provide a coordinate (ex: 'c3')");
         }
-        ws.printHighlightedBoard(move);
     }
 
     public String clear () {
         loginState = State.SIGNEDOUT;
         return server.clear();
+    }
+
+    private ChessGame getGame(int gameID) throws ResponseException {
+        ListGamesResult listGames = server.listGames();
+        for (GameData gameData : listGames.games()) {
+            if (gameData.gameID() == gameID) {
+                return gameData.game();
+            }
+        }
+
+        return null;
     }
 
     public int findGameIndex(int gameID) throws ResponseException {

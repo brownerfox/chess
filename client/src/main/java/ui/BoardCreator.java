@@ -3,6 +3,7 @@ package ui;
 import chess.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -107,10 +108,11 @@ public class BoardCreator {
     }
 
     private String determineSquareColor(int row, int col, Collection<ChessMove> validMoves) {
-        Set<ChessPosition> validPositions;
-        validPositions = validMoves.stream()
-                .map(ChessMove::getEndPosition)
-                .collect(Collectors.toSet());
+        Set<ChessPosition> validPositions = validMoves == null ?
+                Collections.emptySet() :
+                validMoves.stream()
+                        .map(ChessMove::getEndPosition)
+                        .collect(Collectors.toSet());
 
         ChessPosition position = new ChessPosition(row, col);
 
