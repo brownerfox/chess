@@ -32,6 +32,7 @@ public class ConnectionManager {
     }
 
     public void sendMessage(Session session, ServerMessage message) throws IOException {
+        System.out.print(new Gson().toJson(message));
         session.getRemote().sendString(new Gson().toJson(message));
     }
 }

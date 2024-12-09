@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
@@ -80,7 +81,9 @@ public class MySQLDataAccess implements DataAccess {
          throw new DataAccessException("");
         }
         var statement = "INSERT INTO gamedata (gamename, game) VALUES (?, ?)";
-        String game = new Gson().toJson(new ChessGame());
+        ChessGame newGame = new ChessGame();
+        newGame.getBoard().resetBoard();
+        String game = new Gson().toJson(newGame);
         var id = executeUpdate(statement, gameName, game);
         return (int) id;
     }

@@ -8,13 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/ChessClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/client/websocket/WebSocketFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/client/websocket/WebSocketFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/ui/BoardCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/ui/BoardCreator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/dataaccess/MySQLDataAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/dataaccess/MySQLDataAccess.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/server/websocket/ConnectionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/server/websocket/ConnectionManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/server/websocket/WebSocketHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/server/websocket/WebSocketHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/JoinGameCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/MakeMoveCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/UserGameCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/websocket/commands/UserGameCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/messages/LoadGameMessage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/service/ChessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/service/ChessService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared/src/main/java/websocket/messages/ServerMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/websocket/messages/ServerMessage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -73,10 +70,10 @@
     "JUnit.ServerFacadeTests.logOutUserSuccess.executor": "Run",
     "JUnit.ServiceUnitTests.createUserSuccess.executor": "Run",
     "JUnit.StandardAPITests.executor": "Debug",
-    "JUnit.WebSocketTests.connectGood.executor": "Debug",
+    "JUnit.WebSocketTests.connectGood.executor": "Run",
     "JUnit.WebSocketTests.executor": "Run",
     "JUnit.WebSocketTests.makeMoveBadAuthtoken.executor": "Run",
-    "JUnit.WebSocketTests.validMove.executor": "Run",
+    "JUnit.WebSocketTests.validMove.executor": "Debug",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
     "Repository.Attach.Sources": "false",
@@ -94,7 +91,7 @@
       <recent name="client" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.WebSocketTests.connectGood">
+  <component name="RunManager" selected="JUnit.WebSocketTests.validMove">
     <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="client" />
@@ -158,9 +155,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.WebSocketTests.connectGood" />
-        <item itemvalue="Application.Main" />
         <item itemvalue="JUnit.WebSocketTests.validMove" />
+        <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.WebSocketTests.connectGood" />
         <item itemvalue="Application.Main (1)" />
         <item itemvalue="JUnit.WebSocketTests" />
       </list>
@@ -197,7 +194,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
-          <line>224</line>
+          <line>223</line>
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -227,7 +224,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/server/src/main/java/server/websocket/ConnectionManager.java</url>
-          <line>34</line>
+          <line>35</line>
           <option name="timeStamp" value="68" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -245,11 +242,48 @@
           <line>28</line>
           <option name="timeStamp" value="73" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/main/java/client/ChessClient.java</url>
+          <line>256</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/server/src/main/java/server/websocket/WebSocketHandler.java</url>
+          <line>54</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/server/src/main/java/server/websocket/WebSocketHandler.java</url>
+          <line>108</line>
+          <option name="timeStamp" value="76" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/client/src/main/java/client/websocket/WebSocketFacade.java</url>
+          <line>57</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/server/src/test/java/passoff/server/WebSocketTests.java</url>
+          <line>88</line>
+          <option name="timeStamp" value="83" />
+        </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">
           <properties class="com.google.gson.JsonSyntaxException" package="com.google.gson" />
           <option name="timeStamp" value="33" />
         </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="81" />
+        </breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JUnit">
+        <watch expression="message" />
+      </configuration>
+      <configuration name="Application">
+        <watch expression="from" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

@@ -86,15 +86,15 @@ public class ChessService {
         GameData game = dataAccess.getGame(gameID);
 
         if (teamColor == null) {
-            return new JoinGameResult();
+            throw new ServiceException("");
         } else if (Objects.equals(teamColor.toUpperCase(), "WHITE")) {
-            if (Objects.equals(game.whiteUsername(), null)) {
+            if (Objects.equals(game.whiteUsername(), null) || Objects.equals(authData.username(), game.whiteUsername())) {
                 newGame = new GameData(gameID, authData.username(), game.blackUsername(), game.gameName(), game.game());
             } else {
                 throw new ServiceException("");
             }
         } else {
-            if (Objects.equals(game.blackUsername(), null)) {
+            if (Objects.equals(game.blackUsername(), null) || Objects.equals(authData.username(), game.blackUsername())) {
                 newGame = new GameData(gameID, game.whiteUsername(), authData.username(), game.gameName(), game.game());
             } else {
                 throw new ServiceException("");

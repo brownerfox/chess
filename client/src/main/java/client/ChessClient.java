@@ -207,9 +207,8 @@ public class ChessClient {
             } else {
                 setTeamColor(teamColor);
                 setInGame(true);
-                ws = new WebSocketFacade(this.serverUrl, getTeamColor(), getGame(gameID));
+                ws = new WebSocketFacade(this.serverUrl, getTeamColor());
                 ws.joinPlayer(new UserGameCommand(UserGameCommand.CommandType.CONNECT, server.authToken, gameID, null, getTeamColor().toString()));
-                ws.printBoard();
                 output.append(result);
                 return output.toString();
             }
@@ -242,7 +241,7 @@ public class ChessClient {
         }
         if (findGameIndex(gameID) != -1) {
             setInGame(true);
-            ws = new WebSocketFacade(this.serverUrl, getTeamColor(), getGame(gameID));
+            ws = new WebSocketFacade(this.serverUrl, getTeamColor());
             ws.joinObserver(new UserGameCommand(UserGameCommand.CommandType.CONNECT, server.authToken, gameID, null, null));
             return ("");
             //return server.joinGame(joinGameRequest);
@@ -252,27 +251,33 @@ public class ChessClient {
     }
 
     private String makeMove(String[] params) {
+        if (!inGame) {
+            return "You're not in a game!";
+        }
         ChessPosition to = null;
         ChessPosition from = null;
         ChessPiece promotion = null;
-        if (params.length >= 3 && params[1].matches("[a-h][1-8]") && params[2].matches("[a-h][1-8]")) {
-            from = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - ('a' - 1));
-            to = new ChessPosition(params[2].charAt(1) - '0', params[2].charAt(0) - ('a' - 1));
+        if (params.length >= 2 && params[0].matches("[a-h][1-8]") && params[1].matches("[a-h][1-8]")) {
+            from = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a' - 1));
+            to = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - ('a' - 1));
 
-            if (params.length == 4) {
-                promotion = switch (params[3]) {
+            if (params.length == 3) {
+                promotion = switch (params[2]) {
                     case "queen" -> new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
                     case "rook" -> new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
                     case "bishop" -> new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
                     case "knight" -> new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
                     default -> null;
                 };
-            }
-            if (promotion == null) {
-                return ("Insert a valid promotion piece: 'queen', 'rook', 'bishop', 'knight'");
+                if (promotion == null) {
+                    return ("Insert a valid promotion piece: 'queen', 'rook', 'bishop', 'knight'");
+                } else {
+                    ws.makeMove(new ChessMove(from, to, promotion.getPieceType()));
+                }
             }
 
-            ws.makeMove(new ChessMove(from, to, promotion.getPieceType()));
+
+            ws.makeMove(new ChessMove(from, to, null));
             return "";
         } else {
             return ("Please provide a start position and an end position (ex: 'a2 a3')");
@@ -281,6 +286,7 @@ public class ChessClient {
 
     private String leaveGame() {
         ws.leave();
+        setInGame(false);
         return "";
     }
 
@@ -295,8 +301,8 @@ public class ChessClient {
     }
 
     private String highlightLegalMoves(String[] params) {
-        if (params.length == 2 && params[1].matches("[a-h][1-8]")) {
-            ChessPosition position = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - ('a'-1));
+        if (params.length == 1 && params[0].matches("[a-h][1-8]")) {
+            ChessPosition position = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a'-1));
             ws.printHighlightedBoard(position);
             return "";
         }

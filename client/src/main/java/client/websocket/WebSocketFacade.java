@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import static ui.EscapeSequences.*;
 
-public class WebSocketFacade {
+public class WebSocketFacade extends Endpoint {
 
     private final Session session;
     private ChessGame.TeamColor teamColor;
@@ -25,9 +25,8 @@ public class WebSocketFacade {
     private String authToken;
     private ChessGame game;
 
-    public WebSocketFacade(String url, ChessGame.TeamColor teamColor, ChessGame game) throws ResponseException {
+    public WebSocketFacade(String url, ChessGame.TeamColor teamColor) throws ResponseException {
         this.teamColor = teamColor;
-        this.game = game;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -57,6 +56,8 @@ public class WebSocketFacade {
             printMessage(error.getMessage());
         }
         else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
+            ServerMessage loadGame = new Gson().fromJson(message, ServerMessage.class);
+            game = loadGame.getGame();
             printBoard();
         }
     }
@@ -116,5 +117,10 @@ public class WebSocketFacade {
 
     public void setGame(ChessGame game) {
         this.game = game;
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
+
     }
 }
