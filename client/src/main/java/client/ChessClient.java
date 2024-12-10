@@ -285,6 +285,7 @@ public class ChessClient {
     }
 
     private String leaveGame() {
+        setInGame(false);
         ws.leave();
         setInGame(false);
         return "";
@@ -314,17 +315,6 @@ public class ChessClient {
     public String clear () {
         loginState = State.SIGNEDOUT;
         return server.clear();
-    }
-
-    private ChessGame getGame(int gameID) throws ResponseException {
-        ListGamesResult listGames = server.listGames();
-        for (GameData gameData : listGames.games()) {
-            if (gameData.gameID() == gameID) {
-                return gameData.game();
-            }
-        }
-
-        return null;
     }
 
     public int findGameIndex(int gameID) throws ResponseException {

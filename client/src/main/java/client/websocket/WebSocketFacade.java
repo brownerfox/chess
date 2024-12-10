@@ -49,16 +49,17 @@ public class WebSocketFacade extends Endpoint {
     private void receiveMessage(String message) {
         if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
             ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-            printMessage(notification.getMessage());
+            printMessage(message);
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
            ServerMessage error = new Gson().fromJson(message, ServerMessage.class);
-            printMessage(error.getMessage());
+            printMessage(message);
         }
         else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             ServerMessage loadGame = new Gson().fromJson(message, ServerMessage.class);
             game = loadGame.getGame();
             printBoard();
+            printMessage(message);
         }
     }
 
