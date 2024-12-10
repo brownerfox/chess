@@ -89,7 +89,7 @@ public class MySQLDataAccess implements DataAccess {
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException, BadGameIDException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameid, whiteusername, blackusername, gamename, game FROM gamedata WHERE gameid=?";
             try (var ps = conn.prepareStatement(statement)) {
